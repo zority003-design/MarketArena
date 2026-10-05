@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type Country } from "./data/world";
+import { Atlas3D } from "./Atlas3D";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news";
@@ -44,152 +45,9 @@ function Terrain({ detailed = false }: { detailed?: boolean }) {
   return <g className="terrain-layer"><path className="terrain-lowland" d="M42 218 C92 190 134 201 174 223 C216 247 257 247 298 226 C345 202 394 207 454 225 L454 312 L42 312 Z"/><path className="terrain-shadow" d="M70 151 C104 118 140 120 169 145 C196 168 223 174 252 152 C283 128 317 130 347 151 C379 174 404 165 434 143 L444 185 C408 204 377 207 343 190 C310 173 282 176 251 197 C216 220 188 210 158 190 C126 168 101 170 73 188 Z"/><path className="ridge major" d="M73 104 C91 78 107 75 123 98 C138 73 154 72 171 99 C188 67 209 69 226 98 C243 78 257 80 271 104"/><path className="ridge major second" d="M274 111 C292 77 309 75 327 103 C343 70 360 73 376 105 C392 82 407 87 426 116"/><path className="ridge light" d="M88 117 C101 99 112 98 124 115 M138 116 C150 95 160 97 171 117 M292 122 C306 99 316 100 327 119 M344 121 C356 99 366 102 378 120"/><path className="contour" d="M55 132 C89 108 126 110 155 129 C187 151 214 159 245 142 C276 124 304 124 337 141 C370 158 401 153 439 130"/><path className="contour" d="M52 154 C89 131 123 135 151 153 C184 175 214 183 247 165 C279 146 307 148 338 164 C369 180 400 177 442 153"/><path className="contour" d="M57 178 C94 155 125 160 157 178 C189 197 218 205 250 186 C283 167 311 170 343 186 C374 202 402 199 435 179"/><path className="river" d="M221 74 C218 100 228 113 218 138 C207 163 199 183 207 203 C215 223 231 232 239 251 C245 267 241 282 231 296"/><path className="river" d="M302 79 C293 105 298 126 313 146 C327 164 341 175 348 194 C355 213 351 231 342 248"/><path className="river thin" d="M156 108 C173 127 178 143 170 164 C163 181 168 198 181 214"/><ellipse className="lake" cx="145" cy="226" rx="19" ry="8"/><ellipse className="lake" cx="376" cy="214" rx="14" ry="6"/><path className="snow" d="M178 73 L191 59 L205 73 L194 79 Z M317 75 L329 60 L343 75 L333 81 Z"/>{detailed&&<g className="terrain-detail"><path d="M91 244 C119 231 141 231 164 244 M182 257 C211 246 232 247 254 259 M282 241 C311 229 337 230 360 243 M366 261 C390 250 411 251 430 260"/><path d="M108 199 C126 190 143 191 158 201 M344 201 C362 190 379 191 394 201"/></g>}</g>;
 }
 function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { selected: string; onSelect: (id: string) => void; showCompanies?: boolean; onCompany?: (company: CompanyPreview) => void }) {
-  return <div className="atlas atlas-realistic">
-    <div className="atlas-head"><span>АТЛАС · ФИЗИКО-ПОЛИТИЧЕСКАЯ КАРТА</span><span>СЕВЕР ↑</span></div>
-    <svg viewBox="0 0 500 350" className="atlas-svg atlas-world-svg" role="img" aria-label="Физико-политическая карта пяти вымышленных государств">
-      <defs>
-        <linearGradient id="oceanDeep" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#0b4b66"/><stop offset=".48" stopColor="#06344b"/><stop offset="1" stopColor="#021d2d"/></linearGradient>
-        <radialGradient id="oceanGlow" cx=".46" cy=".38" r=".72"><stop stopColor="#6baeb9" stopOpacity=".22"/><stop offset=".7" stopColor="#0b3348" stopOpacity="0"/><stop offset="1" stopColor="#00141f" stopOpacity=".55"/></radialGradient>
-        <linearGradient id="terrainBase" x1=".2" y1="0" x2=".85" y2="1"><stop stopColor="#a7b47e"/><stop offset=".28" stopColor="#718e67"/><stop offset=".62" stopColor="#49674e"/><stop offset="1" stopColor="#233b34"/></linearGradient>
-        <linearGradient id="terrainWarm" x1=".1" y1="0" x2=".9" y2="1"><stop stopColor="#c79b62"/><stop offset=".5" stopColor="#8b633f"/><stop offset="1" stopColor="#4c3b31"/></linearGradient>
-        <linearGradient id="terrainSouth" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#71966d"/><stop offset=".5" stopColor="#3d6955"/><stop offset="1" stopColor="#21423a"/></linearGradient>
-        <linearGradient id="mountainFace" x1=".12" y1=".08" x2=".82" y2=".92"><stop stopColor="#d7d5c1"/><stop offset=".22" stopColor="#8f958b"/><stop offset=".52" stopColor="#505b58"/><stop offset=".78" stopColor="#303c3d"/><stop offset="1" stopColor="#18282d"/></linearGradient>
-        <linearGradient id="mountainLit" x1=".18" y1=".05" x2=".76" y2=".9"><stop stopColor="#f4f0d9"/><stop offset=".35" stopColor="#c4c5b3"/><stop offset="1" stopColor="#59635f"/></linearGradient>
-        <linearGradient id="snowRidge" x1=".2" y1="0" x2=".8" y2="1"><stop stopColor="#ffffff"/><stop offset=".42" stopColor="#e8e7da"/><stop offset="1" stopColor="#9da7a5"/></linearGradient>
-        <radialGradient id="forestMass" cx=".42" cy=".38" r=".78"><stop stopColor="#477c54"/><stop offset=".48" stopColor="#285640"/><stop offset="1" stopColor="#183a34"/></radialGradient>
-        <pattern id="terrainGrain" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".7" fill="#fff" opacity=".12"/><circle cx="13" cy="11" r=".8" fill="#142f2c" opacity=".16"/><path d="M0 15l5-2 4 2 5-2 4 2" fill="none" stroke="#e8e8cf" strokeOpacity=".07"/></pattern>
-        <pattern id="forestTexture" width="30" height="24" patternUnits="userSpaceOnUse">
-          <path d="M2 14C4 8 9 7 13 10C16 5 22 6 25 11C29 15 25 21 19 20C14 24 8 21 6 19C2 19 0 17 2 14Z" fill="#163d35" opacity=".48"/>
-          <path d="M18 2C22 0 27 2 28 6C29 10 25 12 21 10C17 9 15 5 18 2Z" fill="#7ca064" opacity=".2"/>
-          <circle cx="7" cy="5" r="1.5" fill="#9ab477" opacity=".18"/><circle cx="13" cy="17" r="1.2" fill="#9ab477" opacity=".2"/>
-        </pattern>
-        <filter id="landShadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dy="6"/><feComponentTransfer><feFuncA type="linear" slope=".62"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="softRelief" x="-10%" y="-10%" width="120%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="3" seed="17" result="noise"/><feDiffuseLighting in="noise" surfaceScale="3.5" diffuseConstant=".85" lighting-color="#fff" result="light"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="light" in2="SourceGraphic" operator="in" result="lit"/><feBlend in="SourceGraphic" in2="lit" mode="soft-light"/></filter>
-        <clipPath id="landmassClip">{countries.map(c=><path key={c.id} d={c.mapPath}/>)}</clipPath>
-      </defs>
-
-      <rect width="500" height="350" fill="url(#oceanDeep)"/>
-      <rect width="500" height="350" fill="url(#oceanGlow)"/>
-      <g className="bathymetry" fill="none" stroke="#a9d4dc" strokeOpacity=".1" strokeWidth=".8">
-        <path d="M10 62C70 40 120 56 178 39S296 48 360 29 450 40 494 20"/>
-        <path d="M5 82C72 60 120 75 182 58S300 66 362 49 449 60 498 40"/>
-        <path d="M4 286C69 260 123 278 184 256S299 271 358 248 442 264 498 242"/>
-        <path d="M6 309C69 286 124 302 183 281S301 296 359 274 445 290 497 269"/>
-      </g>
-
-      <g filter="url(#landShadow)">
-        {countries.map(c=><path key={c.id} d={c.mapPath} fill={c.id==="darvast" ? "url(#terrainWarm)" : c.id==="estraviya" || c.id==="saverniya" ? "url(#terrainSouth)" : "url(#terrainBase)"} stroke={selected===c.id ? "#f6efd8" : "#d9d6c0"} strokeOpacity={selected===c.id ? ".95" : ".42"} strokeWidth={selected===c.id ? "1.6" : ".72"} className={selected===c.id ? "country-shape selected" : "country-shape"} onClick={()=>onSelect(c.id)}/>)}
-      </g>
-      <g clipPath="url(#landmassClip)" filter="url(#softRelief)">
-        <rect x="35" y="45" width="430" height="280" fill="url(#terrainGrain)"/>
-        <path d="M38 174C91 132 137 141 182 166S267 190 314 158 398 135 462 166L462 226C404 202 357 204 313 232S226 255 176 229 92 207 38 232Z" fill="#b2b77f" opacity=".28"/>
-        <path d="M42 220C94 190 140 201 178 224S248 258 299 230 387 205 459 232L459 322H42Z" fill="#2d604a" opacity=".52"/>
-        <path d="M280 78C327 61 391 71 447 109L455 184C411 165 367 171 323 191L286 166Z" fill="#b98750" opacity=".7"/>
-        <rect x="46" y="105" width="116" height="88" fill="url(#forestTexture)" opacity=".72"/>
-        <rect x="142" y="126" width="128" height="76" fill="url(#forestTexture)" opacity=".43"/>
-        <rect x="145" y="232" width="145" height="92" fill="url(#forestTexture)" opacity=".82"/>
-        <rect x="296" y="224" width="130" height="82" fill="url(#forestTexture)" opacity=".38"/>
-        {/* organic forest belts */}
-        <g fill="url(#forestMass)" opacity=".72">
-          <path d="M66 151 C80 139 101 137 119 144 C134 150 146 162 142 176 C138 190 120 196 103 191 C88 187 73 177 66 165Z"/>
-          <path d="M83 201 C101 188 125 190 143 201 C160 211 169 226 161 239 C151 252 129 251 111 244 C94 237 78 219 83 201Z"/>
-          <path d="M166 252 C185 238 211 241 230 252 C248 263 254 278 244 291 C232 304 207 300 190 291 C174 282 160 265 166 252Z"/>
-          <path d="M286 235 C304 223 329 224 346 236 C360 246 366 261 357 273 C346 287 324 287 306 280 C289 273 277 248 286 235Z"/>
-          <path d="M361 235 C380 226 404 229 418 241 C429 251 427 264 416 272 C402 282 380 279 367 269 C355 259 350 243 361 235Z"/>
-        </g>
-        {/* agricultural plains and field texture */}
-        <g fill="none" stroke="#c4c889" strokeOpacity=".22" strokeWidth=".9">
-          <path d="M177 222 C198 214 218 216 238 225 C253 232 267 236 284 231"/>
-          <path d="M171 229 C194 220 216 223 235 232 C251 239 268 243 286 237"/>
-          <path d="M178 237 C198 229 216 231 235 240 C250 247 267 250 281 246"/>
-          <path d="M291 275 C309 265 329 267 345 275 C357 281 369 285 383 280"/>
-          <path d="M295 282 C312 273 330 275 345 282 C359 289 373 292 388 286"/>
-        </g>
-        {/* dry eastern basin: layered mesas and dune contours */}
-        <g fill="none" stroke="#e0c28c" strokeOpacity=".25" strokeWidth=".8">
-          <path d="M325 101 C347 91 371 92 392 101 S426 115 443 108"/>
-          <path d="M318 114 C342 103 368 105 390 114 S424 128 445 121"/>
-          <path d="M312 129 C337 118 365 120 389 129 S421 142 440 136"/>
-          <path d="M318 145 C341 135 365 137 386 145 S415 157 430 151"/>
-        </g>
-        <rect x="48" y="64" width="410" height="255" fill="#dce0bc" opacity=".08" filter="url(#softRelief)"/>
-
-        {/* sculpted mountain systems: irregular landforms, not icon triangles */}
-        <g opacity=".98" strokeLinejoin="round">
-          <path d="M66 132 C73 117 78 106 88 94 C96 84 103 82 110 91 C117 79 126 72 135 83 C143 91 149 104 156 111 C164 101 172 91 181 93 C191 96 198 108 205 116 C214 105 223 94 232 98 C242 102 248 116 255 124 L250 151 C228 143 210 139 190 145 C168 152 148 149 127 143 C104 137 84 139 66 132Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.2"/>
-          <path d="M153 132 C164 115 170 102 181 91 C188 83 196 84 203 94 C211 82 220 72 230 82 C239 91 245 105 252 114 C260 103 269 93 278 97 C287 101 294 114 301 122 L297 148 C277 140 257 140 238 147 C214 155 185 149 153 132Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.15"/>
-          <path d="M266 137 C276 120 282 106 292 95 C300 86 307 87 314 98 C323 84 332 75 342 85 C350 94 355 107 362 115 C371 103 380 94 389 99 C398 104 406 117 414 125 L410 151 C389 145 369 146 349 153 C327 160 297 154 266 137Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.1"/>
-          <path d="M91 120 C101 105 107 96 115 89 C121 84 126 86 130 94 C137 85 144 78 151 84 C159 91 163 104 170 113 C160 122 147 128 132 129 C117 129 104 126 91 120Z" fill="url(#mountainLit)" opacity=".88"/>
-          <path d="M181 124 C190 108 195 99 202 92 C208 86 213 88 218 97 C225 87 232 81 239 88 C246 96 251 108 257 117 C247 127 233 132 219 132 C204 132 193 129 181 124Z" fill="url(#mountainLit)" opacity=".8"/>
-          <path d="M294 130 C302 114 308 105 315 97 C321 91 326 93 331 101 C338 91 345 85 352 92 C359 100 364 112 371 121 C360 132 347 137 333 138 C319 139 307 136 294 130Z" fill="url(#mountainLit)" opacity=".82"/>
-          <path d="M103 98 C111 91 116 87 122 89 C128 91 130 96 134 102 C128 99 124 100 120 104 C116 101 111 99 103 98Z M194 97 C201 90 207 87 213 90 C218 93 220 98 224 103 C217 99 212 100 208 104 C203 101 199 99 194 97Z M307 101 C314 94 319 92 325 95 C330 98 333 103 336 108 C330 104 325 105 321 109 C316 106 312 104 307 101Z" fill="url(#snowRidge)" opacity=".9"/>
-          <path d="M73 138 C95 145 118 150 140 149 C164 148 181 141 202 145 C226 150 248 157 270 151 C292 145 312 145 336 151 C361 158 383 151 409 145" fill="none" stroke="#162a2c" strokeWidth="5" opacity=".32" filter="url(#landShadow)"/>
-        </g>
-        <g fill="none" stroke="#d8d8c6" strokeOpacity=".24" strokeWidth=".7">
-          <path d="M77 126 C100 116 120 117 141 126 S179 140 201 129 S241 118 263 129 S300 141 325 129 S370 117 405 130"/>
-          <path d="M88 138 C110 129 129 131 148 139 S184 151 205 141 S243 132 264 141 S302 153 327 141 S370 130 398 141"/>
-          <path d="M174 120 C192 110 211 112 226 121 S253 135 270 126 S300 115 317 124"/>
-        </g>
-        {/* elevation contours */}
-        <g fill="none" stroke="#e2e4c8" strokeOpacity=".22" strokeWidth=".7">
-          <path d="M52 139C91 112 126 116 159 136S218 161 251 143 309 126 342 143 402 158 447 132"/>
-          <path d="M50 160C88 135 124 139 156 158S216 183 250 164 309 147 341 164 401 179 447 154"/>
-          <path d="M56 183C94 158 126 163 159 181S217 204 251 186 310 169 343 186 402 201 441 179"/>
-          <path d="M68 207C102 188 131 191 164 209S218 227 250 213 307 197 340 214 390 226 428 210"/>
-        </g>
-
-        {/* rivers: all originate in the northern mountains */}
-        <g fill="none" strokeLinecap="round">
-          <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#274f58" strokeWidth="4.8" opacity=".48"/>
-          <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#a9dce0" strokeWidth="1.8"/>
-          <path d="M177 91C170 116 186 128 174 151S165 186 184 209 201 231 203 255" stroke="#b7e1e2" strokeWidth="1.1" opacity=".9"/>
-          <path d="M303 70C292 99 301 121 316 143S341 174 347 198 349 232 338 265" stroke="#a8dbe0" strokeWidth="1.8"/>
-          <path d="M343 111C357 129 374 143 374 159S365 190 350 203" stroke="#b9e3e4" strokeWidth="1.05"/>
-          <path d="M126 143C143 155 151 169 149 184S155 205 172 215" stroke="#b9e3e4" strokeWidth="1.05"/>
-          <path d="M265 103C256 127 266 146 281 163S299 190 300 210" stroke="#b4dfe1" strokeWidth="1.05"/>
-          <path d="M391 160C378 176 378 193 390 208" stroke="#b7e1e2" strokeWidth=".95"/>
-        </g>
-
-        <g filter="url(#landShadow)">
-          <ellipse cx="142" cy="231" rx="24" ry="9" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
-          <ellipse cx="376" cy="214" rx="18" ry="7" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
-          <ellipse cx="274" cy="278" rx="13" ry="5" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
-        </g>
-      </g>
-
-      {/* Political borders follow the shared country geometry; coastline is a separate physical edge. */}
-      <g fill="none" stroke="#f1ecd7" strokeOpacity=".58" strokeWidth=".82">
-        {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
-      </g>
-      <path d="M72 105 C60 92 72 76 91 68 C112 58 137 63 157 72 C170 78 181 80 195 79 C213 70 234 62 258 61 C275 60 291 65 307 74 C329 62 350 58 373 64 C397 70 418 84 433 101 C446 116 454 129 452 145 C450 159 438 168 432 180 C427 190 433 201 423 210 C438 222 447 238 437 250 C444 263 434 276 421 286 C403 295 381 302 357 299 C338 306 317 299 298 288 C279 279 259 270 241 259 C248 270 260 283 260 292 C244 303 226 307 208 304 C190 301 175 293 162 282 C149 271 142 258 144 247 C150 241 156 239 161 238 C145 247 128 245 115 235 C100 224 88 213 77 198 C66 185 57 174 55 158 C53 145 61 135 58 124 C55 116 65 111 72 105 Z" fill="none" stroke="#f7f1dc" strokeOpacity=".9" strokeWidth="1.65" strokeLinejoin="round" filter="url(#landShadow)"/>
-      <g fill="#cfe7e7" opacity=".32">
-        <path d="M74 94C65 87 68 80 77 76C84 73 90 76 91 82C91 88 84 93 74 94Z"/>
-        <path d="M432 221C443 218 450 224 449 232C448 240 440 244 433 240C427 236 427 227 432 221Z"/>
-        <path d="M122 257C115 251 108 255 107 262C106 269 113 273 120 270C126 268 128 262 122 257Z"/>
-      </g>
-
-      {countries.map(c=><g key={c.id} className={"capital "+(selected===c.id?"capital-active":"")} onClick={()=>onSelect(c.id)}>
-        <text className="country-name-label" x={c.capitalX} y={c.capitalY+29} textAnchor="middle">{c.name.toUpperCase()}</text>
-        <circle cx={c.capitalX} cy={c.capitalY} r="4.2"/><circle cx={c.capitalX} cy={c.capitalY} r="1.7"/>
-        <text x={c.capitalX+8} y={c.capitalY-8}>{c.capital}</text>
-      </g>)}
-
-      {showCompanies && countries.find(c=>c.id===selected)?.companies.map((company,index)=>{
-        const dx=index%2===0?14:-14, dy=index<2?-16:17;
-        return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}>
-          <line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/>
-          <circle cx={company.x} cy={company.y} r="5.2"/><circle cx={company.x} cy={company.y} r="1.8"/>
-          <g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g>
-        </g>;
-      })}
-
-      <text className="sea-label" x="24" y="30">СЕВЕРНЫЙ ОКЕАН</text>
-      <text className="sea-label" x="382" y="330">ЮЖНОЕ МОРЕ</text>
-      <g className="compass"><circle cx="466" cy="30" r="17"/><text x="463" y="16">N</text><path d="M466 19V41M455 30H477"/></g>
-    </svg>
-    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="mount"/> горы · леса</span><span><b className="company-dot"/> компания · нажми</span></div>
-  </div>;
+  return <Atlas3D countries={countries} selected={selected} onSelect={onSelect} showCompanies={showCompanies} onCompany={onCompany} />;
 }
+
 function WorldPreview() {
   return <AtlasMap selected={countries[0].id} onSelect={()=>{}} />;
 }
