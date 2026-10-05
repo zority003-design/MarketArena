@@ -161,7 +161,8 @@ export const countries: Country[] = [
 ];
 
 
-const expansionCompanies: Record<string, CompanyPreview[]> = {
+type ExpansionCompany = [string,string,string,string,string,string,number,string,number,number];
+const expansionCompanies: Record<string, ExpansionCompany[]> = {
   slavoriya: [
     ["СлавБанк Капитал","SBK","Финансы","корпоративный кредит и инвестиции","Дмитрий Рейн","председатель правления",50,"Банкир, специализирующийся на промышленном финансировании.",198,158],
     ["Вектор Сталь","VKS","Металлы","листовой прокат и сплавы","Роман Глебов","генеральный директор",46,"Инженер-металлург, развивающий экспортные мощности.",190,128],
