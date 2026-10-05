@@ -293,3 +293,102 @@ button{cursor:pointer}
 .map-motion{transform:none!important}
 .map-motion .atlas-svg{transform:none!important}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* MarketArena Atlas 2.0 — relief-first, static cartography */
+.atlas-realistic,.country-map,.world-preview{
+  background:linear-gradient(155deg,#071a2b 0%,#0a2b3d 48%,#061521 100%)!important;
+  border:1px solid rgba(135,196,215,.22)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 24px 70px rgba(0,0,0,.3)!important;
+}
+.atlas-realistic .atlas-svg,.country-atlas-svg{
+  filter:drop-shadow(0 18px 26px rgba(0,0,0,.34));
+}
+.atlas-realistic .continent-base,.country-land-fill{
+  stroke:#d7e5d7!important;stroke-width:2!important;
+  filter:drop-shadow(0 9px 8px rgba(0,0,0,.34));
+}
+.atlas-realistic .atlas-country,.world-country{
+  stroke:rgba(225,235,224,.56)!important;stroke-width:1.25!important;
+  transition:filter .18s ease,opacity .18s ease;
+}
+.atlas-realistic .atlas-country:hover{filter:brightness(1.13) saturate(1.08);cursor:pointer}
+.terrain-lowland{fill:url(#land)!important;opacity:.34}
+.terrain-shadow{fill:#243c35;opacity:.34;filter:blur(1px)}
+.terrain-layer .ridge{fill:none;stroke:#dce2cf;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+.terrain-layer .ridge.major{stroke:#eef0dc;stroke-width:2.8;filter:drop-shadow(2px 3px 1px rgba(0,0,0,.34))}
+.terrain-layer .ridge.light{stroke:#9da990;stroke-width:1.35;opacity:.65}
+.terrain-layer .contour{fill:none;stroke:#657a6d;stroke-width:1;opacity:.48}
+.terrain-layer .river{fill:none;stroke:#78c8dc;stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.terrain-layer .river.thin{stroke:#9ad9e5;stroke-width:1.15;opacity:.72}
+.terrain-layer .lake{fill:#4f9bb3;opacity:.65;stroke:#b6e5eb;stroke-width:.7}
+.terrain-layer .snow{fill:#f3f2e8;opacity:.82;filter:drop-shadow(0 2px 1px rgba(0,0,0,.25))}
+.terrain-detail path{fill:none;stroke:#6e826f;stroke-width:1;opacity:.45}
+.country-coastline{fill:none;stroke:#e7eee0;stroke-width:1.8;opacity:.86}
+.border-line{stroke:rgba(243,237,213,.42)!important;stroke-width:.85!important;stroke-dasharray:2 2}
+.country-company-marker{filter:drop-shadow(0 0 7px rgba(68,230,255,.42))}
+.country-company-marker circle:first-child{fill:#43e6ff!important;stroke:#06212d!important}
+.trade-route{stroke:#ffd56a!important;stroke-width:1.7!important;filter:drop-shadow(0 0 5px rgba(255,213,106,.3))}
+.world-preview .world-country{stroke:rgba(235,244,236,.34)!important}
+.world-preview .world-label circle{fill:#ffd56a;stroke:#102531;stroke-width:1.5}
+.world-preview .world-label text{fill:#e9f0eb;font-size:7px;font-weight:700;paint-order:stroke;stroke:#071b27;stroke-width:2px}
+
+/* Home market feed */
+.home-news-card{grid-column:1/-1;background:linear-gradient(145deg,rgba(15,28,45,.96),rgba(8,15,28,.96));border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.2)}
+.home-news-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.home-news-list>button{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;text-align:left;padding:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);border-radius:13px;color:inherit;cursor:pointer}
+.home-news-list>button:hover{border-color:rgba(67,230,255,.28);background:rgba(67,230,255,.04);transform:translateY(-1px)}
+.home-news-list p{margin:5px 0 0;color:#8497a9;font-size:11px;line-height:1.5}
+.news-signal{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:11px}
+.news-signal.positive{background:rgba(143,246,94,.11);color:var(--lime)}
+.news-signal.negative{background:rgba(255,104,122,.11);color:#ff7890}
+
+/* Exchange terminal */
+.exchange-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+.exchange-overview>div{padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025)}
+.exchange-overview span,.spotlight-bottom span{display:block;color:#73879a;font-size:9px;letter-spacing:.12em;font-weight:800}
+.exchange-overview b{display:block;font-size:21px;margin:7px 0 3px}
+.exchange-overview small{color:#8294a4;font-size:10px}
+.exchange-spotlight{padding:20px;border:1px solid rgba(67,230,255,.18);border-radius:18px;background:radial-gradient(circle at 80% 0%,rgba(67,230,255,.09),transparent 35%),linear-gradient(145deg,#101b2d,#0a111e);margin-bottom:15px}
+.spotlight-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.spotlight-head h2{margin:7px 0 3px;font-size:25px;letter-spacing:-.04em}
+.spotlight-head p{margin:0;color:#8295a8;font-size:11px}
+.spotlight-price{text-align:right}.spotlight-price b{display:block;font-size:24px}.spotlight-price span{display:block;margin-top:4px;font-weight:800}
+.spotlight-bottom{display:grid;grid-template-columns:90px 90px 100px 1fr auto;gap:12px;align-items:center;margin-top:12px}
+.spotlight-bottom>div{min-height:52px;padding:10px;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025)}
+.spotlight-bottom b{display:block;margin-top:6px;font-size:13px}
+.spotlight-news b{font-size:11px;line-height:1.35}
+.spotlight-actions{display:flex!important;gap:7px;align-items:center;border:0!important;background:none!important;padding:0!important}
+.spotlight-actions button{height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:#0d1726;color:#dbe8ee;font-weight:800}
+.spotlight-actions .primary{background:linear-gradient(135deg,#43e6ff,#8b7cff);color:#06131b;border:0}
+
+/* Company intelligence */
+.company-description{font-size:13px;line-height:1.7;color:#b6c5cf}
+.company-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.company-metrics>div{padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}
+.company-metrics span,.company-facts span{display:block;color:#6f8393;font-size:8px;letter-spacing:.11em;font-weight:800}
+.company-metrics b{display:block;margin-top:6px;font-size:14px}
+.company-facts{display:grid;grid-template-columns:1fr 1.4fr;gap:8px 14px;margin:15px 0;padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.02)}
+.company-facts b{font-size:11px;color:#cbd9df}
+.ceo-portrait-large{margin-top:15px;display:flex;justify-content:center}
+
+/* Original illustrated CEO portraits — no external stock photos */
+.ceo-avatar{position:relative;overflow:hidden;width:62px;height:62px;border-radius:16px;flex:none;background:#111c2b!important;border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px rgba(255,255,255,.12),0 12px 30px rgba(0,0,0,.28)}
+.ceo-portrait-large .ceo-avatar{width:150px;height:170px;border-radius:24px}
+.portrait-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 25%,rgba(100,214,235,.25),transparent 38%),linear-gradient(145deg,#1c3351,#0b1423)}
+.portrait-light{position:absolute;width:70%;height:70%;left:15%;top:-20%;border-radius:50%;background:rgba(255,255,255,.06);filter:blur(8px)}
+.portrait-shoulders{position:absolute;left:10%;right:10%;bottom:-10%;height:48%;border-radius:45% 45% 0 0;background:linear-gradient(180deg,#263b57,#111827)}
+.portrait-neck{position:absolute;left:39%;width:22%;height:24%;top:47%;background:#b7775d;border-radius:0 0 8px 8px}
+.portrait-head{position:absolute;left:23%;top:17%;width:54%;height:46%;border-radius:47% 47% 43% 43%;background:#c98d6d;box-shadow:inset -6px -5px 0 rgba(94,48,39,.13)}
+.portrait-hair{position:absolute;left:-3%;top:-7%;width:106%;height:45%;border-radius:55% 55% 30% 30%;background:#2a2526}
+.portrait-hair-1 .portrait-hair{height:35%;left:0}.portrait-hair-2 .portrait-hair{height:49%;border-radius:48% 48% 20% 20%}.portrait-hair-3 .portrait-hair{height:30%;left:5%;width:90%}
+.portrait-tone-1 .portrait-head{background:#a9654f}.portrait-tone-2 .portrait-head{background:#e0a17e}
+.portrait-eye{position:absolute;top:45%;width:10%;height:6%;background:#18232b;border-radius:50%}.portrait-eye.left{left:23%}.portrait-eye.right{right:23%}
+.portrait-nose{position:absolute;left:47%;top:47%;width:7%;height:17%;border-right:2px solid rgba(92,53,44,.5);border-bottom:2px solid rgba(92,53,44,.35);border-radius:0 0 6px 0}
+.portrait-mouth{position:absolute;left:39%;top:69%;width:22%;height:6%;border-bottom:2px solid rgba(91,46,44,.7);border-radius:50%}
+.portrait-ear{position:absolute;top:43%;width:10%;height:17%;background:#bd7a61;border-radius:50%}.portrait-ear.left{left:-7%}.portrait-ear.right{right:-7%}
+.ceo-profile>.ceo-avatar{display:none}
+
+/* Better responsive market terminal */
+@media (max-width:980px){.home-news-list,.exchange-overview{grid-template-columns:1fr}.spotlight-bottom{grid-template-columns:repeat(2,1fr)}.spotlight-news{grid-column:1/-1}.spotlight-actions{grid-column:1/-1}.company-metrics{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:700px){.company-metrics{grid-template-columns:1fr}.spotlight-head{flex-direction:column}.spotlight-price{text-align:left}.home-news-list{grid-template-columns:1fr}}
