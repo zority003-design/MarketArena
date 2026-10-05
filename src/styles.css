@@ -145,3 +145,151 @@ button:focus-visible,input:focus-visible{outline:2px solid #73b6c9;outline-offse
 
 /* Market simulation UI */
 .company-chart{margin-top:18px;border:1px solid #25424d;background:#081820;border-radius:7px;padding:14px 15px;color:#8acbd7}.company-chart svg{width:100%;height:190px;display:block;margin-top:8px}.chart-range{display:flex;justify-content:space-between;align-items:center}.chart-range span{font-size:8px;color:#6d8792;letter-spacing:.12em}.chart-range b{font:600 14px "Space Grotesk";color:#e4f1f2}.news-transactions{margin-top:26px;border-top:1px solid #1b3039;padding-top:18px}.news-transactions>div{display:grid;grid-template-columns:55px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #172c35;font-size:10px}.news-transactions>div span{color:#718a95}.news-transactions>div strong{font-family:"Space Grotesk"}.news-transactions>p{color:#667f8a;font-size:10px}.quote-box{grid-template-columns:1fr auto auto auto!important}.quote-box small:last-child{color:#79939e}.company-modal .company-chart polyline{filter:drop-shadow(0 0 5px #6bb9c855)}
+
+
+/* MarketArena 2026 — Aurora Neon visual system */
+:root{
+  --bg:#050812;--panel:#0b1020;--panel-2:#10172a;--ink:#f4f7ff;--muted:#8f9ab4;
+  --cyan:#43e6ff;--violet:#9b7cff;--lime:#b7f36b;--coral:#ff6f91;--gold:#ffd166;
+  --line:rgba(255,255,255,.10);--glass:rgba(11,16,32,.76);
+}
+*{box-sizing:border-box}
+body{background:
+ radial-gradient(900px 600px at 82% -10%,rgba(67,230,255,.14),transparent 60%),
+ radial-gradient(800px 620px at -10% 80%,rgba(155,124,255,.12),transparent 62%),
+ #050812;color:var(--ink)}
+button,input{font-family:inherit}
+button{cursor:pointer}
+::selection{background:rgba(67,230,255,.28);color:#fff}
+
+/* Brand */
+.brand-mark,.game-brand span{
+  background:conic-gradient(from 210deg,var(--cyan),var(--violet),var(--coral),var(--cyan));
+  border:1px solid rgba(255,255,255,.24)!important;
+  box-shadow:0 0 35px rgba(67,230,255,.18),inset 0 1px rgba(255,255,255,.35);
+  color:#07101c!important;
+  font-weight:900!important;
+}
+.brand b,.game-brand b{letter-spacing:-.035em}
+.brand small{color:#8e9bb7!important}
+
+/* Landing */
+.auth-screen{background:transparent}
+.auth-panel{position:relative}
+.auth-panel:before{content:"";position:absolute;width:340px;height:340px;left:-180px;bottom:-160px;border-radius:50%;background:rgba(155,124,255,.12);filter:blur(35px);pointer-events:none}
+.auth-copy h1{letter-spacing:-.065em;line-height:.95}
+.auth-copy h1 em{background:linear-gradient(90deg,var(--cyan),#fff,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
+.auth-copy p{color:#a7b2c9!important}
+.auth-tabs{border-bottom-color:var(--line)!important}
+.auth-tabs button{color:#73809a!important}
+.auth-tabs button.active{color:#fff!important;border-bottom-color:var(--cyan)!important}
+.field input{background:rgba(255,255,255,.045)!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important;border-radius:12px!important;outline:none}
+.field input:focus{border-color:rgba(67,230,255,.65)!important;box-shadow:0 0 0 4px rgba(67,230,255,.09)}
+.primary{background:linear-gradient(135deg,var(--cyan),#79b8ff 48%,var(--violet))!important;color:#06101c!important;border:0!important;border-radius:12px!important;box-shadow:0 12px 35px rgba(67,230,255,.18)!important}
+.primary:hover{transform:translateY(-2px);filter:saturate(1.12)}
+.primary:disabled{opacity:.35;filter:grayscale(.6);box-shadow:none!important}
+
+/* Atlas */
+.atlas,.world-preview{background:#07101e!important;border:1px solid rgba(115,231,255,.18)!important;box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.08)!important}
+.atlas-head{background:linear-gradient(90deg,rgba(67,230,255,.08),rgba(155,124,255,.05),transparent)!important;color:#aebbd4!important;border-bottom:1px solid var(--line)}
+.atlas-svg{background:#061325!important}
+.continent-base,.country-land-fill{filter:drop-shadow(0 18px 16px rgba(0,0,0,.32))}
+.atlas-country{stroke:rgba(255,255,255,.55)!important;transition:filter .2s,opacity .2s,stroke-width .2s}
+.atlas-country:hover,.atlas-country.selected{filter:brightness(1.12) saturate(1.16);stroke:#fff!important;stroke-width:2.2!important}
+.trade-route{stroke:var(--cyan)!important;stroke-opacity:.55!important;filter:drop-shadow(0 0 4px rgba(67,230,255,.35))}
+.trade-route.alt{stroke:var(--violet)!important}
+.company-marker circle:first-child{fill:var(--coral)!important;stroke:#fff!important;stroke-width:1.2!important;filter:drop-shadow(0 0 7px rgba(255,111,145,.65))}
+.company-marker circle:nth-child(2){fill:#fff!important}
+.company-marker text{fill:#fff!important;font-weight:900;paint-order:stroke;stroke:#07101e;stroke-width:3px}
+.company-marker:hover circle:first-child{fill:var(--gold)!important;transform-origin:center;transform-box:fill-box;transform:scale(1.18)}
+.capital circle:first-child{fill:var(--lime)!important;stroke:#07101e!important;filter:drop-shadow(0 0 6px rgba(183,243,107,.55))}
+.capital text,.world-label text{fill:#fff!important}
+.map-key{color:#8996b1!important}
+.map-key .company-dot{background:var(--coral)!important}
+.map-key .dot{background:var(--lime)!important}
+.map-key .line{background:var(--cyan)!important}
+
+/* Setup cards */
+.setup-screen{background:transparent}
+.setup-inner h1{letter-spacing:-.055em}
+.mode-card,.difficulty,.country-option,.country-profile{
+  background:linear-gradient(145deg,rgba(16,23,42,.94),rgba(8,13,27,.94))!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+}
+.mode-card:hover,.country-option:hover,.difficulty:hover{border-color:rgba(67,230,255,.35)!important;transform:translateY(-3px)}
+.mode-card.selected,.difficulty.active,.country-option.active{border-color:rgba(67,230,255,.7)!important;box-shadow:0 0 0 1px rgba(67,230,255,.18),0 22px 60px rgba(67,230,255,.10)!important}
+.mode-card i{color:var(--cyan)!important}
+.country-option strong{color:var(--gold)!important}
+.profile-stats div,.company-strip>div{border-color:var(--line)!important}
+.company-strip>div:hover{border-color:rgba(155,124,255,.55)!important;background:rgba(155,124,255,.06)!important}
+
+/* Game shell */
+.game-shell{background:transparent}
+.game-topbar{background:rgba(5,8,18,.82)!important;border-bottom:1px solid var(--line)!important;backdrop-filter:blur(20px)}
+.game-topbar nav button{color:#8995ad!important}
+.game-topbar nav button:hover,.game-topbar nav button.active{color:#fff!important}
+.game-topbar nav button.active:after{background:linear-gradient(90deg,var(--cyan),var(--violet))!important}
+.game-right b{color:#fff!important}
+.offline-pill{background:rgba(183,243,107,.09)!important;border-color:rgba(183,243,107,.35)!important;color:var(--lime)!important}
+.game-sidebar{background:rgba(7,11,24,.72)!important;border-right:1px solid var(--line)!important;backdrop-filter:blur(18px)}
+.game-sidebar>button{color:#8e9ab2!important;border-radius:10px!important}
+.game-sidebar>button:hover,.game-sidebar>button.side-active{background:linear-gradient(90deg,rgba(67,230,255,.10),rgba(155,124,255,.08))!important;color:#fff!important;border-color:rgba(67,230,255,.18)!important}
+.side-bottom{border-color:var(--line)!important}
+.game-main{background:transparent}
+.game-heading h1,.panel-title h1{letter-spacing:-.055em}
+.game-heading p,.panel-lead{color:#98a4bc!important}
+
+/* Cards */
+.market-map-card,.jobs-card,.companies-card,.capital-card,.table-card,.portfolio-summary div,.company-focus-card{
+  background:linear-gradient(145deg,rgba(15,22,40,.92),rgba(7,12,25,.94))!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:0 18px 55px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.035);
+}
+.market-map-card:hover,.company-focus-card:hover,.capital-card:hover{border-color:rgba(67,230,255,.25)!important}
+.card-head h2,.companies-card h2,.jobs-card h2{letter-spacing:-.035em}
+.positive,.gain{color:var(--lime)!important}.loss{color:var(--coral)!important}
+.money-bar{background:#171d30!important}
+.money-bar i{background:linear-gradient(90deg,var(--cyan),var(--violet),var(--lime))!important}
+.capital-card>strong{background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.capital-actions button,.job-row button,.ticker-row,.trade-actions button,.secondary-action{
+  background:rgba(255,255,255,.035)!important;border-color:rgba(255,255,255,.10)!important;color:#cbd5e8!important;border-radius:9px!important
+}
+.capital-actions button:hover,.job-row button:hover,.trade-actions button:hover,.secondary-action:hover{border-color:rgba(67,230,255,.5)!important;background:rgba(67,230,255,.07)!important}
+
+/* Exchange */
+.table-card{overflow:hidden}
+.table-row{border-bottom-color:rgba(255,255,255,.065)!important}
+.table-row:hover{background:rgba(67,230,255,.035)!important}
+.table-head{background:rgba(255,255,255,.035)!important}
+.ticker-link,.ticker{color:var(--cyan)!important}
+.trade-actions b{color:var(--lime)!important}
+.mini-chart path:first-child{stroke:var(--cyan)!important;filter:drop-shadow(0 0 7px rgba(67,230,255,.5))}
+.grid-line{stroke:rgba(255,255,255,.06)!important}
+
+/* Company profiles */
+.company-focus-card h3{letter-spacing:-.035em}
+.sector-chip,.ceo-tags span{background:rgba(255,255,255,.025)!important;border-color:rgba(255,255,255,.10)!important}
+.ceo-avatar{background:linear-gradient(145deg,#172b54,#101426)!important;border:1px solid rgba(255,255,255,.08)}
+.company-chart,.quote-box,.ceo-profile{background:rgba(255,255,255,.025)!important;border-color:rgba(255,255,255,.09)!important}
+.company-chart{box-shadow:inset 0 1px rgba(255,255,255,.04)}
+.company-chart polyline{stroke:var(--cyan)!important}
+.chart-range b{color:#fff!important}
+.company-modal-backdrop{background:rgba(1,4,12,.78)!important;backdrop-filter:blur(18px)}
+.company-modal{background:linear-gradient(145deg,#10182b,#080d1c)!important;border-color:rgba(67,230,255,.24)!important;box-shadow:0 40px 120px rgba(0,0,0,.65),0 0 80px rgba(67,230,255,.08)!important}
+.modal-company-head h2{letter-spacing:-.045em}
+.modal-close:hover{color:#fff!important}
+
+/* News */
+.news-list article,.news-transactions>div{border-color:rgba(255,255,255,.07)!important}
+.news-list article:hover{background:rgba(155,124,255,.035)}
+.news-list strong{color:var(--violet)!important}
+.news-transactions{border-top-color:var(--line)!important}
+
+/* Flags */
+.flag{border:1px solid rgba(255,255,255,.25)!important;box-shadow:0 7px 18px rgba(0,0,0,.38)!important}
+
+/* Subtle motion, no map warping */
+.map-motion{transform:none!important}
+.map-motion .atlas-svg{transform:none!important}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
