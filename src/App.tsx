@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { countries, difficultyLevels, type Country } from "./data/world";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
@@ -187,7 +188,7 @@ function GameScreen({ player, country, difficulty, onRestart }: { player: string
   </div>;
 }
 
-function Panel({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }) {
+function Panel({ title, eyebrow, children }: { title: string; eyebrow: string; children: ReactNode }) {
   return <div className="game-panel"><div className="panel-title"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div></div>{children}</div>;
 }
 
