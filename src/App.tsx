@@ -62,8 +62,13 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
 }
 
 function CEOAvatar({ company }: { company: CompanyPreview }) {
-  const initials = company.ceo.split(" ").map(x=>x[0]).join("").slice(0,2);
-  return <div className="ceo-avatar"><div className="ceo-head"><span>{initials}</span></div><div className="ceo-shoulders"/></div>;
+  const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+  const tone=seed%3, hair=seed%4;
+  return <div className={"ceo-avatar portrait-tone-"+tone+" portrait-hair-"+hair} aria-label={"Портрет "+company.ceo}>
+    <div className="portrait-bg"><span className="portrait-light"/></div>
+    <div className="portrait-neck"/><div className="portrait-shoulders"/>
+    <div className="portrait-head"><i className="portrait-ear left"/><i className="portrait-ear right"/><span className="portrait-hair"/><span className="portrait-face"/><i className="portrait-eye left"/><i className="portrait-eye right"/><span className="portrait-nose"/><span className="portrait-mouth"/></div>
+  </div>;
 }
 
 function CompanyCard({ company, onBuy }: { company: CompanyPreview; onBuy: (price:number)=>void }) {
