@@ -1895,3 +1895,47 @@ body{overflow-x:hidden}
   .exchange-company-strip{grid-template-columns:1fr!important}
   .exchange-action-row{grid-template-columns:1fr}
 }
+\n
+/* Exchange CTA: never looks disabled and remains clickable on every game layout. */
+.game-topbar nav .exchange-nav{
+  color:#a8e6ec!important;
+  min-width:58px;
+  position:relative;
+  cursor:pointer!important;
+}
+.game-topbar nav .exchange-nav:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-2px;height:2px;
+  background:linear-gradient(90deg,#66dbe5,#74e0b4);
+  opacity:.34;
+  transform:scaleX(.35);
+  transform-origin:center;
+  transition:transform .18s ease,opacity .18s ease;
+}
+.game-topbar nav .exchange-nav:hover,
+.game-topbar nav .exchange-nav.active{color:#f0ffff!important}
+.game-topbar nav .exchange-nav:hover:after,
+.game-topbar nav .exchange-nav.active:after{transform:scaleX(1);opacity:1}
+.game-sidebar>.exchange-side{
+  color:#9edee5!important;
+  background:rgba(73,202,215,.045);
+}
+.game-sidebar>.exchange-side:hover{
+  color:#eaffff!important;
+  background:linear-gradient(90deg,rgba(73,202,215,.14),rgba(73,202,215,.035))!important;
+  border-color:rgba(110,218,228,.24)!important;
+}
+
+/* Landing cards: stronger cursor response without requiring JS or extra listeners. */
+.auth-visual-core,.auth-float{
+  user-select:none;
+  pointer-events:auto;
+}
+.auth-visual-core{font-family:"Manrope",sans-serif!important}
+.auth-float span,.auth-float b,.auth-float small{font-family:"Manrope",sans-serif!important}
+.auth-float-a,.auth-float-b,.auth-float-c{transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s ease,border-color .32s ease}
+.auth-float-a:hover{transform:translate3d(7px,-10px,0) scale(1.045)!important}
+.auth-float-b:hover{transform:translate3d(-7px,-10px,0) scale(1.045)!important}
+.auth-float-c:hover{transform:translate3d(5px,-8px,0) scale(1.045)!important}
+.auth-visual-core:hover{transform:translate3d(0,-10px,0) scale(1.035)!important}
