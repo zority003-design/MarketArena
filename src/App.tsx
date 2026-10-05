@@ -263,55 +263,63 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
               <div>
                 <span className="eyebrow">MARKET TERMINAL · VLR</span>
                 <h2>Биржа работает</h2>
-                <p>Выбери компанию ниже. Котировка, график и сделки доступны прямо здесь — без модального окна.</p>
+                <p>Выбери компанию, чтобы посмотреть котировку и совершить сделку.</p>
               </div>
               <div className="exchange-live-state"><i/> LIVE · ДЕНЬ {day}</div>
             </div>
             <div className="exchange-overview">
-              <div><span>ИНДЕКС РЫНКА</span><b>{(1000+country.companies.reduce((sum,c)=>sum+priceChange(c),0)*3).toFixed(1)}</b><small>динамика за день</small></div>
               <div><span>КОМПАНИЙ</span><b>{country.companies.length}</b><small>публичный рынок</small></div>
               <div><span>СВОБОДНЫЕ ДЕНЬГИ</span><b>{cash.toLocaleString("ru-RU")} VLR</b><small>доступно для сделок</small></div>
               <div><span>ПОЗИЦИЙ</span><b>{Object.values(holdings).filter(Boolean).length}</b><small>открытые активы</small></div>
+              <div><span>ДЕНЬ</span><b>{day}</b><small>рынок открыт</small></div>
             </div>
             <div className="exchange-company-strip">
-              {country.companies.map((company)=>(
-                <button type="button" key={company.ticker} className={exchangeCompany?.ticker===company.ticker?"exchange-company active":"exchange-company"} onClick={()=>setExchangeCompany(company)}>
+              {country.companies.map(company=>
+                <button type="button" key={company.ticker}
+                  className={exchangeCompany?.ticker===company.ticker?"exchange-company active":"exchange-company"}
+                  onClick={()=>setExchangeCompany(company)}>
                   <span className="ticker">{company.ticker}</span>
                   <b>{company.name}</b>
                   <small>{company.sector}</small>
                   <strong>{priceFor(company).toLocaleString("ru-RU")} VLR</strong>
                   <em className={priceChange(company)>=0?"gain":"loss"}>{priceChange(company)>=0?"+":""}{priceChange(company).toFixed(2)}%</em>
                 </button>
-              ))}
+              )}
             </div>
-            {(()=>{const focus=exchangeCompany??country.companies[0]??null;
-              if(!focus) return <div className="exchange-empty"><b>Рынок недоступен</b><span>В этой стране пока нет публичных компаний.</span></div>;
-              const points=history(focus,chartRange);
-              const min=Math.min(...points), max=Math.max(...points), span=Math.max(1,max-min);
-              const path=points.map((value,index)=>{const x=(index/Math.max(1,points.length-1))*100;const y=88-((value-min)/span)*70;return (index?"L":"M")+x.toFixed(2)+" "+y.toFixed(2)}).join(" ");
-              const m=companyProfile(focus,country);
-              return <div className="exchange-focus">
-                <div className="exchange-focus-head">
-                  <div><span className="ticker">{focus.ticker}</span><h2>{focus.name}</h2><p>{focus.sector} · {m.headquarters}</p></div>
-                  <div className="exchange-focus-price"><b>{priceFor(focus).toLocaleString("ru-RU")} VLR</b><span className={priceChange(focus)>=0?"gain":"loss"}>{priceChange(focus)>=0?"+":""}{priceChange(focus).toFixed(2)}%</span></div>
-                </div>
-                <div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button type="button" key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div>
-                <div className="exchange-chart">
-                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="График котировки">
-                    <defs><linearGradient id="exchange-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#6dd7df" stopOpacity=".22"/><stop offset="100%" stopColor="#6dd7df" stopOpacity="0"/></linearGradient></defs>
-                    <path d={path+" L100 100 L0 100 Z"} fill="url(#exchange-fill)"/>
-                    <path d={path} fill="none" stroke="#78dce4" strokeWidth="1.4" vectorEffect="non-scaling-stroke"/>
-                  </svg>
-                </div>
-                <div className="exchange-metrics">
-                  <div><span>P / E</span><b>{m.pe}</b></div><div><span>P / B</span><b>{m.pb}</b></div><div><span>ДИВИДЕНД</span><b>{m.dividendYield}</b></div><div><span>КАПИТАЛИЗАЦИЯ</span><b>{m.marketCap}</b></div>
-                </div>
-                <div className="exchange-action-row">
-                  <div><span>ПОСЛЕДНИЙ ФАКТОР</span><b>{eventLabel(focus,day)}</b></div>
-                  <div className="spotlight-actions"><button type="button" onClick={()=>sell(focus)} disabled={!holdings[focus.ticker]}>Продать</button><button type="button" className="primary small" onClick={()=>buy(focus)}>Купить</button></div>
-                </div>
-              </div>;
-            })()}
+            <div className="exchange-focus">
+              {(() => {
+                const focus=exchangeCompany??country.companies[0];
+                if(!focus) return <div className="exchange-empty"><b>Рынок недоступен</b><span>В этой стране пока нет публичных компаний.</span></div>;
+                const owned=holdings[focus.ticker]||0;
+                const price=priceFor(focus);
+                return <div>
+                  <div className="exchange-focus-head">
+                    <div>
+                      <span className="ticker">{focus.ticker}</span>
+                      <h2>{focus.name}</h2>
+                      <p>{focus.sector} · {country.capital}</p>
+                    </div>
+                    <div className="exchange-focus-price">
+                      <b>{price.toLocaleString("ru-RU")} VLR</b>
+                      <span className={priceChange(focus)>=0?"gain":"loss"}>{priceChange(focus)>=0?"+":""}{priceChange(focus).toFixed(2)}%</span>
+                    </div>
+                  </div>
+                  <div className="exchange-metrics">
+                    <div><span>ТИКЕР</span><b>{focus.ticker}</b></div>
+                    <div><span>СЕКТОР</span><b>{focus.sector}</b></div>
+                    <div><span>В ПОРТФЕЛЕ</span><b>{owned} шт.</b></div>
+                    <div><span>СТОИМОСТЬ 1 АКЦИИ</span><b>{price.toLocaleString("ru-RU")} VLR</b></div>
+                  </div>
+                  <div className="exchange-action-row">
+                    <div><span>ПОСЛЕДНИЙ ФАКТОР</span><b>{eventLabel(focus,day)}</b></div>
+                    <div className="spotlight-actions">
+                      <button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button>
+                      <button type="button" className="primary small" onClick={()=>buy(focus)}>Купить</button>
+                    </div>
+                  </div>
+                </div>;
+              })()}
+            </div>
           </div>
         </Panel>}
         {tab==="portfolio"&&<Panel title="Портфель" eyebrow="YOUR CAPITAL"><div className="portfolio-summary"><div><span>СТОИМОСТЬ АКТИВОВ</span><b>{portfolioValue.toLocaleString("ru-RU")} VLR</b></div><div><span>СВОБОДНЫЕ ДЕНЬГИ</span><b>{cash.toLocaleString("ru-RU")} VLR</b></div><div><span>ВСЕГО</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></div><PortfolioChart points={portfolioHistory}/><div className="portfolio-insights"><div><span>ДИВЕРСИФИКАЦИЯ</span><b>{Object.values(holdings).filter(Boolean).length} позиций</b><small>открытые позиции</small></div><div><span>ДЕНЕЖНАЯ ДОЛЯ</span><b>{((cash/Math.max(1,totalWealth))*100).toFixed(1)}%</b><small>ликвидность</small></div><div><span>РЫНОЧНАЯ ЭКСПОЗИЦИЯ</span><b>{portfolioValue.toLocaleString("ru-RU")} VLR</b><small>стоимость акций</small></div></div><div className="table-card portfolio-table">{country.companies.filter(c=>(holdings[c.ticker]||0)>0).map(c=><div className="table-row" key={c.ticker}><button className="ticker-link" onClick={()=>openExchange(c)}>{c.ticker}</button><span>{c.name}</span><span>{holdings[c.ticker]} акций</span><strong>{(holdings[c.ticker]*priceFor(c)).toLocaleString("ru-RU")} VLR</strong><div className="trade-actions"><button onClick={()=>buy(c)}>+ Купить</button><button onClick={()=>sell(c)}>- Продать</button></div></div>)}{portfolioValue===0&&<div className="empty-state">Портфель пуст. Открой «Биржу» и купи первую акцию.</div>}</div></Panel>}
