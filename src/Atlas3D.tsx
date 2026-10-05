@@ -664,16 +664,17 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       }
       for(let gy=0;gy<15;gy++){
         for(let gx=0;gx<15;gx++){
-          const i=gy*13+gx;
+          const i=gy*15+gx;
           const u=19+(gx+.5+(.32*hash(i,selectedCountry.id.length)))*70/15;
-          const v=19+(gy+.5+(.32*hash(i+41,selectedCountry.id.length*2)))*68/13;
+          const v=19+(gy+.5+(.32*hash(i+41,selectedCountry.id.length*2)))*70/15;
           if(pointInPolygon(u,v,selectedPoly)){
             const p=worldFromGeo([u,v]);
             scene.add(makeTree(p.x,p.z,.36+hash(i*1.7,4)*.30));
           }
         }
       }
-      if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }\n      for(let i=0;i<Math.min(24,roadCurves.length);i++){
+      if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
+      for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
         car.userData.roadT=(i*0.071)%1;
         scene.add(car);
