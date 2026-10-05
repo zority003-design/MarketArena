@@ -478,7 +478,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const rect = host.getBoundingClientRect();
       const project = (p: THREE.Vector3) => {
         const q = p.clone();
-        q.y += 0.45;
+        q.y = terrainHeight(q.x, q.z) + 0.52;
         q.project(camera);
         return { x: (q.x * 0.5 + 0.5) * rect.width, y: (-q.y * 0.5 + 0.5) * rect.height, z: q.z };
       };
