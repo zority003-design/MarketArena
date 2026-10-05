@@ -430,6 +430,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         opacity: selected === country.id ? 0.20 : 0.035,
         roughness: 1,
         depthWrite: false,
+        depthTest: false,
         side: THREE.DoubleSide
       });
       const mesh = new THREE.Mesh(geometry, material);
@@ -538,8 +539,23 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(countryMeshes, false);
-      if (hits.length) onSelect(hits[0].object.userData.countryId as string);
+      const hits = raycaster.intersectObject(terrain, false);
+      if (hits.length) {
+        const p = hits[0].point;
+        const u = p.x / 0.32 + 50;
+        const v = p.z / 0.24 + 50;
+        const inside = (poly: GeoPoint[]) => {
+          let hit = false;
+          for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+            const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+            const cross = ((yi > v) !== (yj > v)) && (u < (xj - xi) * (v - yi) / ((yj - yi) || 1e-6) + xi);
+            if (cross) hit = !hit;
+          }
+          return hit;
+        };
+        const country = countries.find((c) => inside(countryPolygons[c.id]));
+        if (country) onSelect(country.id);
+      }
     };
 
     renderer.domElement.addEventListener("pointerdown", pointerDown);
