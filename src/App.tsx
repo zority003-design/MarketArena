@@ -300,7 +300,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
   const openExchange=(company?:CompanyPreview)=>{
     const next=company??exchangeCompany??country.companies[0]??null;
-    setSelectedCompany(null);
+    setSelectedCompany(next);
     setExchangeCompany(next);
     setTab("exchange");
   };
