@@ -112,7 +112,13 @@ function ridge(x: number, z: number, cx: number, cz: number, angle: number, leng
   return a * b * height;
 }
 
-const SELECTED_RELIEF_SCALE = 0.34;\n\nfunction surfaceHeight(x: number, z: number) {\n  return terrainHeight(x, z) * SELECTED_RELIEF_SCALE;\n}\n\nfunction terrainHeight(x: number, z: number) {
+const SELECTED_RELIEF_SCALE = 0.34;
+
+function surfaceHeight(x: number, z: number) {
+  return terrainHeight(x, z) * SELECTED_RELIEF_SCALE;
+}
+
+function terrainHeight(x: number, z: number) {
   const nx = x / W + 0.5;
   const nz = z / D + 0.5;
   const low = 0.18 + fbm(nx * 3.2, nz * 3.2) * 0.26;
