@@ -367,6 +367,41 @@ function makeModernBuilding(x:number,z:number,scale=1,type=0) {
   return group;
 }
 
+function makeHighway(curve: THREE.CatmullRomCurve3, width = 0.24) {
+  const group = new THREE.Group();
+  const points = curve.getPoints(20);
+  points.forEach((p, index) => {
+    if(index >= points.length - 1) return;
+    const q = points[index + 1];
+    const dx=q.x-p.x, dz=q.z-p.z;
+    const length=Math.max(.04,Math.hypot(dx,dz));
+    const road=new THREE.Mesh(
+      new THREE.BoxGeometry(width,.035,length),
+      new THREE.MeshStandardMaterial({color:"#27353a",roughness:.92,metalness:.04})
+    );
+    road.position.set((p.x+q.x)/2,Math.max(p.y,q.y)+.045,(p.z+q.z)/2);
+    road.rotation.y=Math.atan2(dx,dz);
+    road.castShadow=true;
+    road.receiveShadow=true;
+    group.add(road);
+    if(index%3===1){
+      const mark=new THREE.Mesh(
+        new THREE.BoxGeometry(.018,.006,.11),
+        new THREE.MeshStandardMaterial({color:"#d9ded6",roughness:.7})
+      );
+      mark.position.set((p.x+q.x)/2,Math.max(p.y,q.y)+.066,(p.z+q.z)/2);
+      mark.rotation.y=Math.atan2(dx,dz);
+      group.add(mark);
+    }
+  });
+  return group;
+}
+
+function makeCityBuilding(x:number,z:number,scale=1,type=0) {
+  const building=makeModernBuilding(x,z,scale,type);
+  return building;
+}
+
 function makeSnowCap(geo: GeoPoint, size: number) {
   const p = worldFromGeo(geo);
   const h = terrainHeight(p.x, p.z);
@@ -487,13 +522,13 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const companyGeos = selectedCountry.companies.map(company => safeCompanyGeo(selectedCountry.id, company));
       const roadCurves: THREE.CatmullRomCurve3[] = [];
       if(companyGeos.length){
-        const firstCurve=inCountryRoad(selectedCountry.id,capital,companyGeos[0],.08); roadCurves.push(firstCurve); scene.add(makeLine(firstCurve.getPoints(22),0xb9a37f,.72,2));
+        const firstCurve=inCountryRoad(selectedCountry.id,capital,companyGeos[0],.08); roadCurves.push(firstCurve); scene.add(makeHighway(firstCurve,.28));
       }
       companyGeos.forEach((geo,index)=>{
         if(index>0){
           const previous=companyGeos[index-1];
           const bend=(hash(index*4.3, selectedCountry.id.length)-.5)*.42;
-          const curve=inCountryRoad(selectedCountry.id,previous,geo,bend); roadCurves.push(curve); scene.add(makeLine(curve.getPoints(22),0xb9a37f,.72,2));
+          const curve=inCountryRoad(selectedCountry.id,previous,geo,bend); roadCurves.push(curve); scene.add(makeHighway(curve,.28));
         }
         const p=worldFromGeo(geo);
         scene.add(makeTree(p.x+.28,p.z+.18,.55+(index%3)*.08));
@@ -502,6 +537,20 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         scene.add(makeModernBuilding(p.x-.38,p.z+.12,.68+(index%2)*.12,index+1));
         scene.add(makeModernBuilding(p.x+.02,p.z-.48,.62,index+2));
       });
+      // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
+      for(let i=0;i<78;i++){
+        const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
+        const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
+        const inside=pointInPolygon(u,v,selectedPoly);
+        const margin=pointInPolygon(u+.9,v)&&pointInPolygon(u-.9,v)&&pointInPolygon(u,v+.9)&&pointInPolygon(u,v-.9);
+        if(inside&&margin){
+          const p=worldFromGeo([u,v]);
+          const type=i%7;
+          const scale=.34+hash(i*4.2,selectedCountry.id.length)*.48;
+          scene.add(makeCityBuilding(p.x,p.z,scale,type));
+          if(i%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
+        }
+      }
       for (let i = 0; i < 120; i += 1) {
         const u = 18 + hash(i * 1.73, selectedCountry.id.length * 2.1) * 70;
         const v = 18 + hash(i * 2.37 + 7, selectedCountry.id.length * 3.4) * 70;
@@ -531,6 +580,22 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
 
 
     [[47, 23], [53, 25], [61, 30], [40, 29]].forEach((p, i) => scene.add(makeSnowCap(p as GeoPoint, 0.6 + i * 0.05)));
+
+    const islandGeo: GeoPoint[] = [[91,76],[94,70],[9,58],[88,17]];
+    islandGeo.forEach((geo,index)=>{
+      const p=worldFromGeo(geo);
+      const island=new THREE.Mesh(
+        new THREE.CylinderGeometry(.34-(index%2)*.08,.48-(index%2)*.08,.10,10),
+        new THREE.MeshStandardMaterial({color:"#667b61",roughness:1})
+      );
+      island.position.set(p.x,.02,p.z);
+      island.scale.z=.72;
+      island.castShadow=true;
+      island.receiveShadow=true;
+      scene.add(island);
+      const tree=makeTree(p.x+.08,p.z-.04,.55);
+      scene.add(tree);
+    });
 
     const selectedMeshes: THREE.Mesh[] = [];
     countries.forEach((country) => {
@@ -765,7 +830,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
             <button
               key={country.id}
               ref={(el) => { labelRefs.current[country.id] = el; }}
-              className={`atlas-country-label ${selected === country.id ? "selected" : ""} ${selected === country.id ? "" : "muted"}`}
+              className={`atlas-country-label ${selected === country.id ? "selected" : ""} ${selected === country.id ? "" : "muted"} ${showCompanies ? "" : "selection-hidden"}`}
               onClick={() => onSelectRef.current(country.id)}
               type="button"
             >
