@@ -266,6 +266,21 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const cycle=Math.sin((atDay+seed*0.17)*0.045)*0.012;
     return {headline:event.headline+"; цены "+commodity.name+" меняются",impact:event.impact+commodity.impact+sectorBias+countryBias+cycle};
   };
+  const macroCrisis=(atDay:number)=>{
+    const crises=[
+      {name:"Банковский шок",short:"ликвидность сжимается, кредит дорожает",impact:-0.075},
+      {name:"Энергетический кризис",short:"топливо и энергия резко дорожают",impact:-0.09},
+      {name:"Торговая блокада",short:"международные перевозки и экспорт проседают",impact:-0.085},
+      {name:"Рецессия",short:"спрос и инвестиции замедляются",impact:-0.10},
+      {name:"Сырьевой обвал",short:"цены на сырьё падают быстрее ожиданий",impact:-0.095}
+    ];
+    const slot=Math.floor((atDay-35)/60);
+    if(slot<0)return null;
+    const start=35+slot*60;
+    if(atDay>start+11)return null;
+    const crisis=crises[slot%crises.length];
+    return {...crisis,start,end:start+11,remaining:start+11-atDay};
+  };
   const quarterlyReport=(company:CompanyPreview,atDay:number)=>{
     const event=marketEvent(company,atDay);
     const commodity=commodityPulse(company.sector,atDay);
@@ -283,10 +298,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const macro=Math.sin((atDay+seed)*0.018)*0.055+Math.cos((atDay+seed*0.37)*0.011)*0.032;
     const sector=Math.sin((atDay+seed*1.7)*0.052)*0.014+Math.cos((atDay+seed)*0.027)*0.009;
     const event=marketEvent(company,atDay).impact;
+    const crisis=macroCrisis(atDay);
+    const crisisSectorBoost=crisis ? (company.sector==="Финансы"&&crisis.name==="Банковский шок"?-.035:company.sector==="Энергетика"&&crisis.name==="Энергетический кризис"?+.018:company.sector==="Судоходство"&&crisis.name==="Торговая блокада"?-.025:company.sector==="Нефть"&&crisis.name==="Сырьевой обвал"?-.030:0) : 0;
     const eventMemory=Math.sin((atDay+seed)*0.015+event*4)*Math.min(0.012,Math.abs(event)*0.28);
     const countryDrift=(marketProfile.bias+(marketProfile.sectors[company.sector]??0))*Math.min(1,Math.max(0.2,atDay/120));
     const live=Math.sin(marketPulse/15000+seed)*0.0007+Math.cos(marketPulse/23000+seed*0.7)*0.0004;
-    const logReturn=macro+sector+eventMemory+countryDrift+live;
+    const logReturn=macro+sector+eventMemory+countryDrift+live+(crisis?.impact??0)+crisisSectorBoost;
     return Math.max(2500,Math.round(base*Math.exp(logReturn)/25)*25);
   };
   const priceChange=(company:CompanyPreview)=>{
@@ -311,6 +328,10 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
   ];
   const completedGoals=campaignGoals.filter(g=>g.done).length;
+  const ownedCompanyValue=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);return sum+(company?Math.max(250000,Math.round(priceFor(company)*75/1000)*1000):0);},0);
+  const takeoverCost=(company:CompanyPreview)=>Math.max(250000,Math.round(priceFor(company)*75/1000)*1000);
+  const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
+  const currentCrisis=macroCrisis(day);
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),cost=price*quantity;
