@@ -313,7 +313,7 @@ function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   ]);
   return curve;
 }
-function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend:number) {
+function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend=0) {
   const poly=countryPolygons[countryId];
   const candidates=[bend,0,-bend*.7,bend*.45];
   for(const amount of candidates){
