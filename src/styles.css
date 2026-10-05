@@ -854,3 +854,146 @@ button{cursor:pointer}
   min-height:0 !important;
   aspect-ratio:500/350 !important;
 }
+
+
+/* PREMIUM ATLAS / FINAL CARTOGRAPHY PASS */
+.atlas-realistic{
+  overflow:hidden !important;
+  border-radius:16px !important;
+  border:1px solid rgba(194,224,215,.22) !important;
+  background:#041b28 !important;
+  box-shadow:
+    0 34px 85px rgba(0,0,0,.58),
+    0 8px 24px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 0 -20px 50px rgba(0,0,0,.18) !important;
+  perspective:none !important;
+}
+.atlas-realistic:after{
+  content:"";
+  position:absolute;
+  inset:44px 0 0;
+  pointer-events:none;
+  z-index:4;
+  background:
+    linear-gradient(115deg,rgba(255,255,255,.055),transparent 24%,transparent 72%,rgba(0,0,0,.16)),
+    radial-gradient(circle at 50% 48%,transparent 48%,rgba(0,0,0,.22) 100%);
+  mix-blend-mode:screen;
+  opacity:.65;
+}
+.atlas-realistic .atlas-world-svg{
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:500/350 !important;
+  background:#06283a url("/atlas-realistic.svg?v=atlas-20261005") center/100% 100% no-repeat !important;
+  transform:none !important;
+  transform-origin:center !important;
+  filter:none !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+.atlas-realistic .atlas-world-svg > rect,
+.atlas-realistic .atlas-world-svg > .continent-base,
+.atlas-realistic .atlas-world-svg > .ocean-depth-lines,
+.atlas-realistic .atlas-world-svg > .world-country-group,
+.atlas-realistic .atlas-world-svg > .capital,
+.atlas-realistic .atlas-world-svg > .sea-label,
+.atlas-realistic .atlas-world-svg > .compass{
+  opacity:0 !important;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group .country-land-base{
+  fill:transparent !important;
+  stroke:transparent !important;
+  opacity:0 !important;
+  pointer-events:all !important;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group.selected .country-land-base{
+  fill:rgba(119,226,208,.10) !important;
+  stroke:rgba(236,247,221,.86) !important;
+  stroke-width:2.2 !important;
+  opacity:1 !important;
+  filter:drop-shadow(0 0 10px rgba(82,230,211,.35)) !important;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group .country-coastline{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+.atlas-realistic .atlas-head{
+  height:48px !important;
+  padding:0 18px !important;
+  background:linear-gradient(180deg,#0b202b,#081922) !important;
+  border-bottom:1px solid rgba(198,224,215,.14) !important;
+  color:#91a9b2 !important;
+  letter-spacing:.16em !important;
+}
+.auth-art{
+  overflow:hidden !important;
+  align-items:center !important;
+  justify-items:center !important;
+  padding:30px !important;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(50,135,153,.22),transparent 43%),
+    radial-gradient(circle at 50% 100%,rgba(6,43,58,.8),transparent 68%),
+    #04111a !important;
+}
+.auth-art .atlas-realistic{
+  width:min(98%,1080px) !important;
+  max-width:none !important;
+  transform:none !important;
+  perspective:none !important;
+  margin:auto !important;
+}
+.auth-art .atlas-realistic .atlas-world-svg{
+  transform:none !important;
+}
+.auth-art .atlas-head{height:46px !important}
+.auth-art .map-key{
+  background:linear-gradient(180deg,rgba(7,21,29,.96),rgba(4,14,21,.98)) !important;
+  border-top:1px solid rgba(206,225,211,.12) !important;
+  padding:11px 15px !important;
+}
+.country-picker{
+  grid-template-columns:minmax(0,1.65fr) 340px !important;
+  gap:18px !important;
+}
+.country-picker > .atlas-realistic{
+  width:100% !important;
+  transform:none !important;
+}
+.country-picker .atlas-world-svg{transform:none !important}
+.country-picker .atlas-realistic .atlas-head{height:46px !important}
+
+/* Keep the landing map present on tablet widths instead of abruptly deleting it. */
+@media (max-width:1100px){
+  .auth-screen{grid-template-columns:1fr !important}
+  .auth-panel{width:min(760px,calc(100% - 44px)) !important;justify-self:center !important;padding:52px 22px 36px !important}
+  .auth-copy{margin:55px 0 30px !important}
+  .auth-art{
+    display:grid !important;
+    min-height:620px !important;
+    border-left:0 !important;
+    border-top:1px solid #162b36 !important;
+    padding:24px !important;
+  }
+  .auth-art .atlas-realistic{width:min(100%,980px) !important}
+}
+@media (max-width:700px){
+  .auth-art{min-height:470px !important;padding:12px !important}
+  .auth-art .atlas-realistic{width:100% !important;border-radius:11px !important}
+  .auth-art .atlas-head{height:38px !important;font-size:7px !important;padding-inline:11px !important}
+  .auth-art .map-key{font-size:7px !important;gap:9px !important}
+}
+
+/* remove the old camera-tilt treatment that made the first screen look crooked */
+.atlas-realistic,
+.atlas-realistic .atlas-world-svg,
+.auth-art .atlas-realistic,
+.auth-art .atlas-world-svg,
+.country-map,
+.country-map .country-atlas-svg{
+  transform:none !important;
+  transform-style:flat !important;
+}
