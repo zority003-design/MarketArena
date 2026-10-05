@@ -418,6 +418,10 @@ function makePerson(x:number,z:number,scale=.45){
   head.position.y=.17*scale; g.add(body,head);
   g.position.set(x,surfaceHeight(x,z)+.04,z); g.castShadow=true; return g;
 }
+function makePine(x:number,z:number,scale=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.025*scale,.04*scale,.22*scale,5),new THREE.MeshStandardMaterial({color:"#554735",roughness:1}));trunk.position.y=.12*scale;g.add(trunk);for(let i=0;i<3;i++){const c=new THREE.Mesh(new THREE.ConeGeometry((.13-i*.025)*scale,(.22+.03*i)*scale,7),new THREE.MeshStandardMaterial({color:i===0?"#244d35":"#315d3d",roughness:.98}));c.position.y=(.25+i*.11)*scale;g.add(c)}g.position.set(x,surfaceHeight(x,z)+.02,z);g.castShadow=true;return g}
+function makeBush(x:number,z:number,scale=.7){const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:"#3f7047",roughness:1});for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(.11*scale,7,5),m);b.position.set((i-1)*.08*scale,.08*scale+(i%2)*.025*scale,(i%3-.5)*.05*scale);g.add(b)}g.position.set(x,surfaceHeight(x,z)+.015,z);g.castShadow=true;return g}
+function makeGrassPatch(x:number,z:number,scale=.8){const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:"#557d4d",roughness:1});for(let i=0;i<5;i++){const b=new THREE.Mesh(new THREE.ConeGeometry(.012*scale,.10*scale,4),m);b.position.set((i-2)*.035*scale,.05*scale,(i%3-1)*.025*scale);g.add(b)}g.position.set(x,surfaceHeight(x,z)+.01,z);return g}
+
 function makeParking(x:number,z:number,scale=.6){
   const g=new THREE.Group();
   const base=new THREE.Mesh(new THREE.BoxGeometry(.46*scale,.018,.30*scale),new THREE.MeshStandardMaterial({color:"#4b5355",roughness:1}));
