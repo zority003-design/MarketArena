@@ -420,7 +420,7 @@ function App(){
   if(screen==="mode") return <ModeScreen onChoose={m=>{setMode(m);if(m==="offline")setScreen("country")}}/>;
   if(screen==="country") return <CountryScreen selected={countryId} setSelected={setCountryId} onNext={()=>setScreen("difficulty")}/>;
   if(screen==="difficulty") return <DifficultyScreen country={country} onStart={id=>{setDifficulty(id);setScreen("game")}} onBack={()=>setScreen("country")}/>;
-  return <GameScreen player={player} country={country} difficulty={difficulty} onLogout={()=>{try{window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("auth");setPlayer("Игрок");}} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v2.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
+  return <GameScreen player={player} country={country} difficulty={difficulty} onLogout={()=>{try{window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("auth");setPlayer("Игрок");}} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v3.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
 }
 
 export default App;
