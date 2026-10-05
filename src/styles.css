@@ -1422,3 +1422,50 @@ button,input{transition:border-color .18s ease,background .18s ease,box-shadow .
   .atlas-3d-viewport{min-height:380px}
   .atlas-head span:last-child{display:none}
 }
+
+
+/* MarketArena 2026 — product surface refinement */
+:root{
+  --ma-bg:#071017;
+  --ma-panel:#0d1720;
+  --ma-panel-2:#101d27;
+  --ma-line:rgba(178,205,218,.13);
+  --ma-text:#eef5f7;
+  --ma-muted:#8da2ad;
+  --ma-accent:#78d7b1;
+  --ma-accent-2:#83b9ff;
+  --ma-radius:18px;
+}
+body{background:radial-gradient(circle at 12% 0%,rgba(69,126,149,.16),transparent 30%),linear-gradient(180deg,#071017 0%,#08131b 100%);color:var(--ma-text)}
+.game-shell{background:transparent;min-height:100vh}
+.game-topbar{height:72px;background:rgba(7,16,23,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--ma-line);box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.game-brand{font-size:15px;letter-spacing:.01em}
+.game-brand span{box-shadow:0 8px 24px rgba(120,215,177,.2)}
+.game-topbar nav button,.game-sidebar>button{transition:transform .18s ease,background .18s ease,color .18s ease,border-color .18s ease}
+.game-topbar nav button:hover,.game-sidebar>button:hover{transform:translateY(-1px)}
+.game-topbar nav button.active{background:rgba(120,215,177,.12);border-color:rgba(120,215,177,.28);color:#dff9ed}
+.game-body{max-width:1680px;margin:0 auto}
+.game-sidebar{background:rgba(9,19,27,.78);border-right:1px solid var(--ma-line);backdrop-filter:blur(18px)}
+.game-main{padding:30px;max-width:1500px}
+.game-heading h1{font-size:clamp(30px,3vw,48px);letter-spacing:-.035em}
+.market-map-card,.capital-card,.jobs-card,.companies-card,.home-news-card,.panel,.exchange-spotlight,.table-card,.patch-card{
+  background:linear-gradient(180deg,rgba(17,30,40,.94),rgba(10,20,28,.94));
+  border:1px solid var(--ma-line);
+  border-radius:var(--ma-radius);
+  box-shadow:0 20px 55px rgba(0,0,0,.2);
+}
+.market-map-card{overflow:hidden}
+.card-head{padding:20px 22px}
+.market-map-card .atlas{border-top:1px solid var(--ma-line)}
+.atlas-3d-viewport{min-height:440px}
+.atlas-3d-watermark{opacity:.55}
+.country-mini{border:1px solid var(--ma-line);background:rgba(255,255,255,.025);border-radius:14px;padding:10px}
+.ticker-row,.table-row,.job-row,.home-news-list button,.life-job{border-color:var(--ma-line);transition:background .18s ease,transform .18s ease}
+.ticker-row:hover,.home-news-list button:hover,.job-row:hover,.life-job:hover{background:rgba(120,215,177,.055);transform:translateX(2px)}
+.trade-actions button,.capital-actions button,.company-focus-footer button,.day-button{border-radius:10px}
+button.primary,.trade-actions button:first-child,.capital-actions button:last-child{background:linear-gradient(135deg,#78d7b1,#5dbf9a);color:#06110d;box-shadow:0 8px 22px rgba(120,215,177,.16)}
+.company-focus-card{background:linear-gradient(180deg,#12212b,#0d1820);border:1px solid var(--ma-line);border-radius:16px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.company-focus-card:hover{transform:translateY(-3px);border-color:rgba(120,215,177,.28);box-shadow:0 18px 45px rgba(0,0,0,.25)}
+.patch-card h2{letter-spacing:-.02em}
+@media(max-width:900px){.game-main{padding:18px}.game-topbar{height:auto;min-height:64px}.atlas-3d-viewport{min-height:360px}}
+@media(max-width:620px){.game-main{padding:12px}.game-heading h1{font-size:30px}.atlas-3d-viewport{min-height:300px}}
