@@ -3016,7 +3016,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{width:0!imp
 .empire-step>b{color:#29de99;font:700 10px "Space Grotesk"}.empire-step strong{display:block;margin:6px 0 4px;font-size:12px}.empire-step span{color:#718188;font-size:9px;line-height:1.5}
 .empire-how{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.empire-how span{padding:9px 11px;border-radius:8px;background:rgba(255,255,255,.025);color:#78898f;font-size:9px}.empire-how b{color:#c9d6d9}
 
-.jobs-card{grid-column:1/-1!important;order:-1!important}
+.jobs-card{grid-column:1/-1!important}
 .hero-map-grid{display:grid;grid-template-columns:minmax(0,1.65fr) 390px;gap:12px}
 
 .candle-terminal{min-height:390px!important;background:linear-gradient(180deg,#080c10,#06090d)!important;border:1px solid rgba(41,222,153,.14)!important;border-radius:12px!important;overflow:hidden!important}
