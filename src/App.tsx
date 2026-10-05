@@ -50,16 +50,22 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
       <defs>
         <linearGradient id="oceanWorld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b4561"/><stop offset=".5" stopColor="#082f49"/><stop offset="1" stopColor="#041c2c"/></linearGradient>
         <pattern id="oceanWaves" width="48" height="24" patternUnits="userSpaceOnUse"><path d="M0 12 C9 7 15 17 24 12 S39 7 48 12" fill="none" stroke="#9bd2df" strokeOpacity=".08"/></pattern>
+        <linearGradient id="terrain-slavoriya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#8ea96f"/><stop offset=".35" stopColor="#557a57"/><stop offset=".7" stopColor="#365a46"/><stop offset="1" stopColor="#203a34"/></linearGradient>
+        <linearGradient id="terrain-lirania" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#6f9b78"/><stop offset=".45" stopColor="#3f765b"/><stop offset="1" stopColor="#23483d"/></linearGradient>
+        <linearGradient id="terrain-darvast" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#b68b55"/><stop offset=".4" stopColor="#8b633e"/><stop offset=".72" stopColor="#6a4834"/><stop offset="1" stopColor="#3e3230"/></linearGradient>
+        <linearGradient id="terrain-estraviya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#79a97d"/><stop offset=".45" stopColor="#3d8069"/><stop offset="1" stopColor="#244e48"/></linearGradient>
+        <linearGradient id="terrain-saverniya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#9eaf69"/><stop offset=".45" stopColor="#668957"/><stop offset="1" stopColor="#355745"/></linearGradient>
         {countries.map(c=><clipPath id={"countryClip-"+c.id} key={c.id}><path d={c.mapPath}/></clipPath>)}
         <filter id="countryReliefShadow"><feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#001018" floodOpacity=".45"/></filter>
       </defs>
       <rect width="500" height="350" fill="url(#oceanWorld)"/>
       <rect width="500" height="350" fill="url(#oceanWaves)"/>
-      <g className="ocean-depth-lines"><path d="M12 72 C88 50 125 62 186 45 S307 48 365 33 S454 42 493 24"/><path d="M2 306 C67 286 114 301 174 286 S301 298 356 279 S440 289 500 270"/><path d="M16 184 C69 170 105 179 143 166 M359 150 C405 137 446 149 489 132"/></g>
+      <path className="continent-base" d="M48 113 C75 73 126 52 184 60 C231 46 273 54 319 61 C373 47 427 70 449 111 C466 142 453 184 428 210 C409 235 390 279 352 298 C308 320 252 320 210 304 C169 316 119 297 98 267 C74 247 54 212 60 179 C42 158 37 134 48 113Z"/><g className="ocean-depth-lines"><path d="M12 72 C88 50 125 62 186 45 S307 48 365 33 S454 42 493 24"/><path d="M2 306 C67 286 114 301 174 286 S301 298 356 279 S440 289 500 270"/><path d="M16 184 C69 170 105 179 143 166 M359 150 C405 137 446 149 489 132"/></g>
       {countries.map((c, index) => <g key={c.id} className={"world-country-group "+(selected===c.id?"selected":"")} filter="url(#countryReliefShadow)">
-        <path d={c.mapPath} className="country-land-base" style={{fill:c.color}} onClick={()=>onSelect(c.id)}/>
+        <path d={c.mapPath} className="country-land-base" style={{fill:"url(#terrain-"+c.id+")"}} onClick={()=>onSelect(c.id)}/>
         <g clipPath={"url(#countryClip-"+c.id+")"}>
-          
+          <path d={c.mapPath} className="country-texture"/>
+          <path className="terrain-light" d={"M "+(c.capitalX-82)+" "+(c.capitalY-30)+" C "+(c.capitalX-30)+" "+(c.capitalY-70)+" "+(c.capitalX+28)+" "+(c.capitalY-48)+" "+(c.capitalX+78)+" "+(c.capitalY-5)+" C "+(c.capitalX+28)+" "+(c.capitalY-12)+" "+(c.capitalX-28)+" "+(c.capitalY+8)+" "+(c.capitalX-82)+" "+(c.capitalY-30)+" Z"}/>
           <path className="forest-patch" d={"M "+(c.capitalX-45)+" "+(c.capitalY+18)+" C "+(c.capitalX-15)+" "+(c.capitalY-2)+" "+(c.capitalX+35)+" "+(c.capitalY+4)+" "+(c.capitalX+60)+" "+(c.capitalY+32)+" L "+(c.capitalX+48)+" "+(c.capitalY+75)+" C "+(c.capitalX+5)+" "+(c.capitalY+61)+" "+(c.capitalX-35)+" "+(c.capitalY+67)+" "+(c.capitalX-55)+" "+(c.capitalY+42)+" Z"}/>
           <path className="terrain-hill" d={"M "+(c.capitalX-75)+" "+(c.capitalY-25)+" C "+(c.capitalX-50)+" "+(c.capitalY-60)+" "+(c.capitalX-10)+" "+(c.capitalY-38)+" "+(c.capitalX+18)+" "+(c.capitalY-54)+" C "+(c.capitalX+42)+" "+(c.capitalY-68)+" "+(c.capitalX+68)+" "+(c.capitalY-31)+" "+(c.capitalX+88)+" "+(c.capitalY-8)+" L "+(c.capitalX+88)+" "+(c.capitalY+18)+" C "+(c.capitalX+38)+" "+(c.capitalY-2)+" "+(c.capitalX-22)+" "+(c.capitalY+12)+" "+(c.capitalX-75)+" "+(c.capitalY-25)+" Z"}/>
           <path className="mountain-range" d={"M "+(c.capitalX-82)+" "+(c.capitalY-24)+" l 14 -28 15 24 18 -37 17 34 20 -24 17 31 18 -18 18 31"}/>
