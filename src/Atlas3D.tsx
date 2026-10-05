@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import type { ReactNode } from "react";
 import * as THREE from "three";
 import type { CompanyPreview, Country } from "./data/world";
 
