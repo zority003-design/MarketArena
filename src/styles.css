@@ -1251,3 +1251,5 @@ button{cursor:pointer}
   .atlas-country-label .flag{display:none}
   .atlas-3d-watermark{display:none}
 }
+
+.atlas-country-label.hovered{border-color:rgba(229,236,215,.62);background:rgba(10,28,33,.74);box-shadow:0 0 0 1px rgba(229,236,215,.10),0 9px 24px rgba(0,0,0,.28)}
