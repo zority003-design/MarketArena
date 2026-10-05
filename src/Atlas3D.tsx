@@ -355,7 +355,7 @@ function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   ]);
   return curve;
 }
-function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend=0): THREE.CatmullRomCurve3 | null {
+function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend=0): THREE.CatmullRomCurve3 {
   const poly=countryPolygons[countryId];
   const candidates=[bend,0,-bend*.7,bend*.45];
   for(const amount of candidates){
@@ -953,7 +953,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>СЕВЕР ↑ · DRAG / ZOOM</span></div>
       <div className="atlas-3d-viewport" ref={hostRef}>
         <div className="atlas-3d-overlay" ref={overlayRef}>
-          {null}\n          {countries.map((country) => (
+          {null}
+          {countries.map((country) => (
             <button
               key={country.id}
               ref={(el) => { capitalRefs.current[country.id] = el; }}
