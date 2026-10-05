@@ -78,7 +78,7 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
       </g>
 
       <g filter="url(#landShadow)">
-        {countries.map(c=><path key={c.id} d={c.mapPath} fill={c.id==="darvast" ? "url(#terrainWarm)" : c.id==="estraviya" || c.id==="saverniya" ? "url(#terrainSouth)" : "url(#terrainBase)"} stroke="#efe9d2" strokeOpacity=".82" strokeWidth="1.4" onClick={()=>onSelect(c.id)}/>)}
+        {countries.map(c=><path key={c.id} d={c.mapPath} fill={c.id==="darvast" ? "url(#terrainWarm)" : c.id==="estraviya" || c.id==="saverniya" ? "url(#terrainSouth)" : "url(#terrainBase)"} stroke={selected===c.id ? "#f6efd8" : "#d9d6c0"} strokeOpacity={selected===c.id ? ".95" : ".42"} strokeWidth={selected===c.id ? "1.6" : ".72"} className={selected===c.id ? "country-shape selected" : "country-shape"} onClick={()=>onSelect(c.id)}/>)}
       </g>
       <g clipPath="url(#landmassClip)" filter="url(#softRelief)">
         <rect x="35" y="45" width="430" height="280" fill="url(#terrainGrain)"/>
@@ -133,12 +133,15 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         </g>
       </g>
 
-      {/* exact political borders are the country paths themselves */}
-      <g fill="none" stroke="#f4eed8" strokeOpacity=".72" strokeWidth="1.15">
+      {/* Political borders follow the shared country geometry; coastline is a separate physical edge. */}
+      <g fill="none" stroke="#f1ecd7" strokeOpacity=".58" strokeWidth=".82">
         {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
       </g>
-      <g fill="none" stroke="#fff7df" strokeOpacity=".28" strokeWidth="3.5">
-        {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
+      <path d="M72 105 C60 92 72 76 91 68 C112 58 137 63 157 72 C170 78 181 80 195 79 C213 70 234 62 258 61 C275 60 291 65 307 74 C329 62 350 58 373 64 C397 70 418 84 433 101 C446 116 454 129 452 145 C450 159 438 168 432 180 C427 190 433 201 423 210 C438 222 447 238 437 250 C444 263 434 276 421 286 C403 295 381 302 357 299 C338 306 317 299 298 288 C279 279 259 270 241 259 C248 270 260 283 260 292 C244 303 226 307 208 304 C190 301 175 293 162 282 C149 271 142 258 144 247 C150 241 156 239 161 238 C145 247 128 245 115 235 C100 224 88 213 77 198 C66 185 57 174 55 158 C53 145 61 135 58 124 C55 116 65 111 72 105 Z" fill="none" stroke="#f7f1dc" strokeOpacity=".9" strokeWidth="1.65" strokeLinejoin="round" filter="url(#landShadow)"/>
+      <g fill="#cfe7e7" opacity=".32">
+        <path d="M74 94C65 87 68 80 77 76C84 73 90 76 91 82C91 88 84 93 74 94Z"/>
+        <path d="M432 221C443 218 450 224 449 232C448 240 440 244 433 240C427 236 427 227 432 221Z"/>
+        <path d="M122 257C115 251 108 255 107 262C106 269 113 273 120 270C126 268 128 262 122 257Z"/>
       </g>
 
       {countries.map(c=><g key={c.id} className={"capital "+(selected===c.id?"capital-active":"")} onClick={()=>onSelect(c.id)}>
