@@ -571,12 +571,15 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
         }
       }
-      for (let i = 0; i < 170; i += 1) {
-        const u = 18 + hash(i * 1.73, selectedCountry.id.length * 2.1) * 70;
-        const v = 18 + hash(i * 2.37 + 7, selectedCountry.id.length * 3.4) * 70;
-        if (pointInPolygon(u, v, selectedPoly)) {
-          const p = worldFromGeo([u, v]);
-          scene.add(makeTree(p.x, p.z, 0.38 + hash(i, 4) * 0.34));
+      for(let gy=0;gy<13;gy++){
+        for(let gx=0;gx<13;gx++){
+          const i=gy*13+gx;
+          const u=19+(gx+.5+(.32*hash(i,selectedCountry.id.length)))*68/13;
+          const v=19+(gy+.5+(.32*hash(i+41,selectedCountry.id.length*2)))*68/13;
+          if(pointInPolygon(u,v,selectedPoly)){
+            const p=worldFromGeo([u,v]);
+            scene.add(makeTree(p.x,p.z,.36+hash(i*1.7,4)*.30));
+          }
         }
       }
       for(let i=0;i<Math.min(12,roadCurves.length);i++){ const car=makeCar(roadCurves[i],.82+(i%3)*.12); scene.add(car); }
