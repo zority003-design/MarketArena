@@ -2599,3 +2599,61 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   margin-top:0!important;
   top:0!important;
 }
+
+
+/* v1.7 player profile */
+.profile-hero-card{
+  display:flex!important;
+  align-items:center!important;
+  gap:18px!important;
+  padding:22px!important;
+  margin-bottom:18px!important;
+  border:1px solid rgba(83,205,218,.25)!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,#0b2029,#08151c)!important;
+}
+.profile-avatar{
+  width:64px!important;height:64px!important;flex:0 0 64px!important;
+  display:grid!important;place-items:center!important;
+  border-radius:16px!important;
+  font-size:25px!important;font-weight:900!important;
+  color:#eaffff!important;
+  background:linear-gradient(145deg,#1c7f8b,#12333e)!important;
+  border:1px solid #4bc8d4!important;
+}
+.profile-hero-card h2{margin:3px 0!important;font-size:26px!important}
+.profile-hero-card p{margin:0!important;color:#91aeb6!important}
+.profile-logout{
+  margin-left:auto!important;min-width:180px!important;height:44px!important;
+  border:1px solid rgba(236,104,104,.55)!important;border-radius:9px!important;
+  background:rgba(110,31,38,.22)!important;color:#ffc5c5!important;
+  font-weight:900!important;cursor:pointer!important;
+}
+.profile-logout:hover{background:rgba(138,40,47,.35)!important;border-color:#ed7777!important}
+.profile-stat-grid{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;margin-bottom:18px!important;
+}
+.profile-stat-grid>div,.profile-records>div{
+  padding:18px!important;border:1px solid #203e47!important;border-radius:12px!important;
+  background:#091820!important;
+}
+.profile-stat-grid span,.profile-records span{display:block!important;color:#76949c!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}
+.profile-stat-grid b{display:block!important;margin-top:7px!important;font-size:20px!important;color:#e1f6f8!important}
+.profile-stat-grid small{color:#718b92!important}
+.profile-records{display:grid!important;grid-template-columns:1.25fr .75fr!important;gap:14px!important}
+.profile-records h3{margin:6px 0 14px!important;font-size:20px!important}
+.profile-record-row{
+  display:flex!important;justify-content:space-between!important;gap:14px!important;
+  padding:12px 0!important;border-bottom:1px solid rgba(70,111,120,.25)!important;
+}
+.profile-record-row:last-child{border-bottom:0!important}
+.profile-record-row b{color:#d8f4f6!important}
+.profile-account-card p{color:#91aeb6!important;line-height:1.7!important}
+.profile-account-card .secondary-action{margin-top:10px!important;min-height:42px!important;cursor:pointer!important}
+@media(max-width:760px){
+  .profile-hero-card{align-items:flex-start!important;flex-wrap:wrap!important}
+  .profile-logout{margin-left:0!important;width:100%!important}
+  .profile-stat-grid{grid-template-columns:1fr 1fr!important}
+  .profile-records{grid-template-columns:1fr!important}
+}
