@@ -134,7 +134,7 @@ function terrainHeight(x: number, z: number) {
     Math.exp(-((x - 5.0) ** 2) / 2.0 - ((z - 1.8) ** 2) / 70) * 0.8;
 
   const dryEast = clamp((x - 5) / 14, 0, 1);
-  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 5.0);
+  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 2.45);
 }
 
 function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
