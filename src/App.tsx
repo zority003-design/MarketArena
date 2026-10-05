@@ -424,20 +424,3 @@ function App(){
 }
 
 export default App;
-
-function App(){
-  const [screen,setScreen]=useState<Screen>(()=>{try{return window.localStorage.getItem("marketarena.screen")==="game"?"game":"auth";}catch{return "auth";}});
-  const [player,setPlayer]=useState(()=>{try{return window.localStorage.getItem("marketarena.player")||"Игрок";}catch{return "Игрок";}});
-  const [mode,setMode]=useState<"offline"|"online">("offline");
-  const [countryId,setCountryId]=useState(()=>{try{return window.localStorage.getItem("marketarena.country")||countries[0].id;}catch{return countries[0].id;}});
-  const [difficulty,setDifficulty]=useState(()=>{try{return window.localStorage.getItem("marketarena.difficulty")||"normal";}catch{return "normal";}});
-  useEffect(()=>{try{window.localStorage.setItem("marketarena.player",player);window.localStorage.setItem("marketarena.country",countryId);window.localStorage.setItem("marketarena.difficulty",difficulty);if(screen==="game")window.localStorage.setItem("marketarena.screen","game");else if(screen==="auth")window.localStorage.removeItem("marketarena.screen");}catch{}},[player,countryId,difficulty,screen]);
-  const country=useMemo(()=>countries.find(c=>c.id===countryId)??countries[0],[countryId]);
-  if(screen==="auth") return <AuthScreen onContinue={name=>{setPlayer(name);setScreen("mode")}}/>;
-  if(screen==="mode") return <ModeScreen onChoose={m=>{setMode(m);if(m==="offline")setScreen("country")}}/>;
-  if(screen==="country") return <CountryScreen selected={countryId} setSelected={setCountryId} onNext={()=>setScreen("difficulty")}/>;
-  if(screen==="difficulty") return <DifficultyScreen country={country} onStart={id=>{setDifficulty(id);setScreen("game")}} onBack={()=>setScreen("country")}/>;
-  return <GameScreen player={player} country={country} difficulty={difficulty} onLogout={()=>{try{window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("auth");setPlayer("Игрок");}} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v2.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
-}
-
-export default App;
