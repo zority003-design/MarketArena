@@ -1366,6 +1366,8 @@ body{overflow-x:hidden}
 
 /* 2026-10-05 — entry, country dossier and interaction polish */
 .auth-screen{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
   grid-template-columns:minmax(0,1fr) minmax(420px,.9fr)!important;
   overflow:hidden!important;
   background:
