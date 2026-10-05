@@ -1362,3 +1362,209 @@ body{overflow-x:hidden}
   .job-game-modal{padding:22px}
   .job-game-board button{height:68px}
 }
+
+
+/* 2026-10-05 — entry, country dossier and interaction polish */
+.auth-screen{
+  grid-template-columns:minmax(0,1fr) minmax(420px,.9fr)!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 18% 18%,rgba(91,214,231,.09),transparent 30%),
+    radial-gradient(circle at 80% 20%,rgba(128,107,255,.08),transparent 28%),
+    linear-gradient(135deg,#07121d 0%,#081722 52%,#050d16 100%)!important;
+}
+.auth-panel{
+  width:min(760px,100%)!important;
+  padding:clamp(42px,7vh,88px) clamp(28px,7vw,104px)!important;
+  justify-self:end!important;
+  position:relative;
+  z-index:3;
+}
+.auth-copy{margin:86px 0 36px!important}
+.auth-copy h1{font-size:clamp(50px,5.2vw,82px)!important}
+.auth-copy p{font-size:15px!important;max-width:620px!important;line-height:1.85!important}
+.auth-tabs{margin-top:8px}
+.auth-visual{
+  position:relative;
+  min-height:100svh;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(75,203,224,.13),transparent 20%),
+    radial-gradient(circle at 70% 70%,rgba(133,113,255,.10),transparent 28%),
+    linear-gradient(145deg,#091a27,#06111b);
+  border-left:1px solid rgba(148,205,214,.10);
+}
+.auth-visual-grid{
+  position:absolute;inset:0;opacity:.38;
+  background-image:linear-gradient(rgba(144,199,209,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(144,199,209,.045) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(circle at center,#000 0 45%,transparent 78%);
+}
+.auth-orbit{
+  position:absolute;border:1px solid rgba(111,216,226,.14);border-radius:50%;
+  transform:rotate(-18deg);
+}
+.orbit-a{width:min(42vw,560px);height:min(24vw,320px)}
+.orbit-b{width:min(52vw,680px);height:min(30vw,390px);transform:rotate(26deg);border-color:rgba(151,130,255,.11)}
+.auth-visual-core{
+  position:relative;z-index:2;width:220px;height:220px;border-radius:50%;
+  display:grid;place-content:center;text-align:center;
+  background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.13),rgba(10,28,40,.95) 56%,#06101a 100%);
+  border:1px solid rgba(154,225,232,.20);
+  box-shadow:0 0 0 18px rgba(75,203,224,.025),0 35px 100px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.08);
+}
+.auth-visual-core span{
+  width:52px;height:52px;margin:0 auto 10px;display:grid;place-items:center;border-radius:13px;
+  background:linear-gradient(145deg,#e9fbfd,#80c7d2);color:#07151d;font:900 14px "Space Grotesk";
+}
+.auth-visual-core b{font:700 20px/1 "Space Grotesk";letter-spacing:.04em}
+.auth-visual-core small{margin-top:9px;color:#6f8e9a;font-size:7px;letter-spacing:.14em}
+.auth-float{
+  position:absolute;z-index:3;min-width:150px;padding:14px 16px;border:1px solid rgba(141,207,215,.14);
+  border-radius:13px;background:rgba(8,22,32,.78);backdrop-filter:blur(14px);box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+.auth-float span,.auth-float small{display:block;color:#6f8995;font-size:8px;letter-spacing:.12em}
+.auth-float b{display:block;margin:6px 0 4px;font:600 20px "Space Grotesk";color:#e8f4f4}
+.auth-float-a{top:25%;left:12%}.auth-float-b{right:9%;top:42%}.auth-float-c{left:18%;bottom:20%}
+.auth-float-a b{color:#7ce0b2}.auth-float-c b{font-size:15px;color:#d8cfff}
+.auth-note{max-width:560px}
+
+.country-profile-rich .profile-title p,
+.country-detail-grid p{font-size:14px!important;line-height:1.75!important;color:#9db0ba!important}
+.country-profile-rich .profile-title h2{font-size:38px!important}
+.country-profile-rich .profile-stats>div{min-height:92px!important;padding:20px!important}
+.country-profile-rich .profile-stats span,
+.country-detail-grid>div>span{font-size:10px!important;letter-spacing:.12em!important}
+.country-profile-rich .profile-stats b{font-size:17px!important;line-height:1.35!important}
+.country-detail-grid{gap:12px!important}
+.country-detail-grid>div{min-height:150px!important;padding:20px!important}
+.country-detail-grid p{margin-top:10px!important}
+.company-preview h3{font-size:24px!important}
+.company-strip{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
+.company-strip>div{min-height:122px!important;padding:17px!important;border-top:3px solid rgba(255,255,255,.12)!important}
+.company-strip>div b{font-size:12px!important}
+.company-strip>div strong{font-size:13px!important;line-height:1.3!important}
+.company-strip>div small{font-size:10px!important}
+.company-strip .sector-finance{border-top-color:#a78bfa!important}.company-strip .sector-energy{border-top-color:#f6c85f!important}
+.company-strip .sector-metals{border-top-color:#a7b5c1!important}.company-strip .sector-industrial,.company-strip .sector-industry{border-top-color:#ef8f6d!important}
+.company-strip .sector-shipping,.company-strip .sector-ports{border-top-color:#62c8e8!important}.company-strip .sector-insurance{border-top-color:#d88be8!important}
+.company-strip .sector-oil{border-top-color:#d5a36a!important}.company-strip .sector-logistics{border-top-color:#79c7a5!important}
+.company-strip .sector-biotech{border-top-color:#79dfb4!important}.company-strip .sector-technology{border-top-color:#8ca8ff!important}
+.company-strip .sector-electronics{border-top-color:#64d8e8!important}.company-strip .sector-robotics{border-top-color:#e58cff!important}
+.company-strip .sector-agro{border-top-color:#a9cf69!important}.company-strip .sector-retail{border-top-color:#f29c77!important}
+.company-strip .sector-realestate{border-top-color:#c7b18a!important}.company-strip .sector-chemicals{border-top-color:#73d0c4!important}
+
+.difficulty-list{gap:12px!important}
+.difficulty{padding:23px!important;min-height:120px!important}
+.difficulty b{font-size:13px!important}
+.difficulty strong{font-size:25px!important}
+.difficulty p{font-size:14px!important;line-height:1.7!important}
+.difficulty small{font-size:10px!important}
+.start-summary{min-height:64px!important;font-size:11px!important}
+.start-summary b{font-size:13px!important}
+
+.game-shell{
+  background:
+    radial-gradient(circle at 84% 6%,rgba(77,177,193,.055),transparent 25%),
+    radial-gradient(circle at 18% 90%,rgba(125,105,220,.045),transparent 30%),
+    linear-gradient(180deg,#07111a 0%,#061019 54%,#07131b 100%)!important;
+}
+.game-main{min-width:0!important}
+.game-topbar,.game-sidebar{background:rgba(7,19,28,.96)!important;backdrop-filter:blur(12px)}
+.game-topbar nav button{pointer-events:auto!important}
+.game-sidebar{scrollbar-width:none!important}
+.game-sidebar::-webkit-scrollbar{display:none!important;width:0!important}
+
+.portfolio-summary>div,.portfolio-insights>div,.portfolio-chart,.portfolio-table .table-row{
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.portfolio-summary>div:hover,.portfolio-insights>div:hover,.portfolio-chart:hover{
+  transform:translateY(-3px);
+  border-color:rgba(103,213,224,.30)!important;
+  box-shadow:0 16px 34px rgba(0,0,0,.18);
+}
+.portfolio-table .table-row:not(.table-head):hover{
+  transform:translateX(3px);
+  background:rgba(71,191,204,.055)!important;
+}
+.portfolio-summary>div,.portfolio-insights>div{
+  cursor:default;
+}
+
+.company-focus-card.sector-finance{border-top:3px solid #a78bfa!important}
+.company-focus-card.sector-energy{border-top:3px solid #f6c85f!important}
+.company-focus-card.sector-metals{border-top:3px solid #a7b5c1!important}
+.company-focus-card.sector-industrial,.company-focus-card.sector-industry{border-top:3px solid #ef8f6d!important}
+.company-focus-card.sector-shipping,.company-focus-card.sector-ports{border-top:3px solid #62c8e8!important}
+.company-focus-card.sector-insurance{border-top:3px solid #d88be8!important}
+.company-focus-card.sector-oil{border-top:3px solid #d5a36a!important}
+.company-focus-card.sector-logistics{border-top:3px solid #79c7a5!important}
+.company-focus-card.sector-biotech{border-top:3px solid #79dfb4!important}
+.company-focus-card.sector-technology{border-top:3px solid #8ca8ff!important}
+.company-focus-card.sector-electronics{border-top:3px solid #64d8e8!important}
+.company-focus-card.sector-robotics{border-top:3px solid #e58cff!important}
+.company-focus-card.sector-agro{border-top:3px solid #a9cf69!important}
+.company-focus-card.sector-retail{border-top:3px solid #f29c77!important}
+.company-focus-card.sector-realestate{border-top:3px solid #c7b18a!important}
+.company-focus-card.sector-chemicals{border-top:3px solid #73d0c4!important}
+.sector-chip.sector-finance{color:#c4b4ff;background:rgba(167,139,250,.11);border-color:rgba(167,139,250,.28)}
+.sector-chip.sector-energy{color:#f8d977;background:rgba(246,200,95,.10);border-color:rgba(246,200,95,.26)}
+.sector-chip.sector-metals{color:#c5d0d8;background:rgba(167,181,193,.10);border-color:rgba(167,181,193,.25)}
+.sector-chip.sector-industrial,.sector-chip.sector-industry{color:#ffad93;background:rgba(239,143,109,.10);border-color:rgba(239,143,109,.25)}
+.sector-chip.sector-shipping,.sector-chip.sector-ports{color:#7fddf4;background:rgba(98,200,232,.10);border-color:rgba(98,200,232,.25)}
+.sector-chip.sector-insurance{color:#efa8f4;background:rgba(216,139,232,.10);border-color:rgba(216,139,232,.25)}
+.sector-chip.sector-oil{color:#e6bb85;background:rgba(213,163,106,.10);border-color:rgba(213,163,106,.25)}
+.sector-chip.sector-logistics{color:#91e1bc;background:rgba(121,199,165,.10);border-color:rgba(121,199,165,.25)}
+.sector-chip.sector-biotech{color:#9df0c6;background:rgba(121,223,180,.10);border-color:rgba(121,223,180,.25)}
+.sector-chip.sector-technology{color:#aebdff;background:rgba(140,168,255,.10);border-color:rgba(140,168,255,.25)}
+.sector-chip.sector-electronics{color:#83eaf5;background:rgba(100,216,232,.10);border-color:rgba(100,216,232,.25)}
+.sector-chip.sector-robotics{color:#efabff;background:rgba(229,140,255,.10);border-color:rgba(229,140,255,.25)}
+.sector-chip.sector-agro{color:#c9e58e;background:rgba(169,207,105,.10);border-color:rgba(169,207,105,.25)}
+.sector-chip.sector-retail{color:#ffb293;background:rgba(242,156,119,.10);border-color:rgba(242,156,119,.25)}
+.sector-chip.sector-realestate{color:#dfcca8;background:rgba(199,177,138,.10);border-color:rgba(199,177,138,.25)}
+.sector-chip.sector-chemicals{color:#8ce1d4;background:rgba(115,208,196,.10);border-color:rgba(115,208,196,.25)}
+
+.history-milestones{margin-top:10px!important;gap:14px!important}
+.history-milestones>div{min-height:128px!important;padding:20px!important}
+.history-milestones b{font-size:28px!important;line-height:1.1!important}
+.history-stat-grid{margin-top:18px!important}
+.history-stat-grid>div{min-height:120px!important;display:flex;flex-direction:column;justify-content:center}
+.history-stat-grid b{line-height:1.1!important}
+.history-list{margin-top:16px!important}
+.history-list>div{gap:18px!important}
+.history-list>div>*{min-width:0}
+.history-list em{white-space:nowrap}
+
+.patch-timeline{padding-top:14px!important}
+.patch-item:first-child{margin-top:10px!important}
+.patch-item .patch-card{padding:24px!important}
+.patch-head{margin-bottom:6px!important}
+.patch-columns{margin-top:4px!important}
+.panel-lead{margin-bottom:12px!important}
+.news-transactions{margin-top:22px!important}
+
+.job-game-board.logistics-board{grid-template-columns:repeat(3,1fr)}
+.job-game-board.freelance-board{grid-template-columns:repeat(2,1fr)}
+.logistics-board button,.freelance-board button{display:grid;place-items:center;gap:4px;color:#cfe2e7}
+.logistics-board button span{font:700 24px "Space Grotesk";color:#75d5df}
+.logistics-board button small,.freelance-board button small{color:#718a95;font-size:9px;letter-spacing:.08em}
+.freelance-board button b{font-size:12px;letter-spacing:.08em}
+.job-game-board button.job-target{transform:scale(1.025)}
+
+.water-dot{display:inline-block;width:9px;height:5px;border-radius:999px;background:#66bfd1;box-shadow:0 0 8px rgba(102,191,209,.28)}
+
+@media(max-width:900px){
+  .auth-screen{grid-template-columns:1fr!important}
+  .auth-visual{display:none}
+  .country-detail-grid{grid-template-columns:1fr!important}
+  .company-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+  .company-strip{grid-template-columns:1fr!important}
+  .auth-copy{margin-top:58px!important}
+  .auth-copy h1{font-size:48px!important}
+  .history-milestones{grid-template-columns:1fr!important}
+}
