@@ -112,7 +112,7 @@ function ridge(x: number, z: number, cx: number, cz: number, angle: number, leng
   return a * b * height;
 }
 
-function terrainHeight(x: number, z: number) {
+const SELECTED_RELIEF_SCALE = 0.34;\n\nfunction surfaceHeight(x: number, z: number) {\n  return terrainHeight(x, z) * SELECTED_RELIEF_SCALE;\n}\n\nfunction terrainHeight(x: number, z: number) {
   const nx = x / W + 0.5;
   const nz = z / D + 0.5;
   const low = 0.18 + fbm(nx * 3.2, nz * 3.2) * 0.26;
@@ -237,7 +237,7 @@ function makeLine(points: THREE.Vector3[], color: number, opacity = 1, width = 1
 function polygonLine(poly: GeoPoint[], yOffset = 0.06) {
   const points = poly.map((p) => {
     const v = worldFromGeo(p);
-    v.y = terrainHeight(v.x, v.z) + yOffset;
+    v.y = surfaceHeight(v.x, v.z) + yOffset;
     return v;
   });
   points.push(points[0].clone());
@@ -301,9 +301,9 @@ function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
     (p1.z + p2.z) / 2 + nz * bend * len
   );
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(p1.x, terrainHeight(p1.x,p1.z)+0.078, p1.z),
-    new THREE.Vector3(mid.x, terrainHeight(mid.x,mid.z)+0.078, mid.z),
-    new THREE.Vector3(p2.x, terrainHeight(p2.x,p2.z)+0.078, p2.z)
+    new THREE.Vector3(p1.x, surfaceHeight(p1.x,p1.z)+0.078, p1.z),
+    new THREE.Vector3(mid.x, surfaceHeight(mid.x,mid.z)+0.078, mid.z),
+    new THREE.Vector3(p2.x, surfaceHeight(p2.x,p2.z)+0.078, p2.z)
   ]);
   return curve;
 }
@@ -380,8 +380,8 @@ function makeHighway(curve: THREE.CatmullRomCurve3, width = 0.24) {
     const nx=-dz/len, nz=dx/len;
     const leftX=p.x+nx*width*.5, leftZ=p.z+nz*width*.5;
     const rightX=p.x-nx*width*.5, rightZ=p.z-nz*width*.5;
-    const leftY=terrainHeight(leftX,leftZ)+.035;
-    const rightY=terrainHeight(rightX,rightZ)+.035;
+    const leftY=surfaceHeight(leftX,leftZ)+.035;
+    const rightY=surfaceHeight(rightX,rightZ)+.035;
     vertices.push(leftX,leftY,leftZ,rightX,rightY,rightZ);
     uvs.push(0,i/(samples.length-1),1,i/(samples.length-1));
   });
@@ -393,7 +393,7 @@ function makeHighway(curve: THREE.CatmullRomCurve3, width = 0.24) {
   const road=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:"#27353a",roughness:.92,metalness:.04,side:THREE.DoubleSide}));
   road.receiveShadow=true; road.castShadow=true; group.add(road);
   const lane=new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(samples.map(p=>{const q=p.clone();q.y=terrainHeight(q.x,q.z)+.052;return q;})),
+    new THREE.BufferGeometry().setFromPoints(samples.map(p=>{const q=p.clone();q.y=surfaceHeight(q.x,q.z)+.052;return q;})),
     new THREE.LineBasicMaterial({color:0xd9ded6,transparent:true,opacity:.82})
   );
   group.add(lane);
@@ -407,7 +407,7 @@ function makeCityBuilding(x:number,z:number,scale=1,type=0) {
 
 function makeSnowCap(geo: GeoPoint, size: number) {
   const p = worldFromGeo(geo);
-  const h = terrainHeight(p.x, p.z);
+  const h = surfaceHeight(p.x, p.z);
   const shape = new THREE.Shape();
   for (let i = 0; i < 9; i += 1) {
     const a = (i / 9) * Math.PI * 2;
@@ -663,7 +663,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const rect = host.getBoundingClientRect();
       const project = (p: THREE.Vector3) => {
         const q = p.clone();
-        q.y = terrainHeight(q.x, q.z) + 0.52;
+        q.y = surfaceHeight(q.x, q.z) + 0.52;
         q.project(camera);
         return { x: (q.x * 0.5 + 0.5) * rect.width, y: (-q.y * 0.5 + 0.5) * rect.height, z: q.z };
       };
