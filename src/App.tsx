@@ -195,26 +195,16 @@ function CompanyChart({company,points}:{company:CompanyPreview;points:number[]})
   </div>;
 }
 
-function CandleChart({company,points}:{company:CompanyPreview;points:number[]}) {
-  const bars=points.slice(-48).map((close,i)=>{
-    const prev=i===0?points[Math.max(0,points.length-49)]:points[Math.max(0,points.length-48+i-1)];
-    const open=prev;
-    const range=Math.max(80,Math.round(close*(0.008+(i%5)*0.002)));
-    const high=Math.max(open,close)+range;
-    const low=Math.min(open,close)-range;
-    return {open,close,high,low};
-  });
-  const min=Math.min(...bars.map(b=>b.low)), max=Math.max(...bars.map(b=>b.high)), span=Math.max(1,max-min);
-  const y=(v:number)=>18+((max-v)/span)*94;
-  const step=500/bars.length;
-  return <div className="candle-terminal">
-    <div className="candle-head"><span>OHLC · 48 ДНЕЙ</span><b>{bars[bars.length - 1]?.close.toLocaleString("ru-RU")} VLR</b></div>
-    <svg viewBox="0 0 500 128" preserveAspectRatio="none" aria-label={`Японские свечи ${company.ticker}`}>
-      <path d="M0 112H500M0 80H500M0 48H500M0 16H500" className="grid-line"/>
-      {bars.map((b,i)=>{const x=i*step+step/2, up=b.close>=b.open, body=Math.max(2,Math.abs(y(b.open)-y(b.close))); return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={y(b.high)} y2={y(b.low)} /><rect x={x-step*.28} y={Math.min(y(b.open),y(b.close))} width={step*.56} height={body}/></g>})}
-    </svg>
-    <div className="candle-axis"><span>48 дней назад</span><span>24</span><span>сегодня</span></div>
-  </div>;
+type ChartRange="ALL"|"10Y"|"5Y"|"1Y"|"6M"|"1M"|"1W"|"1D";
+const chartRangeLabels:[ChartRange,string][]=[["ALL","Всё время"],["10Y","10 лет"],["5Y","5 лет"],["1Y","1 год"],["6M","6 месяцев"],["1M","1 месяц"],["1W","1 неделя"],["1D","1 день"]];
+function CandleChart({company,points,range}:{company:CompanyPreview;points:number[];range:ChartRange}) {
+  const source=points.length>180?points.filter((_,i)=>i===0||i===points.length-1||i%Math.ceil(points.length/180)===0):points;
+  const bars=source.slice(-180).map((close,i)=>{const prev=i===0?source[Math.max(0,source.length-2)]:source[i-1];const open=prev;const rangeSize=Math.max(35,Math.round(close*(0.006+(i%7)*0.0018)));return {open,close,high:Math.max(open,close)+rangeSize,low:Math.min(open,close)-rangeSize};});
+  const min=Math.min(...bars.map(b=>b.low)),max=Math.max(...bars.map(b=>b.high)),span=Math.max(1,max-min); const y=(v:number)=>12+((max-v)/span)*86; const step=500/Math.max(1,bars.length);
+  const first=bars[0]?.close??0,last=bars[bars.length-1]?.close??0,change=first?((last-first)/first)*100:0;
+  return <div className="candle-terminal"><div className="candle-head"><div><span>ЯПОНСКИЕ СВЕЧИ · {range}</span><b>{last.toLocaleString("ru-RU")} VLR</b></div><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div>
+    <svg viewBox="0 0 500 108" preserveAspectRatio="none" aria-label={"Японские свечи "+company.ticker+", период "+range}><path d="M0 92H500M0 65H500M0 38H500M0 11H500" className="grid-line"/>{bars.map((b,i)=>{const x=i*step+step/2,up=b.close>=b.open,body=Math.max(1.6,Math.abs(y(b.open)-y(b.close)));return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={y(b.high)} y2={y(b.low)}/><rect x={x-step*.34} y={Math.min(y(b.open),y(b.close))} width={Math.max(1,step*.68)} height={body}/></g>})}</svg>
+    <div className="candle-axis"><span>{range==="1D"?"начало сессии":range==="1W"?"7 дней назад":range==="1M"?"месяц назад":range==="6M"?"6 месяцев назад":range==="1Y"?"год назад":range==="5Y"?"5 лет назад":range==="10Y"?"10 лет назад":"начало истории"}</span><span>середина</span><span>сейчас</span></div></div>;
 }
 function Panel({title,eyebrow,children}:{title:string;eyebrow:string;children:ReactNode}){return <div className="game-panel"><div className="panel-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</div>;}
 
