@@ -24,6 +24,15 @@ function Flag({ country }: { country: Country }) {
   return <span className={`flag flag-${country.id}`} aria-label={`Флаг ${country.name}`}><i /></span>;
 }
 
+function CEOAvatar({company}:{company:CompanyPreview}) {
+  const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+  const hair=["short","side","wave","crop"][seed%4];
+  const suit=["navy","slate","sand","black"][Math.floor(seed/4)%4];
+  return <div className={`ceo-avatar modern-portrait portrait-${hair} suit-${suit}`} aria-label={`Портрет CEO ${company.ceo}`}>
+    <div className="portrait-bg"/><div className="portrait-shoulders"/><div className="portrait-neck"/>
+    <div className="portrait-face"><i className="portrait-ear left"/><i className="portrait-ear right"/><b className="portrait-hair"/><i className="portrait-eye left"/><i className="portrait-eye right"/><span className="portrait-nose"/><span className="portrait-mouth"/></div>
+  </div>;
+}
 function Terrain({ detailed = false }: { detailed?: boolean }) {
   return <g className="terrain-layer"><path className="terrain-lowland" d="M42 218 C92 190 134 201 174 223 C216 247 257 247 298 226 C345 202 394 207 454 225 L454 312 L42 312 Z"/><path className="terrain-shadow" d="M70 151 C104 118 140 120 169 145 C196 168 223 174 252 152 C283 128 317 130 347 151 C379 174 404 165 434 143 L444 185 C408 204 377 207 343 190 C310 173 282 176 251 197 C216 220 188 210 158 190 C126 168 101 170 73 188 Z"/><path className="ridge major" d="M73 104 C91 78 107 75 123 98 C138 73 154 72 171 99 C188 67 209 69 226 98 C243 78 257 80 271 104"/><path className="ridge major second" d="M274 111 C292 77 309 75 327 103 C343 70 360 73 376 105 C392 82 407 87 426 116"/><path className="ridge light" d="M88 117 C101 99 112 98 124 115 M138 116 C150 95 160 97 171 117 M292 122 C306 99 316 100 327 119 M344 121 C356 99 366 102 378 120"/><path className="contour" d="M55 132 C89 108 126 110 155 129 C187 151 214 159 245 142 C276 124 304 124 337 141 C370 158 401 153 439 130"/><path className="contour" d="M52 154 C89 131 123 135 151 153 C184 175 214 183 247 165 C279 146 307 148 338 164 C369 180 400 177 442 153"/><path className="contour" d="M57 178 C94 155 125 160 157 178 C189 197 218 205 250 186 C283 167 311 170 343 186 C374 202 402 199 435 179"/><path className="river" d="M221 74 C218 100 228 113 218 138 C207 163 199 183 207 203 C215 223 231 232 239 251 C245 267 241 282 231 296"/><path className="river" d="M302 79 C293 105 298 126 313 146 C327 164 341 175 348 194 C355 213 351 231 342 248"/><path className="river thin" d="M156 108 C173 127 178 143 170 164 C163 181 168 198 181 214"/><ellipse className="lake" cx="145" cy="226" rx="19" ry="8"/><ellipse className="lake" cx="376" cy="214" rx="14" ry="6"/><path className="snow" d="M178 73 L191 59 L205 73 L194 79 Z M317 75 L329 60 L343 75 L333 81 Z"/>{detailed&&<g className="terrain-detail"><path d="M91 244 C119 231 141 231 164 244 M182 257 C211 246 232 247 254 259 M282 241 C311 229 337 230 360 243 M366 261 C390 250 411 251 430 260"/><path d="M108 199 C126 190 143 191 158 201 M344 201 C362 190 379 191 394 201"/></g>}</g>;
 }
@@ -173,6 +182,27 @@ function CompanyChart({company,points}:{company:CompanyPreview;points:number[]})
   </div>;
 }
 
+function CandleChart({company,points}:{company:CompanyPreview;points:number[]}) {
+  const bars=points.slice(-48).map((close,i)=>{
+    const prev=i===0?points[Math.max(0,points.length-49)]:points[Math.max(0,points.length-48+i-1)];
+    const open=prev;
+    const range=Math.max(80,Math.round(close*(0.008+(i%5)*0.002)));
+    const high=Math.max(open,close)+range;
+    const low=Math.min(open,close)-range;
+    return {open,close,high,low};
+  });
+  const min=Math.min(...bars.map(b=>b.low)), max=Math.max(...bars.map(b=>b.high)), span=Math.max(1,max-min);
+  const y=(v:number)=>18+((max-v)/span)*94;
+  const step=500/bars.length;
+  return <div className="candle-terminal">
+    <div className="candle-head"><span>OHLC · 48 ДНЕЙ</span><b>{bars.at(-1)?.close.toLocaleString("ru-RU")} VLR</b></div>
+    <svg viewBox="0 0 500 128" preserveAspectRatio="none" aria-label={`Японские свечи ${company.ticker}`}>
+      <path d="M0 112H500M0 80H500M0 48H500M0 16H500" className="grid-line"/>
+      {bars.map((b,i)=>{const x=i*step+step/2, up=b.close>=b.open, body=Math.max(2,Math.abs(y(b.open)-y(b.close))); return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={y(b.high)} y2={y(b.low)} /><rect x={x-step*.28} y={Math.min(y(b.open),y(b.close))} width={step*.56} height={body}/></g>})}
+    </svg>
+    <div className="candle-axis"><span>48 дней назад</span><span>24</span><span>сегодня</span></div>
+  </div>;
+}
 function Panel({title,eyebrow,children}:{title:string;eyebrow:string;children:ReactNode}){return <div className="game-panel"><div className="panel-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</div>;}
 
 function GameScreen({player,country,difficulty,onRestart}:{player:string;country:Country;difficulty:string;onRestart:()=>void}) {
