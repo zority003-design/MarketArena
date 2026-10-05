@@ -195,7 +195,7 @@ function CandleChart({company,points}:{company:CompanyPreview;points:number[]}) 
   const y=(v:number)=>18+((max-v)/span)*94;
   const step=500/bars.length;
   return <div className="candle-terminal">
-    <div className="candle-head"><span>OHLC · 48 ДНЕЙ</span><b>{bars.at(-1)?.close.toLocaleString("ru-RU")} VLR</b></div>
+    <div className="candle-head"><span>OHLC · 48 ДНЕЙ</span><b>{bars[bars.length - 1]?.close.toLocaleString("ru-RU")} VLR</b></div>
     <svg viewBox="0 0 500 128" preserveAspectRatio="none" aria-label={`Японские свечи ${company.ticker}`}>
       <path d="M0 112H500M0 80H500M0 48H500M0 16H500" className="grid-line"/>
       {bars.map((b,i)=>{const x=i*step+step/2, up=b.close>=b.open, body=Math.max(2,Math.abs(y(b.open)-y(b.close))); return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={y(b.high)} y2={y(b.low)} /><rect x={x-step*.28} y={Math.min(y(b.open),y(b.close))} width={step*.56} height={body}/></g>})}
