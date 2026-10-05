@@ -8,7 +8,7 @@ type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "m
 type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
 type GameSave = {
   player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
-  day:number; transactions:Transaction[]; tab:GameTab; savedAt:string;
+  day:number; transactions:Transaction[]; tab:GameTab; savedAt:string; careerXP?:number; achievements?:string[];
 };
 
 const PATCH_NOTES = [
@@ -214,13 +214,15 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [jobGame,setJobGame]=useState<{jobId:string;target:number;score:number;started:number}|null>(null);
   const [miniGame,setMiniGame]=useState<{active:boolean;score:number;target:number;started:number}>({active:false,score:0,target:1,started:0});
   const [transactions,setTransactions]=useState<Transaction[]>(()=>initialSave?.transactions??[]);
+  const [careerXP,setCareerXP]=useState(()=>initialSave?.careerXP??0);
+  const [achievements,setAchievements]=useState<string[]>(()=>initialSave?.achievements??[]);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
   const [marketPulse,setMarketPulse]=useState(0);
   const [timeSpeed,setTimeSpeed]=useState<0|1|1.5|2>(1);
   const [timePaused,setTimePaused]=useState(false);
   useEffect(()=>{if(timePaused)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused]);
   useEffect(()=>{if(timePaused)return; const ms=Math.round(6000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>v+1),ms); return()=>window.clearInterval(timer)},[timeSpeed,timePaused]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString()};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements]);
   useEffect(()=>{
     if(tab==="exchange" && !exchangeCompany && country.companies.length) setExchangeCompany(country.companies[0]);
   },[tab,country.id,country.companies,exchangeCompany]);
