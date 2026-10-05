@@ -2378,3 +2378,37 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .game-command-deck button{flex-basis:82px!important;min-width:82px!important;height:58px!important;font-size:9px!important}
   .game-command-deck .nav-glyph{width:21px!important;height:21px!important;font-size:13px!important}
 }
+
+/* v1.4 command deck + terminal polish */
+.game-topbar{position:sticky!important;top:0!important;z-index:1200!important}
+.game-command-deck{overflow:visible!important;flex-wrap:nowrap!important}
+.game-command-deck button{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease!important}
+.game-command-deck button:hover{transform:translateY(-3px) scale(1.02)!important;box-shadow:0 10px 25px rgba(45,180,195,.18)!important}
+.game-command-deck button:active{transform:translateY(-1px) scale(.99)!important}
+.game-command-deck button{font-size:12px!important}
+.game-command-deck .nav-glyph{font-size:17px!important}
+.exchange-safe-focushead h2{font-size:28px!important}
+.exchange-safe-focushead p{font-size:14px!important}
+.exchange-safe-metrics span,.exchange-safe-metrics b{font-size:13px!important}
+.company-facts{gap:10px 14px!important}
+.company-facts span{font-size:12px!important;letter-spacing:.05em!important;color:#8eabb3!important}
+.company-facts b{font-size:14px!important;line-height:1.45!important;color:#d8eef1!important}
+.modal-buy{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;flex-wrap:wrap!important;padding:14px!important;margin-top:14px!important;border:1px solid #28454f!important;border-radius:10px!important;background:#091820!important}
+.modal-buy>div{display:flex!important;gap:10px!important;flex-wrap:wrap!important}
+.modal-buy button{position:relative!important;z-index:4!important;min-width:125px!important;height:42px!important;cursor:pointer!important}
+.secondary-action{background:#10252d!important;border:1px solid #42616a!important;color:#d6edf0!important}
+.modal-buy .primary{background:linear-gradient(135deg,#1e8f9d,#176d78)!important;color:#efffff!important}
+.candle-terminal{background:linear-gradient(180deg,#07151c,#061016)!important;border:1px solid #1e3b44!important;border-radius:10px!important;padding:14px!important}
+.candle-terminal svg{height:340px!important}
+.candle-terminal .candle.up rect,.candle-terminal .candle.up line{opacity:.95!important}
+.candle-terminal .candle.down rect,.candle-terminal .candle.down line{opacity:.95!important}
+.chart-range-tabs button{font-size:11px!important;padding:8px 12px!important}
+@media(max-width:1250px){
+  .game-topbar{align-items:center!important}
+  .game-command-deck{overflow-x:auto!important;scrollbar-width:thin!important}
+  .game-command-deck button{flex:0 0 100px!important;min-width:100px!important}
+}
+@media(max-width:720px){
+  .game-command-deck button{flex:0 0 88px!important;min-width:88px!important;font-size:10px!important}
+  .game-command-deck .nav-glyph{font-size:15px!important}
+}
