@@ -420,7 +420,7 @@ function makePerson(x:number,z:number,scale=.45){
 }
 function makePine(x:number,z:number,scale=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.025*scale,.04*scale,.22*scale,5),new THREE.MeshStandardMaterial({color:"#554735",roughness:1}));trunk.position.y=.12*scale;g.add(trunk);for(let i=0;i<3;i++){const c=new THREE.Mesh(new THREE.ConeGeometry((.13-i*.025)*scale,(.22+.03*i)*scale,7),new THREE.MeshStandardMaterial({color:i===0?"#244d35":"#315d3d",roughness:.98}));c.position.y=(.25+i*.11)*scale;g.add(c)}g.position.set(x,surfaceHeight(x,z)+.02,z);g.castShadow=true;return g}
 function makeBush(x:number,z:number,scale=.7){const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:"#3f7047",roughness:1});for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(.11*scale,7,5),m);b.position.set((i-1)*.08*scale,.08*scale+(i%2)*.025*scale,(i%3-.5)*.05*scale);g.add(b)}g.position.set(x,surfaceHeight(x,z)+.015,z);g.castShadow=true;return g}
-function makeGrassPatch(x:number,z:number,scale=.8){const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:"#557d4d",roughness:1});for(let i=0;i<5;i++){const b=new THREE.Mesh(new THREE.ConeGeometry(.012*scale,.10*scale,4),m);b.position.set((i-2)*.035*scale,.05*scale,(i%3-1)*.025*scale);g.add(b)}g.position.set(x,surfaceHeight(x,z)+.01,z);return g}
+function makeGrassPatch(x:number,z:number,scale=.8){const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:"#668f52",roughness:1});for(let i=0;i<10;i++){const b=new THREE.Mesh(new THREE.ConeGeometry(.010*scale,.14*scale,4),m);b.position.set((i%5-2)*.032*scale,.07*scale,(Math.floor(i/5)-.5)*.04*scale);b.rotation.z=(i%2===0?.16:-.16);g.add(b)}g.position.set(x,surfaceHeight(x,z)+.01,z);return g}
 
 function makeParking(x:number,z:number,scale=.6){
   const g=new THREE.Group();
@@ -682,7 +682,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           scene.add(makeTree(p.x,p.z,.34+hash(i*1.7,4)*.34));
         }
       }
-      for(let i=0;i<Math.floor(cityProfile.trees*.55);i++){const u=11+hash(i*5.31+17,selectedCountry.id.length*4.2)*78;const v=11+hash(i*2.77+83,selectedCountry.id.length*6.4)*78;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);if(i%4===0)scene.add(makePine(p.x,p.z,.55+hash(i,3)*.35));else if(i%3===0)scene.add(makeBush(p.x,p.z,.65+hash(i,7)*.35));else scene.add(makeGrassPatch(p.x,p.z,.8+hash(i,11)*.5))}}
+      for(let i=0;i<Math.floor(cityProfile.trees*.95);i++){const u=8+hash(i*5.31+17,selectedCountry.id.length*4.2)*84;const v=8+hash(i*2.77+83,selectedCountry.id.length*6.4)*84;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);if(i%6===0)scene.add(makePine(p.x,p.z,.55+hash(i,3)*.4));else if(i%5===0)scene.add(makeBush(p.x,p.z,.65+hash(i,7)*.4));else scene.add(makeGrassPatch(p.x,p.z,.85+hash(i,11)*.65))}}
+for(let i=0;i<Math.floor(cityProfile.trees*1.35);i++){const u=6+hash(i*3.71+211,selectedCountry.id.length*8.4)*88;const v=6+hash(i*4.19+119,selectedCountry.id.length*5.7)*88;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);scene.add(makeGrassPatch(p.x,p.z,.65+hash(i,19)*.55))}}
       if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
