@@ -838,19 +838,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>СЕВЕР ↑ · DRAG / ZOOM</span></div>
       <div className="atlas-3d-viewport" ref={hostRef}>
         <div className="atlas-3d-overlay" ref={overlayRef}>
-          {countries.map((country) => (
-            <button
-              key={country.id}
-              ref={(el) => { labelRefs.current[country.id] = el; }}
-              className={`atlas-country-label ${selected === country.id ? "selected" : ""} ${selected === country.id ? "" : "muted"} ${showCompanies ? "" : "selection-hidden"}`}
-              onClick={() => onSelectRef.current(country.id)}
-              type="button"
-            >
-              <span className={`flag flag-${country.id}`}><i /></span>
-              <span>{country.name.toUpperCase()}</span>
-            </button>
-          ))}
-          {countries.map((country) => (
+          {null}\n          {countries.map((country) => (
             <button
               key={country.id}
               ref={(el) => { capitalRefs.current[country.id] = el; }}
