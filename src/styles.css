@@ -798,3 +798,59 @@ button{cursor:pointer}
   .auth-art .atlas-realistic {width:98% !important;}
   .country-picker {grid-template-columns:1fr !important;}
 }
+
+
+/* Realistic atlas artwork: use a textured relief plate as the visual base. */
+.atlas-realistic .atlas-world-svg{
+  background:#05283a url("/atlas-realistic.svg") center/100% 100% no-repeat !important;
+  border-radius:12px;
+  overflow:visible;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 28px 55px rgba(0,0,0,.42);
+}
+.atlas-realistic .atlas-world-svg > rect,
+.atlas-realistic .atlas-world-svg > .continent-base,
+.atlas-realistic .atlas-world-svg > .ocean-depth-lines,
+.atlas-realistic .atlas-world-svg > .world-country-group > .country-land-base,
+.atlas-realistic .atlas-world-svg > .world-country-group > .country-coastline,
+.atlas-realistic .atlas-world-svg > .world-country-group > g > *{
+  opacity:0 !important;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group{
+  filter:none !important;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group .country-land-base{
+  fill:transparent !important;
+  stroke:transparent !important;
+  pointer-events:all;
+}
+.atlas-realistic .atlas-world-svg > .world-country-group.selected .country-land-base{
+  fill:rgba(111,232,219,.13) !important;
+  stroke:rgba(232,247,218,.78) !important;
+  stroke-width:2.2 !important;
+  opacity:1 !important;
+  filter:drop-shadow(0 0 9px rgba(83,232,219,.28));
+}
+.atlas-realistic .atlas-world-svg > .capital{
+  opacity:0 !important;
+}
+.atlas-realistic .atlas-world-svg > .sea-label,
+.atlas-realistic .atlas-world-svg > .compass{
+  opacity:0 !important;
+}
+.atlas-realistic .atlas-world-svg{
+  transform:perspective(1700px) rotateX(3deg) rotateY(-2deg) translateZ(0);
+  transform-origin:center center;
+}
+.atlas-realistic{
+  background:
+    radial-gradient(ellipse at 48% 40%,rgba(77,190,190,.18),transparent 38%),
+    linear-gradient(135deg,#03131d,#082d40 55%,#02131e) !important;
+  box-shadow:0 35px 90px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.05);
+}
+.auth-art .atlas-realistic{
+  width:min(98%,1050px) !important;
+}
+.auth-art .atlas-world-svg{
+  min-height:0 !important;
+  aspect-ratio:500/350 !important;
+}
