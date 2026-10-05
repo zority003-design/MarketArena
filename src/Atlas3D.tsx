@@ -571,6 +571,13 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
         }
       }
+      // Secondary roads spread through the whole selected country, not only between company nodes.
+      for(let i=0;i<citySites.length;i+=2){
+        const a=citySites[i], b=citySites[(i+7)%citySites.length];
+        const curve=inCountryRoad(selectedCountry.id,a,b,(hash(i*2.2,selectedCountry.id.length)-.5)*.10);
+        scene.add(makeHighway(curve,.13));
+        roadCurves.push(curve);
+      }
       for(let gy=0;gy<13;gy++){
         for(let gx=0;gx<13;gx++){
           const i=gy*13+gx;
@@ -657,7 +664,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     let moved = false;
     let lastX = 0;
     let lastY = 0;
-    let zoom = 0.92;
+    let zoom = 1.22;
     let panX = 0;
     let panZ = 0;
 
@@ -766,7 +773,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.72, 1.35);
+      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.82, 1.55);
       updateCamera();
       updateOverlay();
     };
