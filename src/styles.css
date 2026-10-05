@@ -2918,3 +2918,40 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .finance-actions button{flex:1}
   .company-focus-footer>div{justify-content:flex-start;width:100%}
 }
+
+/* 2026 premium visual system */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+:root{--font-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--font-display:"Manrope","Inter",ui-sans-serif,sans-serif}
+html,body,#root{font-family:var(--font-ui)!important}
+button,input,textarea,select{font-family:inherit!important}
+h1,h2,h3,h4,.brand b,.game-brand b,.auth-copy h1,.setup-inner h1,.mode-card strong,.profile-title h2,.topbar-time-status b,.topbar-wealth,.company-modal h2,.company-modal h3{font-family:var(--font-display)!important;letter-spacing:-.035em!important}
+.auth-copy h1,.setup-inner h1{font-weight:700!important}
+.auth-panel,.setup-inner{max-width:1180px}
+.auth-screen{background:radial-gradient(circle at 78% 35%,rgba(72,160,178,.12),transparent 28%),radial-gradient(circle at 18% 70%,rgba(71,91,151,.10),transparent 25%),#050c12!important}
+.auth-panel{padding:56px clamp(30px,6vw,100px)!important}
+.auth-copy{margin:78px 0 35px!important}
+.auth-copy h1{font-size:clamp(48px,5.2vw,76px)!important}
+.game-topbar{height:82px!important;padding:0 18px!important;gap:12px!important;background:rgba(5,14,20,.94)!important;backdrop-filter:blur(18px)!important}
+.game-brand{width:52px!important;min-width:52px!important;padding:0!important;justify-content:center!important}
+.game-brand>span{width:42px!important;height:42px!important;border-radius:12px!important;font-family:var(--font-display)!important;font-size:12px!important}
+.game-brand>div{display:none!important}
+.game-command-deck{gap:4px!important;justify-content:flex-start!important;min-width:0!important}
+.game-command-deck button{min-width:66px!important;width:66px!important;height:58px!important;padding:5px 4px!important;border-radius:10px!important;font-size:9px!important}
+.nav-glyph{font-size:14px!important}.nav-label{overflow:hidden;text-overflow:ellipsis;max-width:62px}
+.game-right{gap:7px!important}.game-right .topbar-time-controls{transform:none!important}.topbar-time-status{min-width:108px!important}.topbar-time-status span{font-size:7px!important}.topbar-time-status b{font-size:12px!important}.topbar-time-status em{font-size:7px!important}.time-main{padding:7px 9px!important}.time-main span{display:none!important}.time-speed-group button{padding:7px 6px!important}.topbar-wealth{font-size:11px!important}
+.game-main{width:min(1740px,calc(100% - 28px))!important;margin:0 auto!important;padding:24px 0 60px!important}
+.game-heading h1{font-family:var(--font-display)!important;font-weight:700!important}
+.day-button,.primary,.secondary-action,.takeover-button{font-family:var(--font-display)!important}
+.takeover-explainer{margin:14px 0;padding:12px 14px;border:1px solid rgba(222,174,91,.22);background:rgba(130,88,30,.08);border-radius:10px;display:grid;gap:4px}.takeover-explainer b{font:800 9px var(--font-display);letter-spacing:.12em;color:#e5c27a}.takeover-explainer span{font-size:11px;line-height:1.6;color:#8ea5ad}
+.polished-portrait{width:96px!important;height:112px!important;border-radius:14px!important;background:#10232c!important;overflow:hidden!important;box-shadow:0 16px 35px rgba(0,0,0,.28)!important}.polished-portrait svg{width:100%;height:100%;display:block}
+.candle-terminal svg{height:270px!important}.candle-terminal{padding:16px!important}.candle line{stroke-width:.8!important}.candle rect{rx:0!important}.candle.up line,.candle.up rect{fill:#6bd8a7!important;stroke:#6bd8a7!important}.candle.down line,.candle.down rect{fill:#e97982!important;stroke:#e97982!important}
+.candle-terminal .grid-line{stroke:rgba(160,190,198,.12)!important;stroke-width:.7!important}
+/* fictional flags: deliberately non-national, distinct visual identities */
+.flag{box-shadow:0 5px 14px rgba(0,0,0,.22)!important;border:1px solid rgba(255,255,255,.14)!important}
+.flag-slavoriya{background:linear-gradient(145deg,#183c58 0 30%,#d2a64a 30% 46%,#e6ece5 46% 58%,#8f2e42 58% 100%)!important}.flag-slavoriya i:before{width:15px!important;height:15px!important;border:2px solid #e6ece5!important;background:#183c58!important;transform:rotate(45deg)!important;left:7px!important;top:7px!important}.flag-slavoriya i:after{width:5px!important;height:5px!important;background:#d2a64a!important;left:12px!important;top:12px!important}
+.flag-lirania{background:linear-gradient(160deg,#321d4f 0 36%,#167f82 36% 68%,#d7b45a 68% 100%)!important}.flag-lirania i:before{width:20px!important;height:10px!important;border:2px solid #f4eee0!important;border-radius:50%!important;left:11px!important;top:9px!important;transform:rotate(-12deg)!important}.flag-lirania i:after{width:6px!important;height:6px!important;background:#d7b45a!important;border-radius:50%!important;left:18px!important;top:11px!important}
+.flag-darvast{background:linear-gradient(25deg,#162b3d 0 30%,#a95c32 30% 57%,#d3b24d 57% 72%,#182d3f 72%)!important}.flag-darvast i:before{left:8px!important;top:5px!important;width:17px!important;height:17px!important;background:transparent!important;border:2px solid #d3b24d!important;border-radius:50%!important}.flag-darvast i:after{left:15px!important;top:12px!important;width:5px!important;height:5px!important;background:#d3b24d!important;border-radius:1px!important;transform:rotate(45deg)!important}
+.flag-estraviya{background:linear-gradient(135deg,#123d46 0 34%,#5a3c70 34% 56%,#c98d48 56% 100%)!important}.flag-estraviya i:before{left:17px!important;top:6px!important;width:11px!important;height:20px!important;border:2px solid #d8eee7!important;border-radius:8px 8px 3px 3px!important;transform:none!important}.flag-estraviya i:after{left:21px!important;top:10px!important;width:4px!important;height:12px!important;background:#d8eee7!important;border-radius:2px!important}
+.flag-saverniya{background:linear-gradient(155deg,#284d39 0 40%,#d2aa52 40% 60%,#7c3d3c 60% 100%)!important}.flag-saverniya i:before{left:8px!important;top:6px!important;width:15px!important;height:15px!important;border:2px solid #eee8d9!important;border-radius:50%!important}.flag-saverniya i:after{left:14px!important;top:12px!important;width:5px!important;height:5px!important;background:#eee8d9!important;clip-path:polygon(50% 0,62% 36%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 36%)!important}
+@media(max-width:1250px){.game-command-deck button{min-width:61px!important;width:61px!important}.game-right .topbar-time-status{display:none}.topbar-wealth{display:none!important}}
+@media(max-width:900px){.game-topbar{height:72px!important}.game-brand{display:none!important}.game-command-deck{width:100%!important}.game-command-deck button{min-width:62px!important;width:62px!important}.game-main{width:min(100% - 20px,1740px)!important}}
