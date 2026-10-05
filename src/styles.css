@@ -3058,3 +3058,10 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{width:0!imp
  .game-topbar{height:76px!important}.game-brand{display:none!important}.game-command-deck button{min-width:64px!important;height:54px!important;font-size:8px!important}
  .nav-glyph{font-size:16px!important}.empire-steps{grid-template-columns:1fr}.empire-how{display:grid}.empire-score{min-width:78px}
 }
+
+.exchange-safe-actions>div{display:flex;gap:8px;flex-wrap:wrap}
+.exchange-safe-actions button,.secondary-action,.primary.small{min-width:142px!important;height:42px!important;padding:0 14px!important;border-radius:9px!important;font-size:11px!important;font-weight:800!important}
+.exchange-safe-actions button{border:1px solid rgba(255,255,255,.10)!important;background:#10171d!important;color:#dce5e7!important}
+.exchange-safe-actions button:hover{border-color:rgba(41,222,153,.35)!important;transform:translateY(-1px)!important}
+.exchange-safe-actions .primary.small{background:#29de99!important;color:#06120d!important;border-color:#29de99!important}
+.exchange-safe-actions .secondary-action{background:#111922!important;color:#cdd9dc!important}
