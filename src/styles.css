@@ -1982,3 +1982,27 @@ body{overflow-x:hidden}
 }
 .exchange-terminal-root button{cursor:pointer!important}
 .exchange-terminal-root .exchange-company:disabled{opacity:.5}
+
+/* Market navigation: Биржа is a normal tab, not a permanently tinted item. */
+.game-sidebar>.exchange-side:not(.side-active){color:#8e9ab2!important;background:transparent!important;border-left-color:transparent!important}
+.game-sidebar>.exchange-side.side-active{background:linear-gradient(90deg,rgba(67,230,255,.10),rgba(155,124,255,.08))!important;color:#fff!important;border-left-color:rgba(67,230,255,.32)!important}
+/* Clean flags: use the country bands only, without decorative circles/diamonds. */
+.flag i,.flag i:before,.flag i:after{display:none!important}
+/* Exchange terminal controls and dossier. */
+.exchange-time-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.exchange-time-controls button{border:1px solid rgba(130,180,191,.18);background:rgba(255,255,255,.025);color:#819aa4;border-radius:7px;padding:7px 9px;font-size:9px}
+.exchange-time-controls button.active,.exchange-time-controls button:hover{color:#e8fbfd;border-color:rgba(104,213,224,.42);background:rgba(86,204,216,.09)}
+.exchange-time-controls span{display:block;width:100%;text-align:right;color:#6f8994;font:800 9px "Space Grotesk";letter-spacing:.08em;margin-top:3px}
+.exchange-calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 0 14px}
+.exchange-calendar>div,.company-report-card,.exchange-company-dossier>div{border:1px solid rgba(132,185,196,.10);background:rgba(255,255,255,.018);border-radius:10px;padding:12px}
+.exchange-calendar span,.company-report-card>span,.exchange-company-dossier span{display:block;color:#718995;font-size:8px;letter-spacing:.12em;font-weight:800}
+.exchange-calendar b{display:block;margin-top:6px;font:800 14px "Space Grotesk"}
+.exchange-calendar small{display:block;margin-top:5px;color:#617b86;font-size:9px}
+.company-report-card{margin-top:12px}
+.company-report-card h3{margin:7px 0;font:800 17px "Manrope"}
+.company-report-card p{margin:0;color:#718995;font-size:10px;line-height:1.65}
+.company-report-card>div{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.company-report-card>div b{padding:7px 9px;border-radius:7px;background:rgba(255,255,255,.025);font:700 9px "Space Grotesk"}
+.exchange-company-dossier{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.exchange-company-dossier p{margin:7px 0 0;color:#718995;font-size:9px;line-height:1.55}
+@media(max-width:800px){.exchange-calendar,.exchange-company-dossier{grid-template-columns:1fr}.exchange-time-controls{justify-content:flex-start}.exchange-time-controls span{text-align:left}}
