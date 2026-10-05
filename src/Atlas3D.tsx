@@ -543,7 +543,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const cp = project(worldFromGeo(capitalGeo[country.id]));
         if (label) {
           label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
-          label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0";
+          label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0.62";
         }
         if (capital) {
           capital.style.transform = `translate3d(${cp.x}px,${cp.y}px,0) translate(-50%,-50%)`;
