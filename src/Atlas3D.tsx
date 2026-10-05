@@ -689,6 +689,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         car.userData.roadT=(i*0.071)%1;
         scene.add(car);
       }
+      for(let i=0;i<Math.min(36,roadCurves.length);i++){const walker=makePerson(0,0,.7+(i%3)*.08);walker.userData.walkCurve=roadCurves[i];walker.userData.walkT=(i*.137)%1;scene.add(walker)}
       // Pedestrians and parking clusters stay close to built-up districts.
       citySites.slice(0,Math.min(cityProfile.people,citySites.length)).forEach((geo,i)=>{
         const p=worldFromGeo(geo);
@@ -920,12 +921,19 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       raf = requestAnimationFrame(render);
       scene.traverse((obj)=>{
         const curve=obj.userData.roadCurve as THREE.CatmullRomCurve3|undefined;
+        const walkCurve=obj.userData.walkCurve as THREE.CatmullRomCurve3|undefined;
         if(curve){
           obj.userData.roadT=(obj.userData.roadT+0.0009)%1;
           const p=curve.getPointAt(obj.userData.roadT);
           const ahead=curve.getPointAt((obj.userData.roadT+0.01)%1);
           obj.position.set(p.x,terrainHeight(p.x,p.z)+.11,p.z);
           obj.lookAt(ahead.x,terrainHeight(ahead.x,ahead.z)+.11,ahead.z);
+        }else if(walkCurve){
+          obj.userData.walkT=(obj.userData.walkT+0.00032)%1;
+          const p=walkCurve.getPointAt(obj.userData.walkT);
+          const ahead=walkCurve.getPointAt((obj.userData.walkT+0.015)%1);
+          obj.position.set(p.x,terrainHeight(p.x,p.z)+.045,p.z);
+          obj.lookAt(ahead.x,terrainHeight(ahead.x,ahead.z)+.045,ahead.z);
         }
       });
       updateOverlay();
