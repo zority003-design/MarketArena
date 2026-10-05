@@ -177,7 +177,8 @@ function isLand(u: number, v: number) {
 
 function makeTerrain(selectedId?: string) {
   const nx = 150, nz = 108;
-  const positions: number[] = [];  const colors: number[] = [];
+  const positions: number[] = [];
+  const colors: number[] = [];
   const indices: number[] = [];
 
   for (let z = 0; z <= nz; z += 1) {
@@ -356,7 +357,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     if (!host || !overlay) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#062536");    scene.fog = new THREE.Fog("#062536", 25, 48);
+    scene.background = new THREE.Color("#062536");
+    scene.fog = new THREE.Fog("#062536", 25, 48);
 
     const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 100);
     const selectedPoly = countryPolygons[selected];
@@ -535,7 +537,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const capital = capitalRefs.current[country.id];
         const lp = project(worldFromGeo(labelGeo[country.id]));
         const cp = project(worldFromGeo(capitalGeo[country.id]));
-        if (label) {          label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
+        if (label) {
+          label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
           label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0";
         }
         if (capital) {
@@ -715,3 +718,25 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
               <i /><span>{country.capital}</span>
             </button>
           ))}
+          {showCompanies && selectedCountry?.companies.map((company) => (
+            <button
+              key={company.ticker}
+              ref={(el) => { companyRefs.current[company.ticker] = el; }}
+              className="atlas-company-marker"
+              type="button"
+              onClick={() => onCompanyRef.current?.(company)}
+            >
+              <b>{company.ticker}</b>
+            </button>
+          ))}
+        </div>
+        <div className="atlas-3d-watermark">WEBGL · TERRAIN MESH · REAL SHADOWS</div>
+      </div>
+      <div className="map-key">
+        <span><b className="dot" /> столица</span>
+        <span><b className="mount" /> физический рельеф</span>
+        <span><b className="company-dot" /> компания · нажми</span>
+      </div>
+    </div>
+  );
+}
