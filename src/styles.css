@@ -2028,3 +2028,81 @@ body{overflow-x:hidden}
 /* Investor drivers are the primary country decision factor. */
 .country-detail-grid .investor-priority{grid-column:span 1;min-height:150px}
 .country-detail-grid .investor-priority>span{font-size:11px;color:#d7e7eb;letter-spacing:.12em}
+
+
+/* Game-first navigation and safe exchange terminal */
+.game-topbar nav{display:none!important}
+.game-topbar{grid-template-columns:auto 1fr auto!important}
+.game-right{justify-content:flex-end!important}
+.game-right>span:not(.offline-pill),.game-right>b{display:none!important}
+.game-right .offline-pill{margin-left:auto}
+.game-clock-card{margin:12px 10px 14px;padding:12px;border:1px solid #233f4a;border-radius:8px;background:linear-gradient(145deg,#0b1e28,#08151d);box-shadow:inset 0 1px 0 #ffffff08}
+.game-clock-card>span{display:block;font-size:8px;letter-spacing:.15em;font-weight:800;color:#68828d}
+.game-clock-card>b{display:block;margin-top:5px;font:700 24px "Space Grotesk";color:#eaf5f6}
+.game-clock-card>small{display:block;margin-top:2px;color:#708995;font-size:9px}
+.game-clock-card>div{display:flex;gap:5px;margin-top:10px}
+.game-clock-card button{border:1px solid #284854;background:#0b202a;color:#9db4bd;border-radius:5px;padding:5px 7px;font-size:9px;font-weight:800}
+.game-clock-card button:hover,.game-clock-card button:focus-visible{border-color:#69a8b7;color:#eaf5f6}
+.exchange-safe{display:grid;gap:14px}
+.exchange-safe-top{display:flex;justify-content:space-between;gap:20px;padding:18px;border:1px solid #263f4b;border-radius:10px;background:linear-gradient(145deg,#0b1d27,#08151d)}
+.exchange-safe-top h2{margin:7px 0 4px;font:700 28px "Space Grotesk";letter-spacing:-.04em}
+.exchange-safe-top p{margin:0;color:#79919b;font-size:11px}
+.exchange-safe-clock{min-width:210px;text-align:right}
+.exchange-safe-clock>b{display:block;font:800 22px "Space Grotesk"}
+.exchange-safe-clock>span{display:block;color:#718994;font-size:9px;margin:3px 0 8px}
+.exchange-safe-clock button,.exchange-safe-marketline button,.exchange-safe-actions button{border:1px solid #2b4b57;background:#0b202a;border-radius:6px;padding:8px 10px;font-size:10px;font-weight:800}
+.exchange-safe-clock button.active{background:#d7edf1;color:#07151c;border-color:#d7edf1}
+.exchange-safe-marketline{display:flex;align-items:center;gap:18px;padding:10px 12px;border:1px solid #203843;border-radius:7px;background:#091821;color:#6f8791;font-size:10px}
+.exchange-safe-marketline b{color:#b9dce2}
+.exchange-safe-marketline button{margin-left:auto;color:#d6edf0}
+.exchange-safe-companies{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.exchange-safe-companies button{min-width:0;text-align:left;padding:11px;border:1px solid #213b46;border-radius:8px;background:#091821;color:#9ab0b8;display:grid;gap:4px}
+.exchange-safe-companies button:hover,.exchange-safe-companies button.selected{border-color:#63a9ba;background:#0d222c}
+.exchange-safe-companies b{font:800 11px "Space Grotesk";color:#dff4f6}
+.exchange-safe-companies span{font-size:11px;color:#d0dfe3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exchange-safe-companies small{font-size:8px;color:#6e8791}
+.exchange-safe-companies strong{font:700 14px "Space Grotesk";color:#eaf6f7}
+.exchange-safe-companies em{font-style:normal;font-size:9px}
+.exchange-safe-focus{border:1px solid #294651;border-radius:10px;background:linear-gradient(145deg,#0a1a23,#07131a);overflow:hidden}
+.exchange-safe-focushead{display:flex;justify-content:space-between;align-items:flex-start;padding:20px;border-bottom:1px solid #1e3742}
+.exchange-safe-focushead h2{margin:6px 0 4px;font:700 30px "Space Grotesk";letter-spacing:-.045em}
+.exchange-safe-focushead p{margin:0;color:#758d97;font-size:11px}
+.exchange-safe-focushead>div:last-child{text-align:right}
+.exchange-safe-focushead>div:last-child>b{display:block;font:800 25px "Space Grotesk"}
+.exchange-safe-focushead>div:last-child>strong{display:block;margin-top:4px;font-size:12px}
+.exchange-safe-chart{padding:16px 18px 8px}
+.exchange-safe-chart svg{display:block;width:100%;height:260px;background:linear-gradient(180deg,#091a23,#07131a);border:1px solid #1c343e;border-radius:7px;color:#63d1df}
+.chart-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#728b95;font-size:9px;letter-spacing:.1em}
+.chart-title b{font:700 16px "Space Grotesk";color:#e4f2f4;letter-spacing:0}
+.exchange-safe-chart .chart-range-tabs{margin-top:8px}
+.exchange-safe-metrics{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #1c343e;border-bottom:1px solid #1c343e}
+.exchange-safe-metrics div{padding:13px 16px;border-right:1px solid #1c343e}
+.exchange-safe-metrics div:last-child{border-right:0}
+.exchange-safe-metrics span,.exchange-safe-report span,.exchange-safe-dossier span{display:block;color:#66818c;font-size:8px;letter-spacing:.12em;font-weight:800}
+.exchange-safe-metrics b{display:block;margin-top:5px;font:700 14px "Space Grotesk"}
+.exchange-safe-report{margin:14px 18px;padding:15px;border:1px solid #2a4651;border-radius:8px;background:#0a1b24}
+.exchange-safe-report>div:first-child{display:flex;justify-content:space-between;gap:10px}
+.exchange-safe-report>div:first-child>b{font-size:9px;color:#78d5a8}
+.exchange-safe-report h3{margin:8px 0 5px;font:700 17px "Space Grotesk"}
+.exchange-safe-report p{margin:0;color:#91a5ad;font-size:11px;line-height:1.65}
+.exchange-safe-report>div:last-child{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.exchange-safe-report strong{padding:7px 9px;border:1px solid #213d48;border-radius:5px;background:#08161e;font:600 10px "Space Grotesk"}
+.exchange-safe-dossier{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1c343e;border-top:1px solid #1c343e}
+.exchange-safe-dossier>div{background:#091821;padding:13px 15px}
+.exchange-safe-dossier p{margin:6px 0 0;color:#8ca2aa;font-size:10px;line-height:1.5}
+.exchange-safe-actions{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 18px;background:#08151d}
+.exchange-safe-actions>span{color:#849aa3;font-size:10px}
+.exchange-safe-actions b{color:#dcecef}
+.exchange-safe-actions>div{display:flex;gap:8px}
+.exchange-safe-actions button.primary{min-height:40px}
+@media(max-width:900px){
+  .exchange-safe-companies{grid-template-columns:repeat(2,1fr)}
+  .exchange-safe-metrics,.exchange-safe-dossier{grid-template-columns:repeat(2,1fr)}
+  .exchange-safe-marketline{flex-wrap:wrap}
+}
+@media(max-width:640px){
+  .exchange-safe-top,.exchange-safe-focushead,.exchange-safe-actions{display:grid}
+  .exchange-safe-clock,.exchange-safe-focushead>div:last-child{text-align:left}
+  .exchange-safe-companies{grid-template-columns:1fr}
+  .exchange-safe-metrics,.exchange-safe-dossier{grid-template-columns:1fr}
+}
