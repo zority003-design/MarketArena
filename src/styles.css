@@ -2024,3 +2024,7 @@ body{overflow-x:hidden}
 .premium-company-marker b{color:#70e7f7!important;font:800 10px "Space Grotesk"!important;letter-spacing:.08em}
 .atlas-3d .atlas-head span:last-child{font-size:0}
 .atlas-3d .atlas-head span:last-child:after{content:"ПЕРЕТАСКИВАНИЕ · МАСШТАБ";font-size:9px}
+
+/* Investor drivers are the primary country decision factor. */
+.country-detail-grid .investor-priority{grid-column:span 1;min-height:150px}
+.country-detail-grid .investor-priority>span{font-size:11px;color:#d7e7eb;letter-spacing:.12em}
