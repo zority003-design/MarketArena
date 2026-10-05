@@ -549,17 +549,20 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         scene.add(makeModernBuilding(p.x+.02,p.z-.48,.62,index+2));
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
-      for(let i=0;i<48;i++){
+      const citySites:GeoPoint[]=[];
+      for(let i=0;i<90&&citySites.length<48;i++){
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
         const margin=pointInPolygon(u+.9,v,selectedPoly)&&pointInPolygon(u-.9,v,selectedPoly)&&pointInPolygon(u,v+.9,selectedPoly)&&pointInPolygon(u,v-.9,selectedPoly);
-        if(inside&&margin){
+        const spaced=citySites.every(([su,sv])=>Math.hypot(u-su,v-sv)>3.2);
+        if(inside&&margin&&spaced){
+          citySites.push([u,v]);
           const p=worldFromGeo([u,v]);
-          const type=i%7;
-          const scale=.34+hash(i*4.2,selectedCountry.id.length)*.48;
+          const type=citySites.length%7;
+          const scale=.32+hash(i*4.2,selectedCountry.id.length)*.42;
           scene.add(makeCityBuilding(p.x,p.z,scale,type));
-          if(i%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
+          if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
         }
       }
       for (let i = 0; i < 170; i += 1) {
