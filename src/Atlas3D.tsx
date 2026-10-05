@@ -351,11 +351,70 @@ function makeBuilding(x: number, z: number, scale = 1, industrial = false) {
   return group;
 }
 
-function makeRoad(a: GeoPoint, b: GeoPoint) {
+function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   const p1 = worldFromGeo(a), p2 = worldFromGeo(b);
-  p1.y = terrainHeight(p1.x, p1.z) + 0.075;
-  p2.y = terrainHeight(p2.x, p2.z) + 0.075;
-  return makeLine([p1, p2], 0xb39d7a, 0.72, 2);
+  const dx = p2.x - p1.x, dz = p2.z - p1.z;
+  const len = Math.max(0.1, Math.hypot(dx, dz));
+  const nx = -dz / len, nz = dx / len;
+  const mid = new THREE.Vector3(
+    (p1.x + p2.x) / 2 + nx * bend * len,
+    0,
+    (p1.z + p2.z) / 2 + nz * bend * len
+  );
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(p1.x, terrainHeight(p1.x,p1.z)+0.078, p1.z),
+    new THREE.Vector3(mid.x, terrainHeight(mid.x,mid.z)+0.078, mid.z),
+    new THREE.Vector3(p2.x, terrainHeight(p2.x,p2.z)+0.078, p2.z)
+  ]);
+  return curve;
+}
+function makeRoad(a: GeoPoint, b: GeoPoint, bend = 0.12) {
+  const curve = roadCurve(a,b,bend);
+  return makeLine(curve.getPoints(18), 0xb9a37f, 0.72, 2);
+}
+function makeCar(curve: THREE.CatmullRomCurve3, scale = 1) {
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.13*scale,0.055*scale,0.24*scale),
+    new THREE.MeshStandardMaterial({color:"#d8e3e6",roughness:.7})
+  );
+  body.position.y=.035*scale;
+  const cabin = new THREE.Mesh(
+    new THREE.BoxGeometry(.09*scale,.045*scale,.11*scale),
+    new THREE.MeshStandardMaterial({color:"#486b78",roughness:.45,metalness:.15})
+  );
+  cabin.position.set(0,.075*scale,-.01*scale);
+  group.add(body,cabin);
+  group.userData.roadCurve=curve;
+  group.userData.roadT=Math.random();
+  return group;
+}
+function makeModernBuilding(x:number,z:number,scale=1,type=0) {
+  const group=new THREE.Group();
+  const tower=type%3===0;
+  const industrial=type%4===3;
+  const width=(industrial?.48:tower?.28:.34)*scale;
+  const depth=(industrial?.36:tower?.28:.30)*scale;
+  const height=(industrial?.26:tower?(0.62+(type%4)*.12):.32)*scale;
+  const body=new THREE.Mesh(new THREE.BoxGeometry(width,height,depth),new THREE.MeshStandardMaterial({color:industrial?"#65777c":tower?"#6f8490":"#7e8f91",roughness:.7,metalness:industrial?.18:.06}));
+  body.position.y=height/2;
+  group.add(body);
+  if(tower){
+    const glass=new THREE.Mesh(new THREE.BoxGeometry(width*.72,height*.78,depth*.76),new THREE.MeshStandardMaterial({color:"#3f6773",roughness:.32,metalness:.18,emissive:"#0a2027",emissiveIntensity:.18,transparent:true,opacity:.88}));
+    glass.position.y=height*.52; group.add(glass);
+  } else {
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(width*1.05,.045*scale,depth*1.05),new THREE.MeshStandardMaterial({color:industrial?"#39494e":"#515d62",roughness:.8}));
+    roof.position.y=height+.025*scale; group.add(roof);
+  }
+  if(industrial){
+    for(let i=0;i<2;i++){
+      const tank=new THREE.Mesh(new THREE.CylinderGeometry(.06*scale,.06*scale,.18*scale,10),new THREE.MeshStandardMaterial({color:"#9ba9a8",roughness:.65,metalness:.22}));
+      tank.position.set((i-.5)*.17*scale,.15*scale,.18*scale); group.add(tank);
+    }
+  }
+  group.position.set(x,terrainHeight(x,z)+.025,z);
+  group.castShadow=true; group.receiveShadow=true;
+  return group;
 }
 
 function makeSnowCap(geo: GeoPoint, size: number) {
@@ -493,14 +552,23 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     if (selectedCountry) {
       const capital = capitalGeo[selectedCountry.id];
       const selectedPoly = countryPolygons[selectedCountry.id];
-      selectedCountry.companies.forEach((company, index) => {
-        const geo = safeCompanyGeo(selectedCountry.id, company);
-        scene.add(makeRoad(capital, geo));
-        const p = worldFromGeo(geo);
-        scene.add(makeTree(p.x + 0.28, p.z + 0.18, 0.55 + (index % 3) * 0.08));
-        scene.add(makeTree(p.x - 0.22, p.z + 0.26, 0.45 + (index % 2) * 0.1));
-        scene.add(makeBuilding(p.x + 0.34, p.z - 0.18, 0.72 + (index % 3) * 0.08, index % 3 === 0));
-        scene.add(makeBuilding(p.x - 0.38, p.z + 0.12, 0.58 + (index % 2) * 0.08, index % 4 === 0));
+      const companyGeos = selectedCountry.companies.map(company => safeCompanyGeo(selectedCountry.id, company));
+      const roadCurves: THREE.CatmullRomCurve3[] = [];
+      if(companyGeos.length){
+        const firstCurve=roadCurve(capital,companyGeos[0],.10); roadCurves.push(firstCurve); scene.add(makeLine(firstCurve.getPoints(22),0xb9a37f,.72,2));
+      }
+      companyGeos.forEach((geo,index)=>{
+        if(index>0){
+          const previous=companyGeos[index-1];
+          const bend=(hash(index*4.3, selectedCountry.id.length)-.5)*.42;
+          const curve=roadCurve(previous,geo,bend); roadCurves.push(curve); scene.add(makeLine(curve.getPoints(22),0xb9a37f,.72,2));
+        }
+        const p=worldFromGeo(geo);
+        scene.add(makeTree(p.x+.28,p.z+.18,.55+(index%3)*.08));
+        scene.add(makeTree(p.x-.22,p.z+.26,.45+(index%2)*.1));
+        scene.add(makeModernBuilding(p.x+.34,p.z-.18,.85+(index%3)*.10,index));
+        scene.add(makeModernBuilding(p.x-.38,p.z+.12,.68+(index%2)*.12,index+1));
+        scene.add(makeModernBuilding(p.x+.02,p.z-.48,.62,index+2));
       });
       for (let i = 0; i < 120; i += 1) {
         const u = 18 + hash(i * 1.73, selectedCountry.id.length * 2.1) * 70;
@@ -510,10 +578,11 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           scene.add(makeTree(p.x, p.z, 0.38 + hash(i, 4) * 0.34));
         }
       }
+      for(let i=0;i<Math.min(5,roadCurves.length);i++){ const car=makeCar(roadCurves[i],.9+(i%2)*.15); scene.add(car); }
       const capitalPoint = worldFromGeo(capital);
-      scene.add(makeBuilding(capitalPoint.x + 0.42, capitalPoint.z + 0.22, 1.2, false));
-      scene.add(makeBuilding(capitalPoint.x - 0.46, capitalPoint.z - 0.18, 1.35, false));
-      scene.add(makeBuilding(capitalPoint.x + 0.02, capitalPoint.z - 0.52, 1.05, true));
+      scene.add(makeModernBuilding(capitalPoint.x+.42,capitalPoint.z+.22,1.45,0));
+      scene.add(makeModernBuilding(capitalPoint.x-.46,capitalPoint.z-.18,1.65,1));
+      scene.add(makeModernBuilding(capitalPoint.x+.02,capitalPoint.z-.52,1.25,3));
     } else {
       countries.forEach((country) => {
         const poly = countryPolygons[country.id];
@@ -718,6 +787,16 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     let raf = 0;
     const render = () => {
       raf = requestAnimationFrame(render);
+      scene.traverse((obj)=>{
+        const curve=obj.userData.roadCurve as THREE.CatmullRomCurve3|undefined;
+        if(curve){
+          obj.userData.roadT=(obj.userData.roadT+0.0009)%1;
+          const p=curve.getPointAt(obj.userData.roadT);
+          const ahead=curve.getPointAt((obj.userData.roadT+0.01)%1);
+          obj.position.set(p.x,terrainHeight(p.x,p.z)+.11,p.z);
+          obj.lookAt(ahead.x,terrainHeight(ahead.x,ahead.z)+.11,ahead.z);
+        }
+      });
       updateOverlay();
       renderer.render(scene, camera);
     };
@@ -754,7 +833,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
             <button
               key={country.id}
               ref={(el) => { labelRefs.current[country.id] = el; }}
-              className={`atlas-country-label ${selected === country.id ? "selected" : ""}`}
+              className={`atlas-country-label ${selected === country.id ? "selected" : ""} ${selected === country.id ? "" : "muted"}`}
               onClick={() => onSelectRef.current(country.id)}
               type="button"
             >
@@ -777,7 +856,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
             <button
               key={company.ticker}
               ref={(el) => { companyRefs.current[company.ticker] = el; }}
-              className="atlas-company-marker"
+              className="atlas-company-marker premium-company-marker"
               type="button"
               onClick={() => onCompanyRef.current?.(company)}
             >
