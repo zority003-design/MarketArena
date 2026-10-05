@@ -29,4 +29,112 @@
 <g fill="#fff2cf" stroke="#142b2e" stroke-width="2"><circle cx="110" cy="120" r="3"/><circle cx="220" cy="145" r="3"/><circle cx="352" cy="115" r="3"/><circle cx="230" cy="248" r="3"/><circle cx="337" cy="235" r="3"/></g>
 <g fill="#e8ebd6" font-family="Georgia,serif" font-size="8"><text x="116" y="115">Элион</text><text x="226" y="140">Велиград</text><text x="358" y="110">Кадар</text><text x="236" y="243">Селена</text><text x="343" y="230">Ривен</text></g>
 <g transform="translate(460 28)" fill="none" stroke="#f2ecd2"><circle r="15"/><path d="M0-12L3 0 0 12-3 0zM-12 0L0-3 12 0 0 3z" fill="#f2ecd2"/></g><text x="460" y="8" text-anchor="middle" fill="#f2ecd2" font-family="Georgia,serif" font-size="7">N</text>
+<!-- PREMIUM PHYSICAL ATLAS OVERLAY -->
+<g id="premiumAtlas">
+<defs>
+<linearGradient id="pOcean" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#0a4966"/><stop offset=".5" stop-color="#07354d"/><stop offset="1" stop-color="#021a2a"/></linearGradient>
+<radialGradient id="pOceanLight" cx=".48" cy=".4" r=".72"><stop stop-color="#4f9bad" stop-opacity=".28"/><stop offset=".65" stop-color="#0a3449" stop-opacity="0"/><stop offset="1" stop-color="#00151f" stop-opacity=".6"/></radialGradient>
+<linearGradient id="pLand" x1=".15" y1="0" x2=".88" y2="1"><stop stop-color="#a7b783"/><stop offset=".25" stop-color="#789568"/><stop offset=".58" stop-color="#4f704f"/><stop offset="1" stop-color="#203a34"/></linearGradient>
+<linearGradient id="pDesert" x1=".2" y1="0" x2=".9" y2="1"><stop stop-color="#d5ad72"/><stop offset=".42" stop-color="#b17d4d"/><stop offset="1" stop-color="#654632"/></linearGradient>
+<pattern id="pGrain" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".7" fill="#fff" opacity=".13"/><circle cx="12" cy="11" r=".8" fill="#102e2b" opacity=".15"/><path d="M0 13l4-2 4 2 4-2 4 2" fill="none" stroke="#e5e8c9" stroke-opacity=".08"/></pattern>
+<pattern id="pForest" width="16" height="14" patternUnits="userSpaceOnUse"><path d="M8 1L3 8h3L2 13h12L10 8h3z" fill="#173d34" opacity=".58"/><path d="M8 4L5 9h2l-2 3h6L9 9h2z" fill="#315d47" opacity=".48"/></pattern>
+<filter id="pShadow" x="-25%" y="-25%" width="150%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dx="1" dy="7" result="o"/><feComponentTransfer><feFuncA type="linear" slope=".7"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="pRelief" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="23" result="n"/><feDiffuseLighting in="n" surfaceScale="4" diffuseConstant=".9" lighting-color="#fff" result="l"><feDistantLight azimuth="225" elevation="48"/></feDiffuseLighting><feComposite in="l" in2="SourceGraphic" operator="in" result="lit"/><feBlend in="SourceGraphic" in2="lit" mode="soft-light"/></filter>
+<path id="pContinent" d="M46 114C70 78 119 57 174 61C216 49 266 52 315 62C370 48 423 69 449 109C468 139 456 180 430 211C410 236 393 276 355 298C315 321 254 320 210 304C168 316 120 298 96 268C72 247 54 214 59 181C41 158 37 135 46 114Z"/>
+<clipPath id="pAll"><use href="#pContinent"/></clipPath>
+<clipPath id="pWest"><path d="M49 104C55 89 67 76 82 68C97 60 114 59 128 65L142 76L153 91L157 108L153 123L150 139L143 154L132 168L117 176L101 175L86 168L72 157L61 145L55 132L51 118Z"/></clipPath>
+<clipPath id="pNorth"><path d="M154 93C168 79 186 69 205 68C224 67 242 73 257 84L273 100L276 118L267 134L261 151L250 166L242 183L229 197L212 204L194 201L178 193L163 181L151 166L145 149L143 131L147 113Z"/></clipPath>
+<clipPath id="pEast"><path d="M276 101L293 84L314 73L337 68L360 70L382 79L402 92L419 108L430 126L431 145L424 163L414 178L400 191L382 201L363 207L344 203L326 195L309 184L294 174L281 159L272 143L268 126Z"/></clipPath>
+<clipPath id="pSouth"><path d="M149 188L166 195L184 201L203 200L221 196L240 198L258 207L272 220L281 236L285 253L282 270L274 286L263 300L249 310L232 315L214 312L196 304L180 294L166 282L156 268L150 251L146 233L142 216L140 201Z"/></clipPath>
+<clipPath id="pSE"><path d="M274 173L292 176L311 184L330 194L349 205L366 218L380 232L388 247L390 263L385 279L376 293L362 304L347 309L330 308L314 303L298 296L284 286L271 274L262 260L256 245L255 228L257 212L252 198L256 185Z"/></clipPath>
+</defs>
+
+<!-- new ocean plate, hiding the previous flat artwork -->
+<rect width="500" height="350" fill="url(#pOcean)"/>
+<rect width="500" height="350" fill="url(#pOceanLight)"/>
+<g fill="none" stroke="#b4dce1" stroke-opacity=".09" stroke-width=".8">
+<path d="M8 52C72 30 127 50 188 33S303 45 365 26 451 39 494 17"/>
+<path d="M5 79C72 56 127 74 188 56S303 69 365 49 452 63 497 42"/>
+<path d="M3 278C71 253 125 270 188 249S302 266 364 243 446 259 497 237"/>
+<path d="M9 309C76 284 126 301 185 280S304 296 361 273 444 288 494 269"/>
+</g>
+
+<!-- physical continent plate with edge thickness -->
+<use href="#pContinent" fill="#001820" opacity=".82" transform="translate(1.5 8)" filter="url(#pShadow)"/>
+<use href="#pContinent" fill="url(#pLand)" stroke="#eee9d2" stroke-opacity=".85" stroke-width="2.2" filter="url(#pRelief)"/>
+<use href="#pContinent" fill="none" stroke="#fff6d8" stroke-opacity=".25" stroke-width="5"/>
+
+<!-- biome zones -->
+<g clip-path="url(#pAll)">
+<rect x="35" y="45" width="430" height="280" fill="url(#pGrain)"/>
+<path d="M40 158C94 122 140 128 186 151S273 176 318 147S405 125 464 157L466 230C407 200 361 201 317 227S224 254 177 226S95 198 42 224Z" fill="#a0ad77" opacity=".28"/>
+<path d="M48 210C100 188 143 198 180 220S251 252 300 224S387 203 451 229L450 319H48Z" fill="#2e6049" opacity=".52"/>
+<path d="M270 100C318 74 375 76 431 111L436 180C397 162 363 166 328 185L285 166Z" fill="url(#pDesert)" opacity=".96"/>
+</g>
+
+<!-- dense forests -->
+<g clip-path="url(#pWest)"><rect x="46" y="108" width="112" height="75" fill="url(#pForest)" opacity=".8"/></g>
+<g clip-path="url(#pNorth)"><rect x="143" y="135" width="126" height="72" fill="url(#pForest)" opacity=".58"/></g>
+<g clip-path="url(#pSouth)"><rect x="143" y="238" width="145" height="84" fill="url(#pForest)" opacity=".9"/></g>
+<g clip-path="url(#pSE)"><rect x="258" y="218" width="140" height="90" fill="url(#pForest)" opacity=".45"/></g>
+
+<!-- mountain shadows / ranges -->
+<g fill="#243b37" stroke="#182b2d" stroke-width=".7" stroke-linejoin="round">
+<path d="M66 118l12-28 11 21 12-35 13 28 12-24 14 30 12-21 14 31 13-20 14 29 13-22 14 32 13-24 14 29 13-22 14 30 13-24 14 31" opacity=".94"/>
+<path d="M169 103l13-28 12 21 14-35 14 30 13-24 15 31 14-20 13 30 14-22 13 29 14-21 13 30" opacity=".9"/>
+<path d="M278 118l12-27 12 23 13-34 14 29 13-24 14 31 14-21 13 29 14-23 13 30 13-20 14 29" opacity=".9"/>
+</g>
+<g fill="none" stroke="#e7e7d4" stroke-width="2.25" stroke-linejoin="round">
+<path d="M66 118l12-28 11 21 12-35 13 28 12-24 14 30 12-21 14 31 13-20 14 29 13-22 14 32 13-24 14 29 13-22 14 30 13-24 14 31"/>
+<path d="M169 103l13-28 12 21 14-35 14 30 13-24 15 31 14-20 13 30 14-22 13 29 14-21 13 30"/>
+<path d="M278 118l12-27 12 23 13-34 14 29 13-24 14 31 14-21 13 29 14-23 13 30 13-20 14 29"/>
+</g>
+<g fill="#fffdf0"><path d="M91 77l-5 13 5-4 5 4zM121 88l-5 12 5-3 5 3zM195 65l-6 15 6-4 6 4zM231 73l-6 15 6-4 6 4zM313 80l-6 15 6-4 6 4zM347 91l-6 13 6-4 6 4zM389 100l-6 12 6-3 6 3z"/></g>
+
+<!-- hillshade / contour relief -->
+<g fill="none" stroke="#e0e3c4" stroke-opacity=".24" stroke-width=".75">
+<path d="M53 127C91 104 126 108 157 127S215 153 246 134S306 116 339 133S401 147 446 119"/>
+<path d="M51 147C90 122 124 127 155 146S214 173 248 153S308 136 341 154S402 168 448 143"/>
+<path d="M57 168C95 144 126 149 158 168S217 194 251 175S312 158 344 175S402 189 439 166"/>
+<path d="M64 190C98 170 127 173 160 191S217 213 251 195S310 179 345 196S402 208 430 190"/>
+<path d="M75 212C109 193 136 197 168 214S220 232 252 217S310 202 341 218S393 228 418 213"/>
+</g>
+
+<!-- river system with dark banks + bright water -->
+<g fill="none" stroke-linecap="round">
+<path d="M204 70C197 96 218 112 209 135S190 169 201 192S229 226 236 248S239 282 226 311" stroke="#315c61" stroke-width="4.6" opacity=".45"/>
+<path d="M204 70C197 96 218 112 209 135S190 169 201 192S229 226 236 248S239 282 226 311" stroke="#a9dce0" stroke-width="1.8" opacity=".98"/>
+<path d="M158 103C175 123 180 143 169 162S164 196 185 214S200 238 202 260" stroke="#b0dfe2" stroke-width="1.25" opacity=".8"/>
+<path d="M301 73C292 98 301 121 316 143S341 174 347 197S349 232 337 262" stroke="#a8dbe0" stroke-width="1.8" opacity=".92"/>
+<path d="M342 126C363 140 373 154 372 170S363 191 350 202" stroke="#b6e2e4" stroke-width="1.05" opacity=".78"/>
+<path d="M118 145C132 153 142 163 147 176S153 199 169 208" stroke="#b9e2e4" stroke-width="1.05" opacity=".7"/>
+</g>
+
+<!-- lakes -->
+<g filter="url(#pShadow)"><ellipse cx="143" cy="225" rx="25" ry="9" fill="#4b9db1" stroke="#c9e9e7" stroke-width=".8"/><ellipse cx="381" cy="216" rx="18" ry="7" fill="#4b9db1" stroke="#c9e9e7" stroke-width=".8"/><ellipse cx="270" cy="278" rx="12" ry="5" fill="#4b9db1" stroke="#c9e9e7" stroke-width=".7"/></g>
+
+<!-- political borders, coast bevel and subtle country separation -->
+<g fill="none" stroke="#f5efd7" stroke-opacity=".7" stroke-width="1.2">
+<path d="M154 93C168 79 186 69 205 68C224 67 242 73 257 84L273 100L276 118L267 134L261 151L250 166L242 183L229 197L212 204L194 201L178 193L163 181L151 166L145 149L143 131L147 113Z"/>
+<path d="M49 104C55 89 67 76 82 68C97 60 114 59 128 65L142 76L153 91L157 108L153 123L150 139L143 154L132 168L117 176L101 175L86 168L72 157L61 145L55 132L51 118Z"/>
+<path d="M276 101L293 84L314 73L337 68L360 70L382 79L402 92L419 108L430 126L431 145L424 163L414 178L400 191L382 201L363 207L344 203L326 195L309 184L294 174L281 159L272 143L268 126Z"/>
+<path d="M149 188L166 195L184 201L203 200L221 196L240 198L258 207L272 220L281 236L285 253L282 270L274 286L263 300L249 310L232 315L214 312L196 304L180 294L166 282L156 268L150 251L146 233L142 216L140 201Z"/>
+<path d="M274 173L292 176L311 184L330 194L349 205L366 218L380 232L388 247L390 263L385 279L376 293L362 304L347 309L330 308L314 303L298 296L284 286L271 274L262 260L256 245L255 228L257 212L252 198L256 185Z"/>
+</g>
+<use href="#pContinent" fill="none" stroke="#fff6d8" stroke-opacity=".72" stroke-width="1.7"/>
+
+<!-- cartographic labels -->
+<g font-family="Georgia,serif" text-anchor="middle" fill="#f6f0d9" stroke="#10282d" stroke-width="2.4" paint-order="stroke">
+<text x="103" y="146" font-size="9" letter-spacing="2.5">ЛИРАНИЯ</text>
+<text x="210" y="129" font-size="9" letter-spacing="2.5">СЛАВОРИЯ</text>
+<text x="355" y="139" font-size="9" letter-spacing="2.5">ДАРВАСТ</text>
+<text x="214" y="280" font-size="9" letter-spacing="2.5">ЭСТРАВИЯ</text>
+<text x="340" y="278" font-size="9" letter-spacing="2.5">САВЕРНИЯ</text>
+</g>
+<g fill="#fff2c9" stroke="#173036" stroke-width="1.8"><circle cx="110" cy="120" r="3.2"/><circle cx="220" cy="145" r="3.2"/><circle cx="352" cy="115" r="3.2"/><circle cx="230" cy="248" r="3.2"/><circle cx="337" cy="235" r="3.2"/></g>
+<g font-family="Georgia,serif" font-size="6.8" fill="#fff" stroke="#122a2d" stroke-width="1.6" paint-order="stroke"><text x="116" y="115">Элион</text><text x="226" y="140">Велиград</text><text x="358" y="110">Кадар</text><text x="236" y="243">Селена</text><text x="343" y="230">Ривен</text></g>
+
+<!-- compass -->
+<g transform="translate(466 30)" fill="none" stroke="#f3edd7"><circle r="17" stroke-opacity=".86"/><circle r="13" stroke-opacity=".25"/><path d="M0-12L4 0 0 12-4 0Z" fill="#f3edd7"/><path d="M-12 0L0-4 12 0 0 4Z" fill="#7faeb6" opacity=".72"/></g><text x="466" y="8" text-anchor="middle" fill="#f3edd7" font-family="Georgia,serif" font-size="7">N</text>
+</g>
 </svg>
