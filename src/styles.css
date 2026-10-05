@@ -586,3 +586,215 @@ button{cursor:pointer}
 .chart-range-tabs button{font-size:9px!important}
 .chart-range-tabs button.active{color:#dffcff!important;background:linear-gradient(180deg,rgba(67,230,255,.13),rgba(67,230,255,.045))!important}
 @media(max-width:700px){.live-market-tape{white-space:normal}.candle-terminal svg{height:220px!important}}
+
+
+/* MarketArena 3D atlas pass — October 2026 */
+.atlas-realistic,
+.country-map {
+  position:relative;
+  isolation:isolate;
+  perspective:1400px;
+  background:
+    radial-gradient(circle at 48% 38%,rgba(64,154,172,.18),transparent 42%),
+    linear-gradient(155deg,#071c2a 0%,#082f43 48%,#041521 100%) !important;
+}
+.atlas-realistic .atlas-world-svg,
+.country-map .country-atlas-svg {
+  transform:perspective(1400px) rotateX(1.8deg) rotateY(-1.2deg);
+  transform-origin:center center;
+  transform-box:view-box;
+  filter:saturate(.96) contrast(1.06) drop-shadow(0 24px 30px rgba(0,0,0,.42));
+}
+.atlas-realistic .world-country-group,
+.country-map .country-physical-detail {
+  filter:drop-shadow(0 10px 7px rgba(0,0,0,.38));
+}
+.atlas-realistic .country-land-base,
+.country-map .country-land-fill {
+  filter:
+    drop-shadow(0 9px 7px rgba(0,0,0,.42))
+    drop-shadow(0 1px 1px rgba(255,255,255,.12));
+}
+.atlas-realistic .country-texture {
+  opacity:.18 !important;
+  stroke:#dce6c9 !important;
+  stroke-opacity:.14 !important;
+  stroke-width:.75 !important;
+  stroke-dasharray:1 3 !important;
+  mix-blend-mode:soft-light;
+}
+.atlas-realistic .terrain-light,
+.country-map .biome-meadow {
+  opacity:.24 !important;
+  mix-blend-mode:screen;
+}
+.atlas-realistic .terrain-hill,
+.country-map .mountain-shadow {
+  opacity:.46 !important;
+  filter:blur(.7px) drop-shadow(3px 4px 2px rgba(0,0,0,.22));
+}
+.atlas-realistic .forest-patch,
+.country-map .forest-mass {
+  opacity:.5 !important;
+  filter:blur(.25px);
+}
+.atlas-realistic .forest-dots circle,
+.country-map .forest-dots circle {
+  opacity:.42 !important;
+}
+.atlas-realistic .mountain-range,
+.country-map .mountain-range {
+  stroke:#e6e7d5 !important;
+  stroke-width:2.15 !important;
+  opacity:.72 !important;
+  filter:drop-shadow(2px 3px 2px rgba(0,0,0,.5));
+}
+.atlas-realistic .mountain-snow,
+.country-map .mountain-snow {
+  opacity:.92 !important;
+  filter:drop-shadow(1px 2px 1px rgba(0,0,0,.28));
+}
+.atlas-realistic .river-wide,
+.country-map .river-wide {
+  stroke:#79cddd !important;
+  stroke-width:2.35 !important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));
+}
+.atlas-realistic .river-thin,
+.country-map .river-thin {
+  stroke:#b2e0e4 !important;
+  stroke-width:1.05 !important;
+  opacity:.7 !important;
+}
+.atlas-realistic .country-lake,
+.country-map .country-lake {
+  fill:#3989a4 !important;
+  stroke:#bfe6e9 !important;
+  stroke-width:.8 !important;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.28));
+}
+.atlas-realistic .terrain-contour,
+.atlas-realistic .contour,
+.country-map .country-sea-contours {
+  fill:none !important;
+  stroke:#c3c9aa !important;
+  stroke-width:.65 !important;
+  stroke-opacity:.24 !important;
+}
+.atlas-realistic .country-coastline {
+  stroke:#f3efd8 !important;
+  stroke-width:1.75 !important;
+  opacity:.95 !important;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));
+}
+.country-map .country-coastline {
+  stroke:#f5f0d8 !important;
+  stroke-width:1.7 !important;
+  opacity:.96 !important;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));
+}
+.atlas-realistic .world-country-group:hover {
+  filter:brightness(1.08) saturate(1.04) drop-shadow(0 13px 9px rgba(0,0,0,.46));
+}
+.atlas-realistic .world-country-group.selected {
+  filter:brightness(1.06) saturate(1.05) drop-shadow(0 15px 11px rgba(65,224,255,.2));
+}
+.atlas-realistic .capital circle:first-child,
+.country-map .capital circle:first-child {
+  filter:drop-shadow(0 0 7px rgba(255,225,133,.65));
+}
+.atlas-realistic .company-marker circle:first-of-type,
+.country-map .company-marker circle:first-of-type {
+  filter:drop-shadow(0 0 6px rgba(116,236,220,.55));
+}
+
+/* The atlas is a visual anchor on the landing screen, not a small side card. */
+.auth-art {
+  padding:28px 26px !important;
+  place-items:center !important;
+  background:
+    radial-gradient(circle at 52% 42%,rgba(35,116,139,.35),transparent 43%),
+    radial-gradient(circle at 50% 100%,rgba(9,49,65,.65),transparent 65%),
+    #05131c !important;
+}
+.auth-art .atlas-realistic {
+  width:min(96%,920px) !important;
+  max-width:none !important;
+  border-radius:18px !important;
+  transform:perspective(1500px) rotateY(-4deg) rotateX(1.5deg);
+  transform-origin:center center;
+  box-shadow:
+    0 38px 90px rgba(0,0,0,.58),
+    inset 0 1px rgba(255,255,255,.08),
+    0 0 0 1px rgba(112,204,215,.12) !important;
+}
+.auth-art .atlas-world-svg {
+  width:100% !important;
+  min-height:0 !important;
+  aspect-ratio:500/350;
+}
+.auth-art .atlas-head {
+  height:48px !important;
+  padding-inline:18px !important;
+}
+.auth-art .map-key {
+  margin:0 !important;
+  padding:11px 14px !important;
+}
+
+/* Country selection: let the map breathe and read as terrain, not a thumbnail. */
+.country-picker {
+  grid-template-columns:minmax(0,1.55fr) 340px !important;
+}
+.country-picker > .atlas-realistic {
+  min-height:0 !important;
+}
+.country-picker .atlas-world-svg {
+  min-height:0 !important;
+  aspect-ratio:500/350;
+}
+.market-map-card .country-map {
+  min-height:0 !important;
+}
+.market-map-card .country-map .country-atlas-svg,
+.game-panel .country-map .country-atlas-svg {
+  min-height:0 !important;
+  aspect-ratio:500/350;
+}
+
+/* No camera/pan/zoom animation on the atlas: it should feel like a premium physical map. */
+.atlas-realistic,
+.atlas-realistic *,
+.country-map,
+.country-map * {
+  animation:none !important;
+}
+.atlas-realistic .world-country-group,
+.atlas-realistic .world-country-group:hover,
+.country-map .company-marker,
+.country-map .capital {
+  transition:none !important;
+}
+
+/* Clean heraldic flags: no mysterious circles/diamonds. */
+.flag i,
+.flag i:before,
+.flag i:after {
+  display:none !important;
+}
+.flag {
+  background-image:none;
+  box-shadow:
+    0 7px 16px rgba(0,0,0,.42),
+    inset 0 0 0 1px rgba(255,255,255,.16) !important;
+}
+.flag:before {
+  opacity:.65;
+}
+@media (max-width:1100px) {
+  .auth-art {display:none !important;}
+}
+@media (max-width:900px) {
+  .auth-art .atlas-realistic {width:98% !important;}
+  .country-picker {grid-template-columns:1fr !important;}
+}
