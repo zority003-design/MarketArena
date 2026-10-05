@@ -372,6 +372,21 @@ function makeRoad(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   const curve = roadCurve(a,b,bend);
   return makeLine(curve.getPoints(18), 0xb9a37f, 0.72, 2);
 }
+function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend:number) {
+  const poly=countryPolygons[countryId];
+  const candidates=[bend,0,-bend*.7,bend*.45];
+  for(const amount of candidates){
+    const curve=roadCurve(a,b,amount);
+    const samples=curve.getPoints(18);
+    let ok=true;
+    for(const p of samples){
+      const u=p.x/0.32+50, v=p.z/0.24+50;
+      if(!pointInPolygon(u,v,poly)){ok=false;break;}
+    }
+    if(ok)return curve;
+  }
+  return roadCurve(a,b,0);
+}
 function makeCar(curve: THREE.CatmullRomCurve3, scale = 1) {
   const group = new THREE.Group();
   const body = new THREE.Mesh(
@@ -537,13 +552,13 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const companyGeos = selectedCountry.companies.map(company => safeCompanyGeo(selectedCountry.id, company));
       const roadCurves: THREE.CatmullRomCurve3[] = [];
       if(companyGeos.length){
-        const firstCurve=roadCurve(capital,companyGeos[0],.10); roadCurves.push(firstCurve); scene.add(makeLine(firstCurve.getPoints(22),0xb9a37f,.72,2));
+        const firstCurve=inCountryRoad(selectedCountry.id,capital,companyGeos[0],.08); roadCurves.push(firstCurve); scene.add(makeLine(firstCurve.getPoints(22),0xb9a37f,.72,2));
       }
       companyGeos.forEach((geo,index)=>{
         if(index>0){
           const previous=companyGeos[index-1];
           const bend=(hash(index*4.3, selectedCountry.id.length)-.5)*.42;
-          const curve=roadCurve(previous,geo,bend); roadCurves.push(curve); scene.add(makeLine(curve.getPoints(22),0xb9a37f,.72,2));
+          const curve=inCountryRoad(selectedCountry.id,previous,geo,bend); roadCurves.push(curve); scene.add(makeLine(curve.getPoints(22),0xb9a37f,.72,2));
         }
         const p=worldFromGeo(geo);
         scene.add(makeTree(p.x+.28,p.z+.18,.55+(index%3)*.08));
