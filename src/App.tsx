@@ -227,7 +227,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [marketPulse,setMarketPulse]=useState(0);
   const [timeSpeed,setTimeSpeed]=useState<1|1.5|2>(1);
   const [timePaused,setTimePaused]=useState(false);
-  const [campaignFinished,setCampaignFinished]=useState(()=>initialSave?.day>=365);
+  const [campaignFinished,setCampaignFinished]=useState(()=>((initialSave?.day??1)>=365));
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(60000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
