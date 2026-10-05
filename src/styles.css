@@ -1939,3 +1939,46 @@ body{overflow-x:hidden}
 .auth-float-b:hover{transform:translate3d(-7px,-10px,0) scale(1.045)!important}
 .auth-float-c:hover{transform:translate3d(5px,-8px,0) scale(1.045)!important}
 .auth-visual-core:hover{transform:translate3d(0,-10px,0) scale(1.035)!important}
+\n
+/* 2026-10-05 — atlas cleanup, stronger motion and hard-edged interaction states */
+.auth-visual-grid{opacity:.58!important;animation:authGridDrift 6s linear infinite!important}
+.auth-orbit.orbit-a{opacity:.9;animation:authOrbitA 6s ease-in-out infinite!important}
+.auth-orbit.orbit-b{opacity:.85;animation:authOrbitB 7.5s ease-in-out infinite!important}
+.auth-visual:after{animation:authCorePulse 4s ease-in-out infinite!important}
+.auth-float-b{right:3%!important;top:44%!important}
+.auth-float-b:hover{transform:translate3d(-10px,-10px,0) scale(1.045)!important}
+.auth-visual-core{box-shadow:0 35px 100px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.08),0 0 55px rgba(79,207,220,.08)!important}
+.auth-visual-core b{max-width:230px;margin:0 auto}
+
+/* Selection dossier hover must stay clipped to its own card. */
+.country-detail-grid>div,
+.country-profile-rich .profile-stats>div,
+.country-option{
+  overflow:hidden!important;
+  isolation:isolate;
+}
+.country-detail-grid>div:before,
+.country-profile-rich .profile-stats>div:before,
+.country-option:before{
+  border-radius:inherit!important;
+}
+.country-detail-grid>div:hover,
+.country-profile-rich .profile-stats>div:hover{
+  transform:translateY(-3px)!important;
+}
+
+/* Exchange controls are visibly actionable rather than looking disabled. */
+.game-topbar nav .exchange-nav,
+.game-sidebar>.exchange-side{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  user-select:none;
+}
+.game-topbar nav .exchange-nav{font-weight:800!important}
+.game-sidebar>.exchange-side{border-left:2px solid transparent!important}
+.game-sidebar>.exchange-side:hover,
+.game-sidebar>.exchange-side.side-active{
+  border-left-color:#6edce4!important;
+}
+.exchange-terminal-root button{cursor:pointer!important}
+.exchange-terminal-root .exchange-company:disabled{opacity:.5}
