@@ -678,7 +678,6 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           scene.add(makeTree(p.x,p.z,.34+hash(i*1.7,4)*.34));
         }
       }
-      }
       if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
