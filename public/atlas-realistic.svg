@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350">
+<defs>
+<linearGradient id="o" x2="0" y2="1"><stop stop-color="#082f46"/><stop offset=".5" stop-color="#063b54"/><stop offset="1" stop-color="#031b2b"/></linearGradient>
+<radialGradient id="g"><stop stop-color="#8aa96f"/><stop offset=".5" stop-color="#4b7050"/><stop offset="1" stop-color="#1b3934"/></radialGradient>
+<radialGradient id="d"><stop stop-color="#c49a59"/><stop offset=".55" stop-color="#8b633f"/><stop offset="1" stop-color="#49342e"/></radialGradient>
+<pattern id="t" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r="1" fill="#d8e2b0" opacity=".18"/><circle cx="12" cy="9" r="1.2" fill="#173e35" opacity=".22"/><path d="M0 15L5 12 9 15" fill="none" stroke="#dce3c2" stroke-opacity=".13"/></pattern>
+<filter id="r" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="8" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" result="d"/><feDiffuseLighting in="n" surfaceScale="4" diffuseConstant=".75" lighting-color="#fff" result="l"><feDistantLight azimuth="225" elevation="48"/></feDiffuseLighting><feComposite in="l" in2="d" operator="in" result="s"/><feBlend in="d" in2="s" mode="soft-light"/></filter>
+<filter id="s"><feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dy="5"/><feComponentTransfer><feFuncA type="linear" slope=".5"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<path id="shape" d="M48 113C75 73 126 52 184 60C231 46 273 54 319 61C373 47 427 70 449 111C466 142 453 184 428 210C409 235 390 279 352 298C308 320 252 320 210 304C169 316 119 297 98 267C74 247 54 212 60 179C42 158 37 134 48 113Z"/>
+<clipPath id="c"><use href="#shape"/></clipPath>
+</defs>
+<rect width="500" height="350" fill="url(#o)"/>
+<path d="M10 80C90 45 140 66 194 42S310 57 365 38 451 50 490 28M10 278C82 248 128 280 188 257S309 276 365 249 447 270 495 245" fill="none" stroke="#8bd0df" stroke-opacity=".12"/>
+<g filter="url(#s)"><use href="#shape" fill="url(#g)" stroke="#eef0d9" stroke-opacity=".7" stroke-width="1.6"/>
+<g clip-path="url(#c)" filter="url(#r)">
+<rect x="35" y="45" width="430" height="280" fill="url(#t)"/>
+<path d="M40 155C95 120 145 125 188 150s83 22 126-4 85-23 146 4v78c-59-29-102-29-148 0s-87 31-131 3-87-31-133-2z" fill="#8aa76b" opacity=".48"/>
+<path d="M50 120l18-34 18 29 20-46 20 39 23-29 20 36 21-28 21 35 20-23 21 31 21-28 19 37" fill="none" stroke="#3a5046" stroke-width="10" stroke-linejoin="round"/>
+<path d="M50 116l18-34 18 29 20-46 20 39 23-29 20 36 21-28 21 35 20-23 21 31 21-28 19 37" fill="none" stroke="#f1f1dc" stroke-opacity=".8" stroke-width="4" stroke-linejoin="round"/>
+<path d="M78 95l10 16-8-4-8 7zm56-13l10 17-9-4-7 8zm58 20l9 15-8-3-7 7zm58-5l10 16-9-4-7 8z" fill="#fff" opacity=".9"/>
+<path d="M60 154c42-23 77-22 112-1s72 26 111 3 75-22 132 2M58 176c43-23 77-20 112 1s72 25 111 2 77-21 131 1M65 198c38-20 71-18 106 1s72 24 109 2 72-20 124 1" fill="none" stroke="#d8dfb8" stroke-opacity=".32"/>
+<path d="M205 68c-8 39 13 57 1 82-12 25-22 42-9 65 13 23 34 29 40 52 5 19-1 35-12 52M298 73c-12 34 6 58 20 77 15 20 28 34 31 54 3 18-5 33-16 51M145 99c19 25 28 43 17 64-10 20-2 38 13 58" fill="none" stroke="#8bd9e1" stroke-opacity=".85" stroke-width="2.4"/>
+<ellipse cx="142" cy="225" rx="24" ry="9" fill="#3e94aa" stroke="#b9e5e6"/>
+<ellipse cx="380" cy="215" rx="18" ry="7" fill="#3e94aa" stroke="#b9e5e6"/>
+<path d="M50 215c45-21 86-14 124 9 39 24 76 26 117 3 40-22 81-18 129 8v80H50z" fill="#2f6548" opacity=".55"/>
+</g></g>
+<path d="M276 101L293 84 314 73 337 68 360 70 382 79 402 92 419 108 430 126 431 145 424 163 414 178 400 191 382 201 363 207 344 203 326 195 309 184 294 174 281 159 272 143 268 126Z" fill="url(#d)" opacity=".95" filter="url(#r)"/>
+<g fill="#f4f0da" font-family="Georgia,serif" text-anchor="middle" font-size="12"><text x="95" y="154" letter-spacing="3">СЛАВОРИЯ</text><text x="205" y="106" letter-spacing="3">ЛИРАНИЯ</text><text x="365" y="142" letter-spacing="3">ДАРВАСТ</text><text x="210" y="274" letter-spacing="3">ЭСТРАВИЯ</text><text x="340" y="274" letter-spacing="3">САВЕРНИЯ</text></g>
+<g fill="#fff2cf" stroke="#142b2e" stroke-width="2"><circle cx="110" cy="120" r="3"/><circle cx="220" cy="145" r="3"/><circle cx="352" cy="115" r="3"/><circle cx="230" cy="248" r="3"/><circle cx="337" cy="235" r="3"/></g>
+<g fill="#e8ebd6" font-family="Georgia,serif" font-size="8"><text x="116" y="115">Элион</text><text x="226" y="140">Велиград</text><text x="358" y="110">Кадар</text><text x="236" y="243">Селена</text><text x="343" y="230">Ривен</text></g>
+<g transform="translate(460 28)" fill="none" stroke="#f2ecd2"><circle r="15"/><path d="M0-12L3 0 0 12-3 0zM-12 0L0-3 12 0 0 3z" fill="#f2ecd2"/></g><text x="460" y="8" text-anchor="middle" fill="#f2ecd2" font-family="Georgia,serif" font-size="7">N</text>
+</svg>
