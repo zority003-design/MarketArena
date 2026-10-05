@@ -118,16 +118,16 @@ function terrainHeight(x: number, z: number) {
   const low = 0.18 + fbm(nx * 3.2, nz * 3.2) * 0.26;
 
   const central =
-    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 5.2) +
-    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 1.85) +
-    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 1.45);
+    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 1.75) +
+    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 0.82) +
+    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 0.65);
 
   const secondary =
-    ridge(x, z, -6.5, 2.8, -0.12, 6.0, 1.4, 2.1) +
-    ridge(x, z, 7.1, 2.2, 0.72, 7.0, 1.6, 2.0);
+    ridge(x, z, -6.5, 2.8, -0.12, 6.0, 1.4, 0.9) +
+    ridge(x, z, 7.1, 2.2, 0.72, 7.0, 1.6, 0.85);
 
-  const plateau = Math.exp(-(((x - 8.0) ** 2) / 42 + ((z + 0.5) ** 2) / 24)) * 1.6;
-  const southernHills = Math.exp(-(((x + 2.0) ** 2) / 60 + ((z - 6.4) ** 2) / 18)) * 1.1;
+  const plateau = Math.exp(-(((x - 8.0) ** 2) / 42 + ((z + 0.5) ** 2) / 24)) * 0.55;
+  const southernHills = Math.exp(-(((x + 2.0) ** 2) / 60 + ((z - 6.4) ** 2) / 18)) * 0.55;
 
   const riverValley =
     Math.exp(-((x + 0.4) ** 2) / 1.5 - ((z - 1.6) ** 2) / 100) * 1.1 +
@@ -142,7 +142,7 @@ function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
 }
 
 function heightColor(h: number, x: number, z: number) {
-  const t = clamp(h / 5.0, 0, 1);
+  const t = clamp(h / 2.45, 0, 1);
   let color = colorStops[colorStops.length - 1].c.clone();
   for (let i = 0; i < colorStops.length - 1; i += 1) {
     if (t >= colorStops[i].h && t <= colorStops[i + 1].h) {
@@ -157,7 +157,7 @@ function heightColor(h: number, x: number, z: number) {
   if (h < 2.1 && forest > 0.62) color.lerp(new THREE.Color("#294f39"), 0.28);
   if (h < 1.7 && z > 2.2) color.lerp(new THREE.Color("#6e714d"), 0.20);
   if (dry > 0.4 && h < 2.8) color.lerp(new THREE.Color("#9a845d"), dry * 0.30);
-  if (h > 4.0) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 4.0) / 1.0, 0, 1) * 0.46);
+  if (h > 1.85) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 1.85) / 0.6, 0, 1) * 0.24);
   return color;
 }
 
@@ -360,12 +360,12 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     scene.background = new THREE.Color("#062536");
     scene.fog = new THREE.Fog("#062536", 25, 48);
 
-    const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
     const selectedPoly = countryPolygons[selected];
     const centerGeo = selectedPoly.reduce((acc, p) => [acc[0] + p[0] / selectedPoly.length, acc[1] + p[1] / selectedPoly.length] as GeoPoint, [0, 0]);
     const centerWorld = worldFromGeo(centerGeo);
     const target = new THREE.Vector3(centerWorld.x, 0.5, centerWorld.z);
-    camera.position.set(centerWorld.x, 11.5, centerWorld.z + 11.5);
+    camera.position.set(centerWorld.x, 16.5, centerWorld.z + 16.5);
     camera.lookAt(target);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -512,14 +512,14 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     let moved = false;
     let lastX = 0;
     let lastY = 0;
-    let zoom = 1.22;
+    let zoom = 0.92;
     let panX = 0;
     let panZ = 0;
 
     const updateCamera = () => {
-      const distance = 17 / zoom;
-      camera.position.set(centerWorld.x + panX, distance * 0.76, centerWorld.z + distance * 0.76 + panZ);
-      target.set(centerWorld.x + panX * 0.55, 0.25, centerWorld.z + panZ * 0.32);
+      const distance = 23 / zoom;
+      camera.position.set(centerWorld.x + panX, distance * 0.62, centerWorld.z + distance * 0.78 + panZ);
+      target.set(centerWorld.x + panX * 0.55, 0.15, centerWorld.z + panZ * 0.42);
       camera.lookAt(target);
     };
 
@@ -608,8 +608,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-      panX = clamp(panX - dx * 0.018 / zoom, -4.2, 4.2);
-      panZ = clamp(panZ + dy * 0.015 / zoom, -3.2, 3.2);
+      panX = clamp(panX - dx * 0.018 / zoom, -2.8, 2.8);
+      panZ = clamp(panZ + dy * 0.015 / zoom, -2.2, 2.2);
       lastX = event.clientX;
       lastY = event.clientY;
       updateCamera();
@@ -621,7 +621,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.82, 1.75);
+      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.72, 1.35);
       updateCamera();
       updateOverlay();
     };
