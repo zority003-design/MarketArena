@@ -618,7 +618,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         });
         const bend=(hash(bestR*4.3, selectedCountry.id.length)-.5)*.18;
         const curve=inCountryRoad(selectedCountry.id,nodes[bestC][0],nodes[bestR][0],bend);
-        roadCurves.push(curve); scene.add(makeHighway(curve,.23));
+        if(curve){ roadCurves.push(curve); scene.add(makeHighway(curve,.23)); }
         connected.push(bestR); remaining.splice(remaining.indexOf(bestR),1);
       }
       companyGeos.forEach((geo,index)=>{
@@ -631,7 +631,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
       const citySites:GeoPoint[]=[];
-      const cityProfile=cityEconomyProfile[selectedCountry.id]??cityEconomyProfile.saverniya;\n      for(let i=0;i<140&&citySites.length<cityProfile.sites;i++){
+      const cityProfile=cityEconomyProfile[selectedCountry.id]??cityEconomyProfile.saverniya;
+      for(let i=0;i<140&&citySites.length<cityProfile.sites;i++){
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
@@ -661,10 +662,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           roadCurves.push(curve);
         });
       }
-      for(let gy=0;gy<13;gy++){
-        for(let gx=0;gx<13;gx++){
+      for(let gy=0;gy<15;gy++){
+        for(let gx=0;gx<15;gx++){
           const i=gy*13+gx;
-          const u=19+(gx+.5+(.32*hash(i,selectedCountry.id.length)))*68/13;
+          const u=19+(gx+.5+(.32*hash(i,selectedCountry.id.length)))*70/15;
           const v=19+(gy+.5+(.32*hash(i+41,selectedCountry.id.length*2)))*68/13;
           if(pointInPolygon(u,v,selectedPoly)){
             const p=worldFromGeo([u,v]);
