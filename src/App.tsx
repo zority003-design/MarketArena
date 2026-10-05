@@ -165,7 +165,10 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [transactions,setTransactions]=useState<Transaction[]>(()=>initialSave?.transactions??[]);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
   const [marketPulse,setMarketPulse]=useState(0);
+  const [timeSpeed,setTimeSpeed]=useState<0|1|1.5|2>(1);
+  const [timePaused,setTimePaused]=useState(false);
   useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
+  useEffect(()=>{if(timePaused)return; const ms=Math.round(6000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>v+1),ms); return()=>window.clearInterval(timer)},[timeSpeed,timePaused]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString()};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab]);
   useEffect(()=>{
     if(tab==="exchange"){
@@ -173,6 +176,14 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       if(!exchangeCompany && country.companies.length) setExchangeCompany(country.companies[0]);
     }
   },[tab,country.id,country.companies,exchangeCompany]);
+  const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
+    slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
+    lirania:{bias:.004,sectors:{"Судоходство":.020,"Порты":.018,"Страхование":.013,"Финансы":.010},strength:"торговые маршруты и портовая инфраструктура",risk:"зависимость от мирового товарооборота и фрахта"},
+    darvast:{bias:-.002,sectors:{"Нефть":.028,"Металлы":.020,"Логистика":.010},strength:"огромная ресурсная база и дешёвая энергия",risk:"волатильность сырьевых цен и экспортных доходов"},
+    estraviya:{bias:.009,sectors:{"Биотех":.026,"Технологии":.024,"Электроника":.020,"Робототехника":.022},strength:"инновации, университеты и высокий человеческий капитал",risk:"длинный цикл исследований и дорогие компоненты"},
+    saverniya:{bias:.005,sectors:{"Агро":.024,"Ритейл":.018,"Логистика":.012},strength:"плодородные земли и большой потребительский рынок",risk:"погода, урожайность и инфляция спроса"}
+  };
+  const marketProfile=countryMarketProfile[country.id]??countryMarketProfile.slavoriya;
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const events=[
@@ -187,7 +198,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const index=Math.floor((atDay+seed)/3)%events.length;
     const event=events[index];
     const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
-    return {headline:event.headline,impact:event.impact+sectorBias};
+    const countryBias=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
+    const cycle=Math.sin((atDay+seed*0.17)*0.045)*0.012;
+    return {headline:event.headline,impact:event.impact+sectorBias+countryBias+cycle};
   };
   const priceFor=(company:CompanyPreview, atDay=day)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
@@ -195,8 +208,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const wave=Math.sin((atDay+seed)*0.37)*0.045+Math.cos((atDay+seed)*0.13)*0.025;
     const trend=Math.sin((atDay+seed)*0.021)*0.08;
     const event=marketEvent(company,atDay).impact;
+    const countryDrift=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
     const live=Math.sin(marketPulse/5200+seed)*0.0025+Math.cos(marketPulse/9100+seed*0.7)*0.0015;
-    return Math.max(2500,Math.round(base*(1+wave+trend+event+live)/50)*50);
+    return Math.max(2500,Math.round(base*(1+wave+trend+event+countryDrift+live)/50)*50);
   };
   const priceChange=(company:CompanyPreview)=>{
     const oldDay=Math.max(1,day-1);
@@ -260,65 +274,37 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
         {tab==="exchange"&&<Panel title={"Биржа · "+country.name} eyebrow="РАБОЧАЯ БИРЖА">
           <div className="exchange-terminal-root">
             <div className="exchange-terminal-head">
-              <div>
-                <span className="eyebrow">MARKET TERMINAL · VLR</span>
-                <h2>Биржа работает</h2>
-                <p>Выбери компанию, чтобы посмотреть котировку и совершить сделку.</p>
+              <div><span className="eyebrow">MARKET TERMINAL · VLR</span><h2>Биржа · {country.name}</h2><p>{marketProfile.strength}. Главный риск страны: {marketProfile.risk}.</p></div>
+              <div className="exchange-time-controls">
+                <button type="button" onClick={()=>setTimePaused(v=>!v)}>{timePaused?"▶ Продолжить":"Ⅱ Пауза"}</button>
+                {[1,1.5,2].map(speed=><button type="button" key={speed} className={timeSpeed===speed?"active":""} onClick={()=>setTimeSpeed(speed as 1|1.5|2)}>×{speed}</button>)}
+                <span>ДЕНЬ {day} · КВАРТАЛ {Math.ceil(day/90)}</span>
               </div>
-              <div className="exchange-live-state"><i/> LIVE · ДЕНЬ {day}</div>
+            </div>
+            <div className="exchange-calendar">
+              <div><span>ИГРОВОЙ КАЛЕНДАРЬ</span><b>День {day}</b><small>До отчёта: {90-(day%90||90)} дн.</small></div>
+              <div><span>РЫНОК</span><b>{timePaused?"ПАУЗА":"ОТКРЫТ"}</b><small>Котировки обновляются автоматически</small></div>
+              <div><span>КВАРТАЛЬНЫЙ ОТЧЁТ</span><b>Q{Math.ceil(day/90)} · {country.name}</b><small>Новые отчёты появляются каждые 90 игровых дней</small></div>
             </div>
             <div className="exchange-overview">
               <div><span>КОМПАНИЙ</span><b>{country.companies.length}</b><small>публичный рынок</small></div>
               <div><span>СВОБОДНЫЕ ДЕНЬГИ</span><b>{cash.toLocaleString("ru-RU")} VLR</b><small>доступно для сделок</small></div>
               <div><span>ПОЗИЦИЙ</span><b>{Object.values(holdings).filter(Boolean).length}</b><small>открытые активы</small></div>
-              <div><span>ДЕНЬ</span><b>{day}</b><small>рынок открыт</small></div>
+              <div><span>РЫНОЧНЫЙ ТРЕНД</span><b className={priceChange(country.companies[0])>=0?"gain":"loss"}>{priceChange(country.companies[0])>=0?"+":""}{priceChange(country.companies[0]).toFixed(2)}%</b><small>за игровой день</small></div>
             </div>
-            <div className="exchange-company-strip">
-              {country.companies.map(company=>
-                <button type="button" key={company.ticker}
-                  className={exchangeCompany?.ticker===company.ticker?"exchange-company active":"exchange-company"}
-                  onClick={()=>setExchangeCompany(company)}>
-                  <span className="ticker">{company.ticker}</span>
-                  <b>{company.name}</b>
-                  <small>{company.sector}</small>
-                  <strong>{priceFor(company).toLocaleString("ru-RU")} VLR</strong>
-                  <em className={priceChange(company)>=0?"gain":"loss"}>{priceChange(company)>=0?"+":""}{priceChange(company).toFixed(2)}%</em>
-                </button>
-              )}
-            </div>
+            <div className="exchange-company-strip">{country.companies.map(company=><button type="button" key={company.ticker} className={exchangeCompany?.ticker===company.ticker?"exchange-company active":"exchange-company"} onClick={()=>setExchangeCompany(company)}><span className="ticker">{company.ticker}</span><b>{company.name}</b><small>{company.sector}</small><strong>{priceFor(company).toLocaleString("ru-RU")} VLR</strong><em className={priceChange(company)>=0?"gain":"loss"}>{priceChange(company)>=0?"+":""}{priceChange(company).toFixed(2)}%</em></button>)}</div>
             <div className="exchange-focus">
-              {(() => {
-                const focus=exchangeCompany??country.companies[0];
-                if(!focus) return <div className="exchange-empty"><b>Рынок недоступен</b><span>В этой стране пока нет публичных компаний.</span></div>;
-                const owned=holdings[focus.ticker]||0;
-                const price=priceFor(focus);
-                return <div>
-                  <div className="exchange-focus-head">
-                    <div>
-                      <span className="ticker">{focus.ticker}</span>
-                      <h2>{focus.name}</h2>
-                      <p>{focus.sector} · {country.capital}</p>
-                    </div>
-                    <div className="exchange-focus-price">
-                      <b>{price.toLocaleString("ru-RU")} VLR</b>
-                      <span className={priceChange(focus)>=0?"gain":"loss"}>{priceChange(focus)>=0?"+":""}{priceChange(focus).toFixed(2)}%</span>
-                    </div>
-                  </div>
-                  <div className="exchange-metrics">
-                    <div><span>ТИКЕР</span><b>{focus.ticker}</b></div>
-                    <div><span>СЕКТОР</span><b>{focus.sector}</b></div>
-                    <div><span>В ПОРТФЕЛЕ</span><b>{owned} шт.</b></div>
-                    <div><span>СТОИМОСТЬ 1 АКЦИИ</span><b>{price.toLocaleString("ru-RU")} VLR</b></div>
-                  </div>
-                  <div className="exchange-action-row">
-                    <div><span>ПОСЛЕДНИЙ ФАКТОР</span><b>{eventLabel(focus,day)}</b></div>
-                    <div className="spotlight-actions">
-                      <button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button>
-                      <button type="button" className="primary small" onClick={()=>buy(focus)}>Купить</button>
-                    </div>
-                  </div>
-                </div>;
-              })()}
+              {(()=>{const focus=exchangeCompany??country.companies[0]; if(!focus)return <div className="exchange-empty">Нет публичных компаний.</div>; const profile=companyProfile(focus,country); const owned=holdings[focus.ticker]||0; const price=priceFor(focus); const prev=priceFor(focus,Math.max(1,day-1)); const delta=((price-prev)/prev)*100; const reportNo=Math.floor((day-1)/90)+1; return <div>
+                <div className="exchange-focus-head"><div><span className="ticker">{focus.ticker}</span><h2>{focus.name}</h2><p>{focus.sector} · CEO: {focus.ceo}</p></div><div className="exchange-focus-price"><b>{price.toLocaleString("ru-RU")} VLR</b><span className={delta>=0?"gain":"loss"}>{delta>=0?"+":""}{delta.toFixed(2)}% сегодня</span></div></div>
+                <CandleChart company={focus} points={history(focus,chartRange)} range={chartRange}/>
+                <div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button type="button" key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div>
+                <div className="exchange-metrics">
+                  <div><span>КАПИТАЛИЗАЦИЯ</span><b>{profile.marketCap}</b></div><div><span>P / E</span><b>{profile.pe}</b></div><div><span>P / B</span><b>{profile.pb}</b></div><div><span>ДИВИДЕНД</span><b>{profile.dividendYield}</b></div>
+                </div>
+                <div className="company-report-card"><span>КВАРТАЛЬНЫЙ ОТЧЁТ · Q{reportNo}</span><h3>{focus.name}</h3><p>{profile.description}</p><div><b>Выручка {profile.revenue}</b><b>Чистая прибыль {profile.netProfit}</b><b>Цель: рост 8–12%</b></div></div>
+                <div className="exchange-company-dossier"><div><span>ПРЕИМУЩЕСТВО</span><p>{marketProfile.strength}. Сектор {focus.sector} получает дополнительный эффект страны {((marketProfile.sectors[focus.sector]??marketProfile.bias)*100).toFixed(1)}%.</p></div><div><span>РИСК</span><p>{marketProfile.risk}. Для компании характерны: {profile.materials}.</p></div><div><span>CEO</span><p>{focus.ceo}, {focus.ceoAge} лет. {focus.ceoBio}</p></div></div>
+                <div className="exchange-action-row"><div><span>В ПОРТФЕЛЕ</span><b>{owned} акций · {eventLabel(focus,day)}</b></div><div className="spotlight-actions"><button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button><button type="button" className="primary small" onClick={()=>buy(focus)}>Купить</button></div></div>
+              </div>})()}
             </div>
           </div>
         </Panel>}
