@@ -226,7 +226,10 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
-  const [transactions,setTransactions]=useState<Transaction[]>([]);\n  const [chartRange,setChartRange]=useState<ChartRange>("1Y");\n  const [marketPulse,setMarketPulse]=useState(0);\n  useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
+  const [transactions,setTransactions]=useState<Transaction[]>([]);
+  const [chartRange,setChartRange]=useState<ChartRange>("1Y");
+  const [marketPulse,setMarketPulse]=useState(0);
+  useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
 
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
@@ -251,7 +254,8 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
     const wave=Math.sin((atDay+seed)*0.37)*0.045+Math.cos((atDay+seed)*0.13)*0.025;
     const trend=Math.sin((atDay+seed)*0.021)*0.08;
     const event=marketEvent(company,atDay).impact;
-    const live=Math.sin(marketPulse/5200+seed)*0.0025+Math.cos(marketPulse/9100+seed*0.7)*0.0015;\n    return Math.max(2500,Math.round(base*(1+wave+trend+event+live)/50)*50);
+    const live=Math.sin(marketPulse/5200+seed)*0.0025+Math.cos(marketPulse/9100+seed*0.7)*0.0015;
+    return Math.max(2500,Math.round(base*(1+wave+trend+event+live)/50)*50);
   };
   const priceChange=(company:CompanyPreview)=>{
     const oldDay=Math.max(1,day-1);
