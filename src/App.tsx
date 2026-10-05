@@ -4,8 +4,17 @@ import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type 
 import { Atlas3D } from "./Atlas3D";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
-type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news";
+type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates";
 type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
+type GameSave = {
+  player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
+  day:number; transactions:Transaction[]; tab:GameTab; savedAt:string;
+};
+
+const PATCH_NOTES = [
+  { version:"v1.0.1", date:"5 октября 2026", title:"Market & Atlas Update", added:["рабочая биржа и сделки","карта выбранной страны с компаниями","профили компаний и CEO"], improved:["dashboard","адаптивная сетка","графики котировок"], fixed:["клики по компаниям","переполнение чисел","сохранение офлайн-игры"] },
+  { version:"v1.0.0", date:"1 октября 2026", title:"Offline Foundation", added:["профиль игрока","выбор страны","классы старта","первые рабочие места и рынок"] }
+] as const;
 
 const jobs = [
   { id: "analyst", title: "Помощник аналитика", pay: 18000, time: "2 часа", text: "Разбор отчётов и исследование компаний." },
@@ -126,17 +135,20 @@ function CandleChart({company,points,range}:{company:CompanyPreview;points:numbe
 function Panel({title,eyebrow,children}:{title:string;eyebrow:string;children:ReactNode}){return <div className="game-panel"><div className="panel-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</div>;}
 
 function GameScreen({player,country,difficulty,onRestart}:{player:string;country:Country;difficulty:string;onRestart:()=>void}) {
-  const [tab,setTab]=useState<GameTab>("overview");
-  const [cash,setCash]=useState(difficulty==="easy"?5000000:difficulty==="hard"?50000:500000);
-  const [holdings,setHoldings]=useState<Record<string,number>>({});
-  const [day,setDay]=useState(1);
+  const saveKey=`marketarena.save.v2.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`;
+  const initialSave=useMemo<GameSave|null>(()=>{try{const raw=window.localStorage.getItem(saveKey);return raw?JSON.parse(raw) as GameSave:null;}catch{return null;}},[saveKey]);
+  const [tab,setTab]=useState<GameTab>(()=>initialSave?.tab??"overview");
+  const [cash,setCash]=useState(()=>initialSave?.cash??(difficulty==="easy"?5000000:difficulty==="hard"?50000:500000));
+  const [holdings,setHoldings]=useState<Record<string,number>>(()=>initialSave?.holdings??{});
+  const [day,setDay]=useState(()=>initialSave?.day??1);
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
-  const [transactions,setTransactions]=useState<Transaction[]>([]);
+  const [transactions,setTransactions]=useState<Transaction[]>(()=>initialSave?.transactions??[]);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
   const [marketPulse,setMarketPulse]=useState(0);
   useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString()};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab]);
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const events=[
@@ -187,7 +199,7 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   };
   const work=(id:string,pay:number)=>{setCash(v=>v+pay);setJobCooldown(id);setNotice("Работа завершена: +"+pay.toLocaleString("ru-RU")+" VLR.");setTimeout(()=>setJobCooldown(null),700);};
   const advance=()=>{setDay(v=>v+1);setNotice("Новый игровой день: котировки, новости и стоимость портфеля обновились.");};
-  const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"]];
+  const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Updates"]];
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
 
   return <div className="game-shell">
@@ -208,6 +220,9 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
         {tab==="companies"&&<Panel title={"Компании · "+country.name} eyebrow="PUBLIC COMPANIES"><p className="panel-lead">Каждая компания получает собственную карточку, котировку и профиль CEO. Нажми на карточку для подробностей.</p><div className="company-grid">{country.companies.map(c=><article className="company-focus-card" key={c.ticker} onClick={()=>setSelectedCompany(c)}><div className="company-focus-top"><span className="ticker">{c.ticker}</span><span className="sector-chip">{c.sector}</span></div><h3>{c.name}</h3><p>{c.note}</p><div className="company-ceo"><CEOAvatar company={c}/><div><span className="eyebrow">CEO · {c.ceoRole}</span><b>{c.ceo}</b><small>{c.ceoAge} лет</small></div></div><div className="company-focus-footer"><span>Котировка <b>{priceFor(c).toLocaleString("ru-RU")} VLR</b></span><button onClick={e=>{e.stopPropagation();buy(c)}}>Купить 1 акцию</button></div></article>)}</div></Panel>}
         {tab==="life"&&<Panel title="Жизнь" eyebrow="CAREER & LIFE"><p className="panel-lead">До большого капитала можно дойти через работу: каждый игровой день ты выбираешь, где заработать деньги для следующих инвестиций.</p>{jobs.map(j=><div className="life-job" key={j.id}><div><b>{j.title}</b><span>{j.text}</span></div><strong>{j.pay.toLocaleString("ru-RU")} VLR</strong><button disabled={jobCooldown===j.id} onClick={()=>work(j.id,j.pay)}>Работать</button></div>)}</Panel>}
         {tab==="map"&&<Panel title={"Карта "+country.name} eyebrow="ATLAS"><p className="panel-lead">Здесь показана именно выбранная страна: её рельеф, реки, столица и расположение публичных компаний.</p><AtlasMap selected={country.id} onSelect={()=>{}} showCompanies onCompany={setSelectedCompany}/></Panel>}
+        {tab==="events"&&<Panel title="События" eyebrow="MARKET EVENTS"><p className="panel-lead">Экономические события связывают страну, отрасли и компании. Каждый импульс отражается в котировках и ленте новостей.</p><div className="event-grid">{country.companies.map(c=>{const e=marketEvent(c,day);return <article className="event-card" key={c.ticker}><div><span className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"POSITIVE":"RISK"}</span><b>{c.name}</b><small>{c.sector} · {c.ticker}</small></div><p>{e.headline}</p><strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}%</strong></article>})}</div></Panel>}
+        {tab==="history"&&<Panel title="История игры" eyebrow="GAME HISTORY"><p className="panel-lead">Здесь сохраняются финансовые решения игрока: сделки, дни и результаты рынка.</p><div className="history-list">{transactions.map((t,i)=><div key={i}><span>День {t.day}</span><b className={t.type==="BUY"?"loss":"gain"}>{t.type}</b><strong>{t.ticker}</strong><span>{t.quantity} шт.</span><em>{(t.price*t.quantity).toLocaleString("ru-RU")} VLR</em></div>)}{transactions.length===0&&<div className="empty-state">История пока пуста. Соверши первую сделку на бирже.</div>}</div><div className="history-stat-grid"><div><span>ДНЕЙ СЫГРАНО</span><b>{day}</b></div><div><span>СДЕЛОК</span><b>{transactions.length}</b></div><div><span>ПОЗИЦИЙ</span><b>{Object.values(holdings).filter(Boolean).length}</b></div></div></Panel>}
+        {tab==="updates"&&<Panel title="Updates & Patch Notes" eyebrow="DEVELOPMENT HISTORY"><p className="panel-lead">Живая история развития MarketArena. Новые версии добавляются в массив PATCH_NOTES без изменения компонентов интерфейса.</p><div className="patch-timeline">{PATCH_NOTES.map(p=><article key={p.version}><div className="patch-dot"/><div className="patch-card"><div className="patch-head"><div><span>{p.version}</span><h2>{p.title}</h2></div><time>{p.date}</time></div><div className="patch-columns"><div><b>Added</b>{p.added.map(x=><span key={x}>+ {x}</span>)}</div><div><b>Improved</b>{p.improved.map(x=><span key={x}>↗ {x}</span>)}</div><div><b>Fixed</b>{p.fixed.map(x=><span key={x}>✓ {x}</span>)}</div></div></div></article>)}</div></Panel>}
         {tab==="news"&&<Panel title="Новости" eyebrow="ECONOMIC NEWS"><p className="panel-lead">Новости поступают в живую ленту симуляции: информационные импульсы меняют котировки, а новые сообщения появляются независимо от нажатия «Следующий день».</p><div className="news-list">{country.companies.slice(0,3).map((c,i)=>{const e=marketEvent(c,day);return <article key={c.ticker}><span>{String(8+i*3).padStart(2,"0")}:30</span><div><b>{c.name}: {e.headline}</b><p>Котировка {c.ticker}: <strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}%</strong> фактор события. Итоговая цена учитывает тренд, волатильность и этот информационный импульс.</p></div><strong>{c.sector.toUpperCase()}</strong></article>})}</div><div className="news-transactions"><span className="eyebrow">ИСТОРИЯ СДЕЛОК</span>{transactions.slice(0,6).map((t,i)=><div key={i}><b className={t.type==="BUY"?"loss":"gain"}>{t.type}</b><span>День {t.day} · {t.ticker} · {t.quantity} шт.</span><strong>{(t.price*t.quantity).toLocaleString("ru-RU")} VLR</strong></div>)}{transactions.length===0&&<p>Сделок пока нет. Первая покупка появится здесь сразу после подтверждения.</p>}</div></Panel>}
       </main>
     </div>
@@ -216,13 +231,18 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
 }
 
 function App(){
-  const [screen,setScreen]=useState<Screen>("auth"); const [player,setPlayer]=useState("Игрок"); const [mode,setMode]=useState<"offline"|"online">("offline"); const [countryId,setCountryId]=useState(countries[0].id); const [difficulty,setDifficulty]=useState("normal");
+  const [screen,setScreen]=useState<Screen>(()=>{try{return window.localStorage.getItem("marketarena.screen")==="game"?"game":"auth";}catch{return "auth";}});
+  const [player,setPlayer]=useState(()=>{try{return window.localStorage.getItem("marketarena.player")||"Игрок";}catch{return "Игрок";}});
+  const [mode,setMode]=useState<"offline"|"online">("offline");
+  const [countryId,setCountryId]=useState(()=>{try{return window.localStorage.getItem("marketarena.country")||countries[0].id;}catch{return countries[0].id;}});
+  const [difficulty,setDifficulty]=useState(()=>{try{return window.localStorage.getItem("marketarena.difficulty")||"normal";}catch{return "normal";}});
+  useEffect(()=>{try{window.localStorage.setItem("marketarena.player",player);window.localStorage.setItem("marketarena.country",countryId);window.localStorage.setItem("marketarena.difficulty",difficulty);if(screen==="game")window.localStorage.setItem("marketarena.screen","game");else if(screen==="auth")window.localStorage.removeItem("marketarena.screen");}catch{}},[player,countryId,difficulty,screen]);
   const country=useMemo(()=>countries.find(c=>c.id===countryId)??countries[0],[countryId]);
   if(screen==="auth") return <AuthScreen onContinue={name=>{setPlayer(name);setScreen("mode")}}/>;
   if(screen==="mode") return <ModeScreen onChoose={m=>{setMode(m);if(m==="offline")setScreen("country")}}/>;
   if(screen==="country") return <CountryScreen selected={countryId} setSelected={setCountryId} onNext={()=>setScreen("difficulty")}/>;
   if(screen==="difficulty") return <DifficultyScreen country={country} onStart={id=>{setDifficulty(id);setScreen("game")}} onBack={()=>setScreen("country")}/>;
-  return <GameScreen player={player} country={country} difficulty={difficulty} onRestart={()=>setScreen("mode")}/>;
+  return <GameScreen player={player} country={country} difficulty={difficulty} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v2.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
 }
 
 export default App;
