@@ -486,7 +486,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         selectedCountry?.companies.forEach((company) => {
           const marker = companyRefs.current[company.ticker];
           if (!marker) return;
-          const p = project(worldFromGeo([company.x, company.y]));
+          const p = project(worldFromGeo([company.x / 5, company.y / 3.5]));
           marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-50%)`;
           marker.style.opacity = p.z > 1 ? "0" : "1";
         });
