@@ -1273,3 +1273,152 @@ button{cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid rgba(126,219,205,.85);outline-offset:2px}
 @media(max-width:900px){.event-grid{grid-template-columns:1fr}.patch-columns{grid-template-columns:1fr 1fr}.game-topbar{gap:10px}.game-topbar nav{order:3;grid-column:1/-1}.game-topbar{flex-wrap:wrap}.game-body{grid-template-columns:72px minmax(0,1fr)}.game-sidebar .player-card>div,.game-sidebar .country-mini>div,.game-sidebar .side-title,.game-sidebar .side-bottom>b,.game-sidebar .side-bottom>small,.game-sidebar>button{font-size:0}.game-sidebar>button{justify-content:center;padding-inline:8px}.game-sidebar>button span{font-size:18px}.game-sidebar .player-card,.game-sidebar .country-mini{justify-content:center;padding-inline:6px}.game-sidebar .avatar{flex:0 0 auto}}
 @media(max-width:620px){.game-body{grid-template-columns:1fr}.game-sidebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:4px;overflow-x:auto;overflow-y:hidden;padding:7px;border-right:0;border-bottom:1px solid rgba(151,185,181,.13);background:rgba(5,15,21,.96);backdrop-filter:blur(12px)}.game-sidebar .player-card,.game-sidebar .country-mini,.game-sidebar .side-title,.game-sidebar .side-bottom{display:none}.game-sidebar>button{font-size:10px!important;white-space:nowrap;flex:0 0 auto;padding:9px 11px}.game-sidebar>button span{display:none}.history-list>div{grid-template-columns:60px 55px 1fr;gap:7px}.history-list>div span:nth-of-type(2),.history-list>div em{display:none}.history-stat-grid{grid-template-columns:1fr}.patch-columns{grid-template-columns:1fr}.patch-head{display:grid}.patch-head time{white-space:normal}.game-main{padding:14px}.company-modal-backdrop{padding:10px 8px}.company-modal{max-height:95vh}}
+
+
+/* MarketArena 2026 visual system */
+:root{
+  --bg:#050b10;
+  --bg-elev:#08131a;
+  --panel:#0b1820;
+  --panel-2:#0e1d26;
+  --panel-3:#12252f;
+  --line:rgba(154,190,201,.14);
+  --line-strong:rgba(154,190,201,.24);
+  --text:#edf6f7;
+  --muted:#78909b;
+  --muted-2:#526b76;
+  --accent:#8ed7df;
+  --accent-soft:rgba(142,215,223,.12);
+  --positive:#6fd0a2;
+  --negative:#ef8f91;
+  --gold:#e4c36b;
+  --radius:12px;
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 520px at 75% -8%,rgba(55,123,141,.16),transparent 62%),
+    radial-gradient(700px 460px at 8% 92%,rgba(26,72,82,.12),transparent 66%),
+    var(--bg);
+}
+::selection{background:rgba(142,215,223,.22);color:#fff}
+button,input{transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease}
+.game-shell{background:transparent}
+.game-topbar{
+  height:76px;
+  background:rgba(6,16,23,.82);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(18px) saturate(130%);
+  -webkit-backdrop-filter:blur(18px) saturate(130%);
+  box-shadow:0 10px 40px rgba(0,0,0,.24);
+}
+.game-brand span{border-radius:9px;box-shadow:0 8px 28px rgba(102,199,214,.14)}
+.game-topbar nav{gap:7px}
+.game-topbar nav button{
+  height:38px;
+  align-self:center;
+  padding:0 12px;
+  border:1px solid transparent;
+  border-radius:8px;
+}
+.game-topbar nav button:hover,.game-topbar nav .active{
+  background:var(--accent-soft);
+  border-color:rgba(142,215,223,.16);
+  border-bottom-color:rgba(142,215,223,.45);
+}
+.game-body{grid-template-columns:248px minmax(0,1fr)}
+.game-sidebar{
+  background:rgba(7,18,25,.76);
+  border-right:1px solid var(--line);
+  backdrop-filter:blur(14px);
+}
+.game-sidebar>button{
+  min-height:40px;
+  border:1px solid transparent;
+  border-radius:9px;
+  padding:0 12px;
+}
+.game-sidebar>button:hover,.game-sidebar>.side-active{
+  background:rgba(142,215,223,.075);
+  border-color:rgba(142,215,223,.11);
+  color:#f3fbfc;
+}
+.game-main{padding:34px clamp(18px,3vw,44px) 54px}
+.game-heading{margin-bottom:22px}
+.game-heading h1,.panel-title h1{letter-spacing:-.065em}
+.market-map-card,.atlas,.country-profile,.company-modal,.panel,.stat-card,.market-card,.life-card{
+  border-color:var(--line);
+  background:linear-gradient(145deg,rgba(13,29,38,.92),rgba(7,17,24,.96));
+  box-shadow:0 22px 70px rgba(0,0,0,.20);
+  border-radius:var(--radius);
+}
+.market-map-card:hover,.atlas:hover{
+  border-color:var(--line-strong);
+  box-shadow:0 26px 90px rgba(0,0,0,.30);
+}
+.card-head h2,.company-preview h3{letter-spacing:-.035em}
+.day-button,.offline-pill{
+  border-radius:9px;
+  background:rgba(12,29,38,.88);
+  border-color:var(--line-strong);
+}
+.primary{
+  min-height:50px;
+  border-radius:9px;
+  background:linear-gradient(135deg,#eaf8fa,#b9dce2);
+  box-shadow:0 10px 30px rgba(90,176,192,.12);
+}
+.primary:hover{box-shadow:0 14px 36px rgba(90,176,192,.18)}
+.country-option,.difficulty,.mode-card{
+  border-color:var(--line);
+  border-radius:11px;
+  background:linear-gradient(145deg,rgba(11,27,36,.92),rgba(7,18,25,.96));
+}
+.country-option:hover,.country-option.active,.difficulty:hover,.difficulty.active,.mode-card:hover,.mode-card.selected{
+  border-color:rgba(142,215,223,.34);
+  background:linear-gradient(145deg,rgba(17,39,49,.98),rgba(8,22,29,.98));
+  box-shadow:0 18px 50px rgba(0,0,0,.24);
+}
+.atlas-3d-viewport{min-height:540px}
+.atlas-head{
+  background:rgba(8,23,31,.82);
+  backdrop-filter:blur(12px);
+}
+.atlas-3d-overlay{pointer-events:none}
+.atlas-3d-overlay button{pointer-events:auto}
+.atlas-country-label,.atlas-capital-marker,.atlas-company-marker{
+  filter:drop-shadow(0 7px 16px rgba(0,0,0,.55));
+}
+.atlas-company-marker{
+  border:1px solid rgba(228,195,107,.45);
+  background:rgba(7,19,25,.84);
+  backdrop-filter:blur(8px);
+  border-radius:8px;
+  box-shadow:0 8px 22px rgba(0,0,0,.25);
+}
+.atlas-company-marker:hover{transform:scale(1.05)}
+.panel,.market-card,.stat-card,.life-card{overflow:hidden}
+.panel-title{margin-bottom:22px}
+@media (max-width:900px){
+  .game-topbar{height:auto;min-height:68px;padding:10px 14px;flex-wrap:wrap;gap:10px}
+  .game-topbar nav{order:3;width:100%;overflow:auto;padding-bottom:2px}
+  .game-topbar nav button{white-space:nowrap}
+  .game-body{grid-template-columns:1fr}
+  .game-sidebar{
+    position:sticky;top:0;z-index:18;
+    border-right:0;border-bottom:1px solid var(--line);
+    padding:8px;display:flex;flex-direction:row;overflow:auto;
+  }
+  .game-sidebar .player-card,.game-sidebar .country-mini,.game-sidebar .side-title,.game-sidebar .side-bottom{display:none}
+  .game-sidebar>button{white-space:nowrap;min-width:max-content}
+  .game-main{padding:22px 14px 40px}
+  .hero-map-grid{grid-template-columns:1fr}
+  .market-map-card{grid-row:auto;min-height:430px}
+}
+@media (max-width:620px){
+  .game-right{font-size:9px}
+  .game-right .offline-pill{display:none}
+  .game-heading{align-items:flex-start;gap:14px;flex-direction:column}
+  .atlas-3d-viewport{min-height:380px}
+  .atlas-head span:last-child{display:none}
+}
