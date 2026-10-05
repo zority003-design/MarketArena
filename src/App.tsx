@@ -53,8 +53,16 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         <linearGradient id="terrainBase" x1=".2" y1="0" x2=".85" y2="1"><stop stopColor="#a7b47e"/><stop offset=".28" stopColor="#718e67"/><stop offset=".62" stopColor="#49674e"/><stop offset="1" stopColor="#233b34"/></linearGradient>
         <linearGradient id="terrainWarm" x1=".1" y1="0" x2=".9" y2="1"><stop stopColor="#c79b62"/><stop offset=".5" stopColor="#8b633f"/><stop offset="1" stopColor="#4c3b31"/></linearGradient>
         <linearGradient id="terrainSouth" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#71966d"/><stop offset=".5" stopColor="#3d6955"/><stop offset="1" stopColor="#21423a"/></linearGradient>
+        <linearGradient id="mountainFace" x1=".12" y1=".08" x2=".82" y2=".92"><stop stopColor="#d7d5c1"/><stop offset=".22" stopColor="#8f958b"/><stop offset=".52" stopColor="#505b58"/><stop offset=".78" stopColor="#303c3d"/><stop offset="1" stopColor="#18282d"/></linearGradient>
+        <linearGradient id="mountainLit" x1=".18" y1=".05" x2=".76" y2=".9"><stop stopColor="#f4f0d9"/><stop offset=".35" stopColor="#c4c5b3"/><stop offset="1" stopColor="#59635f"/></linearGradient>
+        <linearGradient id="snowRidge" x1=".2" y1="0" x2=".8" y2="1"><stop stopColor="#ffffff"/><stop offset=".42" stopColor="#e8e7da"/><stop offset="1" stopColor="#9da7a5"/></linearGradient>
+        <radialGradient id="forestMass" cx=".42" cy=".38" r=".78"><stop stopColor="#477c54"/><stop offset=".48" stopColor="#285640"/><stop offset="1" stopColor="#183a34"/></radialGradient>
         <pattern id="terrainGrain" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".7" fill="#fff" opacity=".12"/><circle cx="13" cy="11" r=".8" fill="#142f2c" opacity=".16"/><path d="M0 15l5-2 4 2 5-2 4 2" fill="none" stroke="#e8e8cf" strokeOpacity=".07"/></pattern>
-        <pattern id="forestTexture" width="14" height="13" patternUnits="userSpaceOnUse"><path d="M7 1L2 8h3l-4 4h12L9 8h3z" fill="#183f35" opacity=".62"/></pattern>
+        <pattern id="forestTexture" width="30" height="24" patternUnits="userSpaceOnUse">
+          <path d="M2 14C4 8 9 7 13 10C16 5 22 6 25 11C29 15 25 21 19 20C14 24 8 21 6 19C2 19 0 17 2 14Z" fill="#163d35" opacity=".48"/>
+          <path d="M18 2C22 0 27 2 28 6C29 10 25 12 21 10C17 9 15 5 18 2Z" fill="#7ca064" opacity=".2"/>
+          <circle cx="7" cy="5" r="1.5" fill="#9ab477" opacity=".18"/><circle cx="13" cy="17" r="1.2" fill="#9ab477" opacity=".2"/>
+        </pattern>
         <filter id="landShadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dy="6"/><feComponentTransfer><feFuncA type="linear" slope=".62"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <filter id="softRelief" x="-10%" y="-10%" width="120%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="3" seed="17" result="noise"/><feDiffuseLighting in="noise" surfaceScale="3.5" diffuseConstant=".85" lighting-color="#fff" result="light"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="light" in2="SourceGraphic" operator="in" result="lit"/><feBlend in="SourceGraphic" in2="lit" mode="soft-light"/></filter>
         <clipPath id="landmassClip">{countries.map(c=><path key={c.id} d={c.mapPath}/>)}</clipPath>
@@ -82,23 +90,22 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         <rect x="145" y="232" width="145" height="92" fill="url(#forestTexture)" opacity=".82"/>
         <rect x="296" y="224" width="130" height="82" fill="url(#forestTexture)" opacity=".38"/>
 
-        {/* broad mountain systems */}
-        <g fill="#263a35" stroke="#182b2b" strokeWidth=".7" strokeLinejoin="round">
-          <path d="M68 123l15-36 13 25 17-43 15 34 17-28 16 33 17-24 17 33 17-29 17 37 17-27 18 34 17-25 16 32 17-24 18 30 17-22 16 28" opacity=".96"/>
-          <path d="M157 112l15-31 13 23 16-39 16 34 15-27 17 34 15-22 17 31 16-25 16 31 17-23 16 31" opacity=".9"/>
-          <path d="M274 123l14-33 14 26 15-40 16 34 15-27 17 35 16-24 16 31 16-25 15 31 16-23 15 29" opacity=".9"/>
+        {/* sculpted mountain systems: irregular landforms, not icon triangles */}
+        <g opacity=".98" strokeLinejoin="round">
+          <path d="M66 132 C73 117 78 106 88 94 C96 84 103 82 110 91 C117 79 126 72 135 83 C143 91 149 104 156 111 C164 101 172 91 181 93 C191 96 198 108 205 116 C214 105 223 94 232 98 C242 102 248 116 255 124 L250 151 C228 143 210 139 190 145 C168 152 148 149 127 143 C104 137 84 139 66 132Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.2"/>
+          <path d="M153 132 C164 115 170 102 181 91 C188 83 196 84 203 94 C211 82 220 72 230 82 C239 91 245 105 252 114 C260 103 269 93 278 97 C287 101 294 114 301 122 L297 148 C277 140 257 140 238 147 C214 155 185 149 153 132Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.15"/>
+          <path d="M266 137 C276 120 282 106 292 95 C300 86 307 87 314 98 C323 84 332 75 342 85 C350 94 355 107 362 115 C371 103 380 94 389 99 C398 104 406 117 414 125 L410 151 C389 145 369 146 349 153 C327 160 297 154 266 137Z" fill="url(#mountainFace)" stroke="#263738" strokeWidth="1.1"/>
+          <path d="M91 120 C101 105 107 96 115 89 C121 84 126 86 130 94 C137 85 144 78 151 84 C159 91 163 104 170 113 C160 122 147 128 132 129 C117 129 104 126 91 120Z" fill="url(#mountainLit)" opacity=".88"/>
+          <path d="M181 124 C190 108 195 99 202 92 C208 86 213 88 218 97 C225 87 232 81 239 88 C246 96 251 108 257 117 C247 127 233 132 219 132 C204 132 193 129 181 124Z" fill="url(#mountainLit)" opacity=".8"/>
+          <path d="M294 130 C302 114 308 105 315 97 C321 91 326 93 331 101 C338 91 345 85 352 92 C359 100 364 112 371 121 C360 132 347 137 333 138 C319 139 307 136 294 130Z" fill="url(#mountainLit)" opacity=".82"/>
+          <path d="M103 98 C111 91 116 87 122 89 C128 91 130 96 134 102 C128 99 124 100 120 104 C116 101 111 99 103 98Z M194 97 C201 90 207 87 213 90 C218 93 220 98 224 103 C217 99 212 100 208 104 C203 101 199 99 194 97Z M307 101 C314 94 319 92 325 95 C330 98 333 103 336 108 C330 104 325 105 321 109 C316 106 312 104 307 101Z" fill="url(#snowRidge)" opacity=".9"/>
+          <path d="M73 138 C95 145 118 150 140 149 C164 148 181 141 202 145 C226 150 248 157 270 151 C292 145 312 145 336 151 C361 158 383 151 409 145" fill="none" stroke="#162a2c" strokeWidth="5" opacity=".32" filter="url(#landShadow)"/>
         </g>
-        <g fill="none" stroke="#e7e7d4" strokeWidth="2.4" strokeLinejoin="round">
-          <path d="M68 123l15-36 13 25 17-43 15 34 17-28 16 33 17-24 17 33 17-29 17 37 17-27 18 34 17-25 16 32 17-24 18 30 17-22 16 28"/>
-          <path d="M157 112l15-31 13 23 16-39 16 34 15-27 17 34 15-22 17 31 16-25 16 31 17-23 16 31"/>
-          <path d="M274 123l14-33 14 26 15-40 16 34 15-27 17 35 16-24 16 31 16-25 15 31 16-23 15 29"/>
+        <g fill="none" stroke="#d8d8c6" strokeOpacity=".24" strokeWidth=".7">
+          <path d="M77 126 C100 116 120 117 141 126 S179 140 201 129 S241 118 263 129 S300 141 325 129 S370 117 405 130"/>
+          <path d="M88 138 C110 129 129 131 148 139 S184 151 205 141 S243 132 264 141 S302 153 327 141 S370 130 398 141"/>
+          <path d="M174 120 C192 110 211 112 226 121 S253 135 270 126 S300 115 317 124"/>
         </g>
-        <g fill="#fffdf1">
-          <path d="M93 73l-6 15 6-4 6 4z"/><path d="M124 86l-6 15 6-4 6 4z"/>
-          <path d="M190 63l-6 16 6-4 6 4z"/><path d="M229 72l-6 16 6-4 6 4z"/>
-          <path d="M313 80l-6 16 6-4 6 4z"/><path d="M350 91l-6 14 6-4 6 4z"/><path d="M392 100l-6 13 6-4 6 4z"/>
-        </g>
-
         {/* elevation contours */}
         <g fill="none" stroke="#e2e4c8" strokeOpacity=".22" strokeWidth=".7">
           <path d="M52 139C91 112 126 116 159 136S218 161 251 143 309 126 342 143 402 158 447 132"/>
