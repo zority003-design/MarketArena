@@ -134,19 +134,32 @@ function CompanyChart({company,points}:{company:CompanyPreview;points:number[]})
 }
 
 type ChartRange="ALL"|"10Y"|"5Y"|"1Y"|"6M"|"1M"|"1W"|"1D";
-const chartRangeLabels:[ChartRange,string][]=[["ALL","Всё время"],["10Y","10 лет"],["5Y","5 лет"],["1Y","1 год"],["6M","6 месяцев"],["1M","1 месяц"],["1W","1 неделя"],["1D","1 день"]];
-function CandleChart({company,points,range}:{company:CompanyPreview;points:number[];range:ChartRange}) {
-  const safe=points.length?points:[priceForFallback(company)];
-  const min=Math.min(...safe),max=Math.max(...safe),span=Math.max(1,max-min);
-  const path=safe.map((v,i)=>`${(i/Math.max(1,safe.length-1))*500},${96-((v-min)/span)*78}`).join(" ");
-  const first=safe[0]??0,last=safe[safe.length-1]??0,change=first?((last-first)/first)*100:0;
+const chartRangeLabels:[ChartRange,string][]=[["1D","1 день"],["1W","1 неделя"],["1M","1 месяц"],["6M","6 месяцев"],["1Y","1 год"],["5Y","5 лет"],["10Y","10 лет"],["ALL","1 год × 20"]];
+type CandlePoint={period:number;open:number;high:number;low:number;close:number};
+function CandleChart({company,candles,range}:{company:CompanyPreview;candles:CandlePoint[];range:ChartRange}) {
+  const safe=candles.length?candles:[{period:0,open:priceForFallback(company),high:priceForFallback(company),low:priceForFallback(company),close:priceForFallback(company)}];
+  const min=Math.min(...safe.map(c=>c.low)),max=Math.max(...safe.map(c=>c.high)),span=Math.max(1,max-min);
+  const width=560,height=300,padX=18,padTop=16,padBottom=28,plotH=height-padTop-padBottom;
+  const stepX=(width-padX*2)/Math.max(1,safe.length);
+  const bodyW=Math.max(3,Math.min(11,stepX*.62));
+  const y=(v:number)=>padTop+(max-v)/span*plotH;
+  const first=safe[0].open,last=safe[safe.length-1].close,change=first?((last-first)/first)*100:0;
+  const lastC=safe[safe.length-1];
+  const formatPeriod=(p:number)=>`День ${Math.max(1,Math.round(p))}`;
   return <div className="candle-terminal">
-    <div className="candle-head"><div><span>ДИНАМИКА КОТИРОВКИ · {range}</span><b>{last.toLocaleString("ru-RU")} VLR</b></div><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div>
-    <svg viewBox="0 0 500 108" preserveAspectRatio="none" aria-label={"График "+company.ticker+", период "+range}>
-      <path d="M0 96H500M0 70H500M0 44H500M0 18H500" className="grid-line"/>
-      <polyline points={path} fill="none" stroke="currentColor" strokeWidth="2.5" vectorEffect="non-scaling-stroke"/>
+    <div className="candle-head"><div><span>ЯПОНСКИЕ СВЕЧИ · ИНТЕРВАЛ {range}</span><b>{last.toLocaleString("ru-RU")} VLR</b></div><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div>
+    <div className="candle-ohlc"><span>O <b>{lastC.open.toLocaleString("ru-RU")}</b></span><span>H <b>{lastC.high.toLocaleString("ru-RU")}</b></span><span>L <b>{lastC.low.toLocaleString("ru-RU")}</b></span><span>C <b>{lastC.close.toLocaleString("ru-RU")}</b></span><em>{formatPeriod(lastC.period)}</em></div>
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-label={`Японские свечи ${company.ticker}, интервал ${range}`}>
+      <path d={`M${padX} ${y(min)}H${width-padX} M${padX} ${y((min+max)/2)}H${width-padX} M${padX} ${y(max)}H${width-padX}`} className="grid-line"/>
+      {safe.map((c,i)=>{
+        const x=padX+stepX*(i+.5),up=c.close>=c.open,top=y(Math.max(c.open,c.close)),bottom=y(Math.min(c.open,c.close)),body=Math.max(2,bottom-top);
+        return <g className={up?"candle up":"candle down"} key={i}>
+          <line x1={x} x2={x} y1={y(c.high)} y2={y(c.low)} />
+          <rect x={x-bodyW/2} y={top} width={bodyW} height={body} />
+        </g>;
+      })}
     </svg>
-    <div className="candle-axis"><span>начало периода</span><span>середина</span><span>сейчас</span></div>
+    <div className="candle-axis"><span>{formatPeriod(safe[0].period)}</span><span>{formatPeriod(safe[Math.floor(safe.length/2)].period)}</span><span>{formatPeriod(safe[safe.length-1].period)}</span></div>
   </div>;
 }
 function priceForFallback(company:CompanyPreview){const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);return 6500+(seed%18)*850;}
@@ -250,7 +263,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const old=priceFor(company,oldDay);
     return ((priceFor(company,day)-old)/old)*100;
   };
-  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:720,"10Y":720,"5Y":540,"1Y":365,"6M":182,"1M":30,"1W":7,"1D":2};const len=lengths[range];return Array.from({length:Math.max(2,len)},(_,i)=>priceFor(company,day-len+1+i));};
+  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,start)+(priceFor(company,end)-priceFor(company,start));});};
+  const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{const counts:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=counts[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;const open=priceFor(company,start);const close=priceFor(company,end);let high=Math.max(open,close),low=Math.min(open,close);for(let j=0;j<=12;j++){const sample=start+(end-start)*(j/12);const value=priceFor(company,sample);high=Math.max(high,value);low=Math.min(low,value);}const wiggle=(Math.sin((end+company.ticker.length)*1.73)+1)*.0025;high=Math.round(high*(1+wiggle)/50)*50;low=Math.max(2500,Math.round(low*(1-wiggle)/50)*50);return {period:end,open,high,low,close};});};
   const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
   const totalWealth=cash+portfolioValue;
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
@@ -293,7 +307,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
 
   return <div className="game-shell">
     <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><div><b>MarketArena</b><small>ECONOMIC STRATEGY</small></div></button><nav className="game-command-deck">{tabs.map(([id,label])=><button type="button" key={id} className={id==="exchange"?(tab===id?"exchange-nav active":"exchange-nav"):tab===id?"active":""} aria-label={id==="exchange"?"Открыть биржу":label} onClick={e=>{e.preventDefault();e.stopPropagation();if(id==="exchange") openExchange(); else setTab(id)}}><span className="nav-glyph">{id==="overview"?"⌂":id==="exchange"?"◈":id==="portfolio"?"▣":id==="companies"?"◆":id==="life"?"✦":id==="map"?"⌖":id==="news"?"≡":id==="events"?"⚡":id==="history"?"◷":"+"}</span>{label}</button>)}</nav><div className="game-right"><span className="offline-pill live-pill"><i/> MARKET LIVE</span><span className="topbar-day">DAY {day}</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
-    <div className="game-body">
+    <div className="game-routebar"><div className="game-route-intro"><b>КАК ИГРАТЬ</b><span>Заработай → изучи рынок → купи актив → следи за портфелем</span></div><div className="game-route-actions"><button onClick={()=>setTab("overview")}>① Обзор</button><button onClick={()=>setTab("life")}>② Заработок</button><button onClick={()=>openExchange()}>③ Биржа</button><button onClick={()=>setTab("portfolio")}>④ Портфель</button><button onClick={()=>setTab("map")}>⑤ Карта</button><button onClick={()=>setTab("history")}>⑥ История</button></div></div>\n    <div className="game-body">
             <main className="game-main">
         {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>{country.name}: экономический центр</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
           <div className="hero-map-grid">
@@ -306,85 +320,25 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
         {tab==="exchange"&&<Panel title={"Биржа · "+country.name} eyebrow="РЫНОЧНАЯ ИГРА">
           <div className="exchange-safe">
             <div className="exchange-safe-top">
-              <div>
-                <span className="eyebrow">ТОРГОВАЯ ПЛОЩАДКА</span>
-                <h2>Фондовый рынок {country.name}</h2>
-                <p>Игровой день {day} · квартал Q{Math.floor((day-1)/90)+1} · {timePaused?"рынок на паузе":"рынок открыт"}</p>
-              </div>
-              <div className="exchange-safe-clock">
-                <b>ДЕНЬ {day}</b>
-                <span>{Math.floor((day-1)/30)+1} месяц · {Math.floor((day-1)/90)+1} квартал</span>
-                <div>
-                  <button type="button" onClick={()=>setTimePaused(v=>!v)}>{timePaused?"▶ Продолжить":"Ⅱ Пауза"}</button>
-                  {[1,1.5,2].map(speed=><button type="button" key={speed} className={timeSpeed===speed?"active":""} onClick={()=>setTimeSpeed(speed as 1|1.5|2)}>×{speed}</button>)}
-                </div>
-              </div>
+              <div><span className="eyebrow">ТОРГОВЫЙ ТЕРМИНАЛ</span><h2>Фондовый рынок {country.name}</h2><p>Один бар = один выбранный интервал · OHLC · японские свечи</p></div>
+              <div className="exchange-safe-clock"><b>ДЕНЬ {day}</b><span>{Math.floor((day-1)/30)+1} месяц · {timePaused?"рынок на паузе":"рынок открыт"}</span><div><button type="button" onClick={()=>setTimePaused(v=>!v)}>{timePaused?"▶ Продолжить":"Ⅱ Пауза"}</button>{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>setTimeSpeed(x as 1|1.5|2)}>×{x}</button>)}</div></div>
             </div>
-            <div className="exchange-safe-marketline">
-              <span>Состояние экономики: <b>{marketProfile.strength}</b></span>
-              <span>Риск: <b>{marketProfile.risk}</b></span>
-              <button type="button" onClick={advance}>Следующий день →</button>
-            </div>
-            <div className="exchange-safe-companies">
-              {country.companies.map(company=>{
-                const p=priceFor(company);
-                const ch=priceChange(company);
-                return <button type="button" key={company.ticker} className={exchangeCompany?.ticker===company.ticker?"selected":""} onClick={()=>setExchangeCompany(company)}>
-                  <b>{company.ticker}</b><span>{company.name}</span><small>{company.sector}</small><strong>{p.toLocaleString("ru-RU")} VLR</strong><em className={ch>=0?"gain":"loss"}>{ch>=0?"+":""}{ch.toFixed(2)}%</em>
-                </button>;
-              })}
-            </div>
-            {exchangeCompany ? (()=> {
-              const focus=exchangeCompany;
-              const p=priceFor(focus);
-              const previous=priceFor(focus,Math.max(1,day-1));
-              const change=((p-previous)/Math.max(1,previous))*100;
-              const owned=holdings[focus.ticker]||0;
-              const report=quarterlyReport(focus,day);
-              const profile=companyProfile(focus,country);
-              const points=history(focus,chartRange).filter(Number.isFinite);
-              const visible=points.length?points.slice(-180):[p];
-              const lo=visible.reduce((a,v)=>Math.min(a,v),visible[0]);
-              const hi=visible.reduce((a,v)=>Math.max(a,v),visible[0]);
-              const span=Math.max(1,hi-lo);
-              const poly=visible.map((v,i)=>((i/Math.max(1,visible.length-1))*100).toFixed(2)+","+(94-((v-lo)/span)*76).toFixed(2)).join(" ");
+            <div className="exchange-safe-marketline"><span>Компаний: <b>{country.companies.length}</b></span><span>Кэш: <b>{cash.toLocaleString("ru-RU")} VLR</b></span><span>Биржа: <b>{country.exchange}</b></span><button type="button" onClick={advance}>Следующий день →</button></div>
+            <div className="exchange-safe-companies">{country.companies.map(c=><button type="button" key={c.ticker} className={exchangeCompany?.ticker===c.ticker?"selected":""} onClick={()=>{setExchangeCompany(c);setSelectedCompany(c)}}><b>{c.ticker}</b><span>{c.name}</span><small>{c.sector}</small><strong>{priceFor(c).toLocaleString("ru-RU")} VLR</strong><em className={priceChange(c)>=0?"gain":"loss"}>{priceChange(c)>=0?"+":""}{priceChange(c).toFixed(2)}%</em></button>)}</div>
+            {exchangeCompany&&(()=>{
+              const focus=exchangeCompany, profile=companyProfile(focus,country), report=quarterlyReport(focus,day), candles=candleSeries(focus,chartRange), current=priceFor(focus), owned=holdings[focus.ticker]||0;
               return <div className="exchange-safe-focus">
-                <div className="exchange-safe-focushead">
-                  <div><span className="ticker">{focus.ticker}</span><h2>{focus.name}</h2><p>{focus.sector} · CEO {focus.ceo}</p></div>
-                  <div><b>{p.toLocaleString("ru-RU")} VLR</b><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div>
+                <div className="exchange-safe-focushead"><div><span className="ticker">{focus.ticker}</span><h2>{focus.name}</h2><p>{focus.sector} · CEO {focus.ceo}</p></div><div><b>{current.toLocaleString("ru-RU")} VLR</b><strong className={priceChange(focus)>=0?"gain":"loss"}>{priceChange(focus)>=0?"+":""}{priceChange(focus).toFixed(2)}%</strong></div></div>
+                <div className="exchange-safe-chart"><CandleChart company={focus} candles={candles} range={chartRange}/><div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button type="button" key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div></div>
+                <div className="exchange-safe-actions"><span>В портфеле: <b>{owned} акций</b> · Кэш: <b>{cash.toLocaleString("ru-RU")} VLR</b></span><div><button type="button" className="secondary-action" onClick={()=>setSelectedCompany(focus)}>Открыть досье</button><button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button><button type="button" className="primary small" onClick={()=>buy(focus)}>Купить 1 акцию</button></div></div>
+                <div className="company-intel">
+                  <div><span className="eyebrow">АНАЛИТИКА</span><h3>Прогноз рынка</h3><p>Базовый сценарий: <b className={priceChange(focus)>=0?"gain":"loss"}>{priceChange(focus)>=0?"умеренный рост":"осторожный сценарий"}</b>. Драйверы: {focus.sector}, страна, сырьё и последний корпоративный сигнал.</p><span className="analyst-quote">«{priceChange(focus)>=0?"Мы видим пространство для роста, если текущий спрос сохранится.":"Мы сохраняем осторожность: рынок уже закладывает существенные риски в оценку."}» — аналитик MarketArena</span><div className="analyst-bars"><span style={{width:`${Math.max(12,Math.min(88,50+priceChange(focus)*5))}%`}}>Рост</span><span style={{width:`${Math.max(12,Math.min(88,50-priceChange(focus)*3))}%`}}>Стабильность</span></div></div>
+                  <div><span className="eyebrow">НОВОСТИ КОМПАНИИ</span><h3>Последние события</h3>{[0,1,2].map(i=>{const e=marketEvent(focus,Math.max(1,day-i*3));return <article className="company-news-item" key={i}><b>ДЕНЬ {Math.max(1,day-i*3)}</b><p>{e.headline}.</p><strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}% к настроению</strong></article>})}</div>
                 </div>
-                <div className="exchange-safe-chart">
-                  <div className="chart-title"><span>КОТИРОВКА · {chartRange}</span><b>{visible[visible.length-1].toLocaleString("ru-RU")} VLR</b></div>
-                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label={"График "+focus.ticker}>
-                    <path d="M0 94H100M0 69H100M0 44H100M0 19H100" className="grid-line"/>
-                    <polyline points={poly} fill="none" stroke="currentColor" strokeWidth="2.2" vectorEffect="non-scaling-stroke"/>
-                  </svg>
-                  <div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button type="button" key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div>
-                </div>
-                <div className="exchange-safe-metrics">
-                  <div><span>КАПИТАЛИЗАЦИЯ</span><b>{profile.marketCap}</b></div>
-                  <div><span>P / E</span><b>{profile.pe}</b></div>
-                  <div><span>P / B</span><b>{profile.pb}</b></div>
-                  <div><span>ДИВИДЕНД</span><b>{profile.dividendYield}</b></div>
-                </div>
-                <div className="exchange-safe-report">
-                  <div><span>ПОСЛЕДНИЙ ОТЧЁТ · Q{Math.floor((day-1)/90)+1}</span><b>{report.outlook.toUpperCase()}</b></div>
-                  <h3>{focus.name}: отчёт формируется из экономики</h3>
-                  <p>{report.event.headline}. Для сектора «{focus.sector}» ключевой фактор — цены {report.commodity.name}. Поэтому расчёт выручки и прибыли меняется вместе с новостью, страновой средой и сырьевым циклом.</p>
-                  <div><strong>Выручка {report.revenue.toFixed(1)} млрд VLR</strong><strong>Чистая прибыль {report.profit.toFixed(2)} млрд VLR</strong><strong>Сырьевой фактор {(report.commodity.impact*100).toFixed(2)}%</strong><strong>Новость {(report.event.impact*100).toFixed(2)}%</strong></div>
-                </div>
-                <div className="exchange-safe-dossier">
-                  <div><span>ПЛЮС СТРАНЫ</span><p>{marketProfile.strength}</p></div>
-                  <div><span>РИСК СТРАНЫ</span><p>{marketProfile.risk}</p></div>
-                  <div><span>РЕСУРСЫ КОМПАНИИ</span><p>{profile.materials}</p></div>
-                  <div><span>CEO</span><p>{focus.ceo}, {focus.ceoAge} лет. {focus.ceoBio}</p></div>
-                </div>
-                <div className="exchange-safe-actions">
-                  <span>В портфеле: <b>{owned} акций</b> · Кэш: <b>{cash.toLocaleString("ru-RU")} VLR</b></span>
-                  <div><button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button><button type="button" className="primary small" onClick={()=>buy(focus)}>Купить 1 акцию</button></div>
-                </div>
+                <div className="exchange-safe-metrics"><div><span>КАПИТАЛИЗАЦИЯ</span><b>{profile.marketCap}</b></div><div><span>ВЫРУЧКА</span><b>{profile.revenue}</b></div><div><span>P / E</span><b>{profile.pe}</b></div><div><span>ДИВИДЕНД</span><b>{profile.dividendYield}</b></div></div>
+                <div className="exchange-safe-report"><div><span>ПОСЛЕДНИЙ ОТЧЁТ · Q{Math.floor((day-1)/90)+1}</span><b>{report.outlook.toUpperCase()}</b></div><h3>{focus.name}: финансовый отчёт</h3><p>{report.event.headline}. Для сектора «{focus.sector}» ключевой фактор — цены {report.commodity.name}. Выручка и прибыль реагируют на новость, страновой цикл и сырьевой фактор.</p><div><strong>Выручка {report.revenue.toFixed(1)} млрд VLR</strong><strong>Чистая прибыль {report.profit.toFixed(2)} млрд VLR</strong><strong>Сырьевой фактор {(report.commodity.impact*100).toFixed(2)}%</strong><strong>Новость {(report.event.impact*100).toFixed(2)}%</strong></div></div>
               </div>;
-            })() : <div className="exchange-empty">Биржа готовит список компаний…</div>}
+            })()}
           </div>
         </Panel>}
 {tab==="portfolio"&&<Panel title="Портфель" eyebrow="YOUR CAPITAL"><div className="portfolio-summary"><div><span>СТОИМОСТЬ АКТИВОВ</span><b>{portfolioValue.toLocaleString("ru-RU")} VLR</b></div><div><span>СВОБОДНЫЕ ДЕНЬГИ</span><b>{cash.toLocaleString("ru-RU")} VLR</b></div><div><span>ВСЕГО</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></div><PortfolioChart points={portfolioHistory}/><div className="portfolio-insights"><div><span>ДИВЕРСИФИКАЦИЯ</span><b>{Object.values(holdings).filter(Boolean).length} позиций</b><small>открытые позиции</small></div><div><span>ДЕНЕЖНАЯ ДОЛЯ</span><b>{((cash/Math.max(1,totalWealth))*100).toFixed(1)}%</b><small>ликвидность</small></div><div><span>РЫНОЧНАЯ ЭКСПОЗИЦИЯ</span><b>{portfolioValue.toLocaleString("ru-RU")} VLR</b><small>стоимость акций</small></div></div><div className="table-card portfolio-table">{country.companies.filter(c=>(holdings[c.ticker]||0)>0).map(c=><div className="table-row" key={c.ticker}><button className="ticker-link" onClick={()=>openExchange(c)}>{c.ticker}</button><span>{c.name}</span><span>{holdings[c.ticker]} акций</span><strong>{(holdings[c.ticker]*priceFor(c)).toLocaleString("ru-RU")} VLR</strong><div className="trade-actions"><button onClick={()=>buy(c)}>+ Купить</button><button onClick={()=>sell(c)}>- Продать</button></div></div>)}{portfolioValue===0&&<div className="empty-state">Портфель пуст. Открой «Биржу» и купи первую акцию.</div>}</div></Panel>}
