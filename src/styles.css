@@ -428,3 +428,54 @@ button{cursor:pointer}
 .country-map .map-overlay-label text:first-child{fill:#eef3e8;font-weight:900}
 .country-map .map-overlay-label text:last-child{fill:#9fc0c7;letter-spacing:.1em}
 .map-key{position:relative;z-index:2}
+
+/* MarketArena complete rebuild: physical atlas + financial terminal */
+.atlas-realistic{background:linear-gradient(145deg,#071c28,#0a3142 58%,#071923);border:1px solid rgba(140,205,214,.18);box-shadow:0 24px 70px rgba(0,0,0,.32)}
+.atlas-world-svg{display:block;width:100%;height:auto;min-height:360px}
+.atlas-world-svg .world-country-group{cursor:pointer;transition:filter .2s ease}
+.atlas-world-svg .world-country-group:hover{filter:drop-shadow(0 8px 7px rgba(0,0,0,.45))}
+.country-land-base{stroke:#173c43;stroke-width:2.2;vector-effect:non-scaling-stroke}
+.country-coastline{fill:none;stroke:#d7c79a;stroke-width:2.4;vector-effect:non-scaling-stroke;pointer-events:none}
+.world-country-group.selected .country-coastline{stroke:#f3df9d;stroke-width:3.2}
+.forest-patch,.forest-mass{fill:#345b3b;opacity:.72}
+.terrain-hill{fill:#9cae77;opacity:.34}
+.mountain-shadow{fill:#5f6d5a;opacity:.6}
+.mountain-range{fill:none;stroke:#4d5549;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.mountain-snow{fill:#eef3e9;opacity:.9}
+.river-wide{fill:none;stroke:#74c5d4;stroke-width:3;opacity:.78}
+.river-thin{fill:none;stroke:#9cdae4;stroke-width:1.7;opacity:.8}
+.country-lake{fill:#6cb5c5;stroke:#b7e2e6;stroke-width:1;opacity:.9}
+.forest-dots{fill:#254e36;opacity:.8}
+.ocean-depth-lines path,.country-sea-contours{fill:none;stroke:#78b6c8;stroke-opacity:.16;stroke-width:1}
+.capital circle:first-child{fill:#f3d26f;stroke:#17262b;stroke-width:2}.capital circle:nth-child(2){fill:#fff}
+.capital text,.sea-label{fill:#d8e8e5;font-size:9px;font-weight:700;letter-spacing:.08em;paint-order:stroke;stroke:#071b24;stroke-width:3px}
+.company-marker{cursor:pointer}.company-marker circle:first-of-type{fill:#a8f0e1;stroke:#08212b;stroke-width:2}.company-marker circle:nth-of-type(2){fill:#fff}
+.company-leader{stroke:#f2c96b;stroke-width:1.4;stroke-dasharray:3 2}
+.company-label-bg{fill:#071923;fill-opacity:.93;stroke:#8bd6d4;stroke-opacity:.45}.map-company-callout text{fill:#fff;font-size:8px;font-weight:800;letter-spacing:.08em}
+.modern-portrait{position:relative;width:72px;height:86px;overflow:hidden;border-radius:20px;background:#14212b;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 12px 30px rgba(0,0,0,.22)}
+.portrait-bg{position:absolute;inset:0;background:radial-gradient(circle at 65% 25%,rgba(255,255,255,.22),transparent 28%),linear-gradient(145deg,#183d4c,#111923)}
+.portrait-shoulders{position:absolute;left:5px;right:5px;bottom:-12px;height:47px;border-radius:35px 35px 8px 8px;background:#25384c}
+.suit-slate .portrait-shoulders{background:#35424a}.suit-sand .portrait-shoulders{background:#675b49}.suit-black .portrait-shoulders{background:#171b22}
+.portrait-neck{position:absolute;left:31px;top:51px;width:15px;height:18px;border-radius:5px;background:#b98263}
+.portrait-face{position:absolute;left:20px;top:19px;width:34px;height:40px;border-radius:46% 46% 43% 43%;background:#c78d6b;box-shadow:inset -5px -3px 0 rgba(93,47,39,.12)}
+.portrait-hair{position:absolute;left:-2px;top:-5px;width:38px;height:17px;border-radius:18px 18px 8px 8px;background:#332b2a}.portrait-side .portrait-hair{transform:skewY(-9deg)}.portrait-wave .portrait-hair{height:20px;border-radius:16px 12px 8px 12px}.portrait-crop .portrait-hair{height:12px}
+.portrait-eye{position:absolute;top:19px;width:5px;height:2px;border-radius:4px;background:#25303a}.portrait-eye.left{left:8px}.portrait-eye.right{right:8px}
+.portrait-nose{position:absolute;left:16px;top:22px;width:3px;height:9px;border-right:1px solid rgba(80,42,35,.45)}
+.portrait-mouth{position:absolute;left:12px;bottom:7px;width:10px;height:3px;border-bottom:1px solid #713e39;border-radius:50%}
+.candle-terminal{border:1px solid rgba(141,210,213,.16);border-radius:16px;padding:12px;background:rgba(2,12,19,.45)}
+.candle-head{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px;letter-spacing:.08em;color:#9eb6ba}.candle-head b{color:#f3f5ed;font-size:14px}
+.candle-terminal svg{width:100%;height:190px}.candle line{stroke-width:1.2}.candle rect{rx:1}
+.candle.up line,.candle.up rect{stroke:#72e0b2;fill:#72e0b2}.candle.down line,.candle.down rect{stroke:#f17d82;fill:#f17d82}
+.candle-axis{display:flex;justify-content:space-between;color:#6e8a90;font-size:10px;padding:4px 2px 0}
+.company-modal{max-width:1100px;width:min(1100px,94vw);max-height:92vh;overflow:auto;background:linear-gradient(145deg,#0c1a24,#101f2b);border:1px solid rgba(148,214,213,.2);box-shadow:0 30px 100px rgba(0,0,0,.55)}
+.modal-company-head{display:flex;align-items:center;gap:18px}.modal-company-head .modern-portrait{width:96px;height:112px}
+.company-modal .modal-grid{grid-template-columns:minmax(0,1.55fr) minmax(260px,.8fr)}
+.company-modal .company-description{font-size:15px;line-height:1.7;color:#c3d4d6}
+.company-modal .company-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.company-modal .company-metrics>div{padding:12px;border:1px solid rgba(150,200,205,.12);border-radius:12px;background:rgba(255,255,255,.025)}
+.company-modal .quote-box{display:grid;grid-template-columns:1.4fr auto;gap:6px}.company-modal .quote-box small{grid-column:1/-1}
+.company-focus-card{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.company-focus-card:hover{transform:translateY(-3px);border-color:rgba(125,231,213,.35);box-shadow:0 18px 40px rgba(0,0,0,.2)}
+.ticker-link,.company-focus-card button,.trade-actions button,.job-row button,.day-button,.capital-actions button{transition:transform .16s ease,filter .16s ease}.ticker-link:hover,.company-focus-card button:hover,.trade-actions button:hover,.job-row button:hover,.day-button:hover,.capital-actions button:hover{transform:translateY(-1px);filter:brightness(1.08)}
+@media(max-width:760px){.company-modal .modal-grid{grid-template-columns:1fr}.company-modal .company-metrics{grid-template-columns:repeat(2,1fr)}.atlas-world-svg{min-height:260px}.modern-portrait{width:62px;height:76px}}
+
+.portrait-tone-0 .portrait-face,.portrait-tone-0 .portrait-neck{background:#c78d6b}.portrait-tone-1 .portrait-face,.portrait-tone-1 .portrait-neck{background:#a96f55}.portrait-tone-2 .portrait-face,.portrait-tone-2 .portrait-neck{background:#d7a07a}.portrait-tone-3 .portrait-face,.portrait-tone-3 .portrait-neck{background:#8f5c49}
+.portrait-tone-1 .portrait-hair{background:#17191d}.portrait-tone-2 .portrait-hair{background:#5a3b2d}.portrait-tone-3 .portrait-hair{background:#241d1b}
