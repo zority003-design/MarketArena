@@ -18,3 +18,129 @@ button:focus-visible,input:focus-visible{outline:2px solid #73b6c9;outline-offse
 
 @media(max-width:1100px){.auth-screen{grid-template-columns:1fr}.auth-art{display:none}.game-topbar nav{display:none}.game-body{grid-template-columns:190px 1fr}.country-picker{grid-template-columns:1fr}.country-options{grid-template-columns:repeat(2,1fr)}.hero-map-grid{grid-template-columns:1fr}.market-map-card{grid-row:auto}.jobs-card{grid-column:auto}.company-strip{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.auth-panel{padding:34px 22px}.auth-copy{margin-top:75px}.setup-inner,.setup-inner.wide{width:calc(100% - 30px);padding-top:42px}.setup-inner h1{font-size:42px}.mode-cards,.company-grid,.dashboard-grid{grid-template-columns:1fr}.country-options{grid-template-columns:1fr}.company-strip{grid-template-columns:1fr 1fr}.profile-stats{grid-template-columns:1fr 1fr}.profile-stats div:nth-child(2){border:0}.setup-actions{display:block}.setup-actions .primary{margin-top:13px;width:100%}.game-body{grid-template-columns:1fr}.game-sidebar{display:none}.game-main{padding:22px 14px}.game-heading{display:block}.day-button{margin-top:15px}.table-row{grid-template-columns:55px 1fr 75px}.table-row span:nth-child(3){display:none}.game-right>span:not(.offline-pill){display:none}.game-topbar{padding:0 13px}.ticker-grid{grid-template-columns:1fr}.life-job{grid-template-columns:1fr}.difficulty strong{float:none;display:block;margin-top:5px}.start-summary{flex-wrap:wrap}.start-summary .primary{width:100%;margin-left:0}.atlas-svg{min-height:300px}.modal-grid{grid-template-columns:1fr}.modal-company-head h2{font-size:24px}}
+
+
+/* MarketArena v0.5 visual pass: larger typography, country-first maps, interactive world and working trading UI */
+.map-motion{--mx:0px;--my:0px;transform:translate3d(var(--mx),var(--my),0);transition:transform .16s ease-out;will-change:transform}
+.map-motion:hover{z-index:2}
+.world-preview{height:100%;min-height:620px;border:1px solid #31586a;border-radius:12px;background:#071923;box-shadow:0 30px 90px #0008;overflow:hidden}
+.world-preview .atlas-svg{height:calc(100% - 88px);min-height:520px}
+.world-preview .atlas-head{font-size:11px;padding:0 18px;height:44px}
+.world-country{stroke:#e7eee6;stroke-width:1.6;stroke-opacity:.55;filter:drop-shadow(0 9px 8px #0007);transition:filter .2s,opacity .2s}
+.world-country:hover{filter:brightness(1.18) drop-shadow(0 12px 10px #0008)}
+.world-label circle{fill:#fff;stroke:#08202c;stroke-width:2}
+.world-label text{fill:#fff;font-size:9px;font-weight:800;paint-order:stroke;stroke:#092431;stroke-width:3px}
+.world-preview-footer{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-top:1px solid #24424e;background:#081923;color:#89a4af;font-size:11px}
+.world-preview-footer b{color:#dceef0;font-family:"Space Grotesk"}
+
+.auth-art{padding:34px 40px 34px 0;min-height:100vh;display:flex;align-items:center}
+.auth-screen{grid-template-columns:minmax(500px,.85fr) minmax(620px,1.15fr)}
+.auth-panel{padding:55px 70px}
+.auth-copy h1{font-size:clamp(52px,5vw,82px)}
+.auth-copy p{font-size:16px;max-width:660px}
+.field input{font-size:16px;padding:16px 18px}
+.primary{font-size:14px;padding:15px 18px}
+.eyebrow{font-size:10px}
+
+.game-topbar{height:78px;padding:0 28px;gap:36px}
+.game-brand b{font-size:18px}
+.game-brand span{width:40px;height:40px;font-size:12px}
+.game-topbar nav{gap:26px}
+.game-topbar nav button{font-size:13px;font-weight:650}
+.game-right{font-size:12px}
+.game-right b{font-size:17px}
+.game-body{grid-template-columns:255px 1fr;min-height:calc(100vh - 78px)}
+.game-sidebar{padding:22px 15px}
+.player-card b,.country-mini b{font-size:13px}
+.player-card small,.country-mini small{font-size:10px}
+.game-sidebar>button{font-size:13px;padding:13px 12px}
+.side-title{font-size:9px}
+.side-bottom b{font-size:13px}
+.game-main{padding:44px 48px;max-width:1600px}
+.game-heading h1{font-size:clamp(38px,3.4vw,58px)}
+.game-heading p,.panel-lead{font-size:15px}
+.day-button{font-size:12px;padding:13px 17px}
+.hero-map-grid{grid-template-columns:minmax(0,1.65fr) 390px}
+.market-map-card{min-height:650px;padding:20px}
+.card-head span,.capital-card>span{font-size:10px}
+.card-head h2{font-size:24px}
+.capital-card{padding:25px}
+.capital-card>strong{font-size:39px}
+.capital-card small{font-size:12px}
+.capital-actions button{font-size:12px;padding:12px 8px}
+.jobs-card,.companies-card{padding:24px}
+.job-row{padding:17px 0}
+.job-row b,.ticker-row b{font-size:13px}
+.job-row small,.ticker-row span small{font-size:10px}
+.job-row button,.ticker-row button{font-size:11px;padding:10px 13px}
+.companies-card h2,.jobs-card h2{font-size:23px}
+.panel-title h1{font-size:54px}
+.game-panel>.mini-chart{height:300px}
+.table-row{grid-template-columns:85px 1fr 170px 170px 230px;font-size:13px;padding:18px}
+.table-head{background:#0c202a;color:#8da8b2;font-size:10px;letter-spacing:.08em}
+.table-row span:nth-child(3){color:#78939e}
+.ticker-link{border:0;background:none;color:#79cedd;text-align:left;font:800 13px "Space Grotesk";cursor:pointer}
+.trade-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.trade-actions button{border:1px solid #3c6874;background:#102832;color:#d5e9ed;border-radius:5px;padding:9px 12px;font-size:11px;cursor:pointer;transition:.15s}
+.trade-actions button:hover{transform:translateY(-2px);border-color:#81c4d0}
+.trade-actions button:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.trade-actions b{min-width:52px;text-align:center;color:#83c7ad;font-size:11px}
+.gain{color:#80caa8!important}
+.loss{color:#e58e84!important}
+.portfolio-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 25px}
+.portfolio-summary div{border:1px solid #25424d;background:#0a1d26;border-radius:7px;padding:21px}
+.portfolio-summary span{display:block;font-size:9px;color:#6d8995;letter-spacing:.12em}
+.portfolio-summary b{display:block;margin-top:9px;font:600 25px "Space Grotesk";color:#e6f2f3}
+.company-focus-card{padding:25px}
+.company-focus-card h3{font-size:26px}
+.company-focus-card>p{font-size:12px}
+.company-focus-footer{font-size:11px}
+.company-focus-footer button{font-size:11px;padding:11px 14px}
+.company-modal{width:min(900px,100%);padding:32px}
+.modal-company-head h2{font-size:35px}
+.modal-company-head p,.modal-grid p{font-size:12px}
+.quote-box{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;margin-top:18px;padding:17px;border:1px solid #274753;background:#0a1d26;border-radius:6px}
+.quote-box span{font-size:9px;color:#6e8994;letter-spacing:.1em}
+.quote-box b{font:600 25px "Space Grotesk";color:#e8f3f4}
+.quote-box small{font-size:11px}
+.secondary-action{border:1px solid #3a5862;background:#0d2029;color:#c8dade;border-radius:4px;padding:10px 14px;font-size:11px;margin-right:7px}
+.ceo-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:15px}
+.ceo-tags span{padding:6px 8px;border:1px solid #2a4752;border-radius:4px;color:#75919b;font-size:9px}
+.modal-buy{font-size:11px}
+
+.country-map{margin-top:15px}
+.country-map .atlas-svg{min-height:560px}
+.country-atlas-svg{background:#08243a}
+.country-land-fill{stroke:#e8e1c9;stroke-width:1.8}
+.country-coastline{fill:none;stroke:#f0ead8;stroke-width:2.4;stroke-opacity:.85}
+.country-river-main{fill:none;stroke:#78b8ca;stroke-width:1.7;opacity:.75}
+.country-company-marker circle:first-child{r:8px}
+.map-overlay-label text:first-child{fill:#e2edf0;font-size:10px;font-weight:800;letter-spacing:.12em}
+.map-overlay-label text:last-child{fill:#7394a1;font-size:8px;letter-spacing:.08em}
+.country-map .company-marker text{font-size:8px}
+.country-map .company-marker circle:first-child{fill:#ffd36b}
+.country-map .capital-active circle:first-child{fill:#fff1a8}
+
+.flag{width:54px;height:34px;border-radius:2px;box-shadow:0 5px 14px #0008}
+.flag-slavoriya{background:linear-gradient(180deg,#194b91 0 33.333%,#f2eee0 33.333% 66.666%,#b63b43 66.666% 100%)}
+.flag-slavoriya i:before{width:9px;height:9px;border-radius:50%;background:#d4ad43;left:22px;top:12px}
+.flag-slavoriya i:after{display:none}
+.flag-lirania{background:linear-gradient(180deg,#f1eee3 0 30%,#1d4f75 30% 70%,#f1eee3 70%)}
+.flag-lirania i:before{width:7px;height:22px;background:#0d2f4d;left:10px;top:6px}
+.flag-lirania i:after{width:7px;height:22px;background:#2b8c8f;right:10px;top:6px}
+.flag-darvast{background:linear-gradient(180deg,#7f2638 0 33.333%,#e0c15c 33.333% 66.666%,#172f48 66.666% 100%)}
+.flag-darvast i:before{width:4px;height:23px;background:#f4ead0;left:25px;top:5px}
+.flag-darvast i:after{display:none}
+.flag-estraviya{background:linear-gradient(90deg,#0e7567 0 32%,#f2eee0 32% 68%,#db7a43 68%)}
+.flag-estraviya i:before{width:18px;height:4px;background:#c6a84c;left:18px;top:15px}
+.flag-estraviya i:after{display:none}
+.flag-saverniya{background:linear-gradient(180deg,#1d5673 0 33.333%,#f2eee0 33.333% 66.666%,#4f8b4b 66.666%)}
+.flag-saverniya i:before{width:9px;height:9px;border-radius:50%;background:#d0a84b;left:22px;top:12px}
+.flag-saverniya i:after{display:none}
+
+@media(max-width:1100px){
+  .auth-screen{grid-template-columns:1fr}.auth-art{display:none}.game-topbar nav{display:none}.game-body{grid-template-columns:210px 1fr}.game-main{padding:30px}.hero-map-grid{grid-template-columns:1fr}.market-map-card{grid-row:auto}.jobs-card{grid-column:auto}.portfolio-summary{grid-template-columns:1fr}.country-map .atlas-svg{min-height:450px}
+}
+@media(max-width:720px){
+  .auth-panel{padding:34px 22px}.auth-copy{margin-top:75px}.game-body{grid-template-columns:1fr}.game-sidebar{display:none}.game-main{padding:22px 14px}.game-heading h1{font-size:36px}.panel-title h1{font-size:39px}.table-row{grid-template-columns:58px 1fr 150px}.table-row span:nth-child(3){display:none}.table-row .trade-actions{grid-column:2/-1;justify-content:flex-start}.world-preview{min-height:440px}.world-preview .atlas-svg{min-height:350px}.country-map .atlas-svg{min-height:340px}.quote-box{grid-template-columns:1fr}.modal-company-head h2{font-size:27px}
+}
