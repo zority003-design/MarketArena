@@ -193,6 +193,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [exchangeCompany,setExchangeCompany]=useState<CompanyPreview|null>(()=>initialSave?.tab==="exchange" ? (country.companies[0]??null) : null);
+  useEffect(()=>{if(tab==="exchange"&&!exchangeCompany&&country.companies.length){setExchangeCompany(country.companies[0]);}},[tab,exchangeCompany,country.companies]);
   const [selectedNews,setSelectedNews]=useState<string|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
   const [jobGame,setJobGame]=useState<{jobId:string;target:number;score:number;started:number}|null>(null);
@@ -324,7 +325,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
               <div className="exchange-safe-clock"><b>ДЕНЬ {day}</b><span>{Math.floor((day-1)/30)+1} месяц · {timePaused?"рынок на паузе":"рынок открыт"}</span><div><button type="button" onClick={()=>setTimePaused(v=>!v)}>{timePaused?"▶ Продолжить":"Ⅱ Пауза"}</button>{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>setTimeSpeed(x as 1|1.5|2)}>×{x}</button>)}</div></div>
             </div>
             <div className="exchange-safe-marketline"><span>Компаний: <b>{country.companies.length}</b></span><span>Кэш: <b>{cash.toLocaleString("ru-RU")} VLR</b></span><span>Биржа: <b>{country.exchange}</b></span><button type="button" onClick={advance}>Следующий день →</button></div>
-            <div className="exchange-safe-companies">{country.companies.map(c=><button type="button" key={c.ticker} className={exchangeCompany?.ticker===c.ticker?"selected":""} onClick={()=>{setExchangeCompany(c);setSelectedCompany(c)}}><b>{c.ticker}</b><span>{c.name}</span><small>{c.sector}</small><strong>{priceFor(c).toLocaleString("ru-RU")} VLR</strong><em className={priceChange(c)>=0?"gain":"loss"}>{priceChange(c)>=0?"+":""}{priceChange(c).toFixed(2)}%</em></button>)}</div>
+            <div className="exchange-safe-companies">{country.companies.map(c=><button type="button" key={c.ticker} className={exchangeCompany?.ticker===c.ticker?"selected":""} onClick={()=>{setExchangeCompany(c);setSelectedCompany(c);setTab("exchange")}}><b>{c.ticker}</b><span>{c.name}</span><small>{c.sector}</small><strong>{priceFor(c).toLocaleString("ru-RU")} VLR</strong><em className={priceChange(c)>=0?"gain":"loss"}>{priceChange(c)>=0?"+":""}{priceChange(c).toFixed(2)}%</em></button>)}</div>
+            {!exchangeCompany&&<div className="exchange-recovery"><b>Биржа готова к работе</b><p>Выбери компанию ниже, чтобы открыть котировку, японские свечи, аналитику и досье.</p><button type="button" className="primary small" onClick={()=>{const first=country.companies[0];if(first){setExchangeCompany(first);setSelectedCompany(first);}}}>Открыть первую компанию</button></div>}
             {exchangeCompany&&(()=>{
               const focus=exchangeCompany, profile=companyProfile(focus,country), report=quarterlyReport(focus,day), candles=candleSeries(focus,chartRange), current=priceFor(focus), owned=holdings[focus.ticker]||0;
               return <div className="exchange-safe-focus">
