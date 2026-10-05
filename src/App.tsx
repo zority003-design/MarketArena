@@ -234,7 +234,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       {headline:"инвесторы позитивно оценили результаты квартала",impact:0.028},
       {headline:"рынок зафиксировал прибыль после сильного роста",impact:-0.014}
     ];
-    const event=events[Math.floor((atDay+seed)/3)%events.length];
+    const eventIndex=((Math.floor((atDay+seed)/3)%events.length)+events.length)%events.length;
+    const event=events[eventIndex];
     const commodity=commodityPulse(company.sector,atDay);
     const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
     const countryBias=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
