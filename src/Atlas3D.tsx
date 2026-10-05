@@ -323,8 +323,8 @@ function makeSnowCap(geo: GeoPoint, size: number) {
 export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany }: Atlas3DProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const labelRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const capitalRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const labelRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const capitalRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const companyRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const onSelectRef = useRef(onSelect);
   const onCompanyRef = useRef(onCompany);
