@@ -2106,3 +2106,5 @@ body{overflow-x:hidden}
   .exchange-safe-companies{grid-template-columns:1fr}
   .exchange-safe-metrics,.exchange-safe-dossier{grid-template-columns:1fr}
 }
+
+.exchange-placeholder-chart{height:260px;border:1px solid #1c343e;border-radius:7px;background:repeating-linear-gradient(0deg,transparent 0 50px,#ffffff0a 51px),repeating-linear-gradient(90deg,transparent 0 80px,#ffffff0a 81px);display:flex;align-items:flex-end;gap:3px;padding:15px}.exchange-placeholder-chart div{flex:1;background:linear-gradient(180deg,#61d5df,#285866);min-height:35px;border-radius:2px 2px 0 0;opacity:.8}.exchange-placeholder-chart div:nth-child(1){height:38%}.exchange-placeholder-chart div:nth-child(2){height:56%}.exchange-placeholder-chart div:nth-child(3){height:43%}.exchange-placeholder-chart div:nth-child(4){height:72%}.exchange-placeholder-chart div:nth-child(5){height:64%}
