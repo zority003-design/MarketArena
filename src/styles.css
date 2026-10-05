@@ -545,3 +545,44 @@ button{cursor:pointer}
 @keyframes livePulse{50%{opacity:.35;transform:scale(.75)}}
 @media(max-width:900px){.country-detail-grid{grid-template-columns:1fr 1fr}.atlas-realistic .atlas-world-svg{min-height:500px!important}}
 @media(max-width:600px){.country-detail-grid{grid-template-columns:1fr}.candle-terminal svg{height:220px}.chart-range-tabs{overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.chart-range-tabs button{white-space:nowrap}}
+
+
+/* Final cartography / atlas treatment */
+.atlas-realistic{background:radial-gradient(circle at 50% 35%,#123f51 0,#082b3c 48%,#041923 100%)!important}
+.atlas-realistic .atlas-world-svg{height:auto!important;min-height:0!important;aspect-ratio:500/350;filter:saturate(.92) contrast(1.04)}
+.atlas-realistic .continent-base{display:none}
+.atlas-realistic .country-land-base{stroke:#d9dfc9!important;stroke-width:1.35!important;paint-order:stroke fill;filter:drop-shadow(0 7px 5px rgba(0,0,0,.42))}
+.atlas-realistic .country-texture{fill:none!important;stroke:#d9dfc9;stroke-width:.45;stroke-opacity:.13;stroke-dasharray:1.5 3;mix-blend-mode:overlay}
+.atlas-realistic .terrain-light{fill:#e8e5bd!important;opacity:.10!important}
+.atlas-realistic .terrain-hill{fill:#8d9b70!important;opacity:.25!important}
+.atlas-realistic .forest-patch{fill:#183f35!important;opacity:.34!important}
+.atlas-realistic .forest-dots circle{fill:#173a32!important;opacity:.24!important}
+.atlas-realistic .mountain-range{stroke:#d1d3bd!important;stroke-width:1.7!important;opacity:.58!important}
+.atlas-realistic .mountain-snow{fill:#f1f0dd!important;opacity:.78!important}
+.atlas-realistic .river-wide{stroke:#75c8d7!important;stroke-width:2.15!important;opacity:.82!important}
+.atlas-realistic .river-thin{stroke:#a1dbe1!important;stroke-width:1!important;opacity:.58!important}
+.atlas-realistic .country-lake{fill:#4a9eb5!important;stroke:#b6e1e4!important;opacity:.74!important}
+.atlas-realistic .country-coastline{stroke:#f0ead4!important;stroke-width:1.5!important;opacity:.9!important}
+.atlas-realistic .country-name-label{font-family:"Space Grotesk",sans-serif!important;font-size:8px!important;font-weight:700!important;letter-spacing:.18em!important;fill:#f4f0df!important;opacity:.9!important;paint-order:stroke!important;stroke:#081c27!important;stroke-width:2.7px!important}
+.atlas-realistic .capital text{font-size:7.2px!important;fill:#fff!important}
+.atlas-realistic .sea-label{font-size:6.5px!important;letter-spacing:.26em!important}
+.atlas-realistic .map-key{border:1px solid rgba(177,214,215,.12)!important;background:rgba(2,12,19,.5)!important}
+
+/* Rich flag finish */
+.flag{box-shadow:0 5px 14px rgba(0,0,0,.38),inset 0 0 0 1px rgba(255,255,255,.18)!important}
+.flag:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.20),transparent 28%,transparent 68%,rgba(0,0,0,.13));pointer-events:none}
+.flag i{z-index:2}
+.country-options .flag{width:52px!important;height:34px!important}
+.profile-title .flag{width:68px!important;height:44px!important}
+
+/* Exchange: readable terminal + live market tape */
+.live-market-tape{display:flex;align-items:center;gap:9px;margin:9px 0 14px;padding:9px 11px;border:1px solid rgba(103,227,168,.14);background:rgba(103,227,168,.035);border-radius:8px;color:#94a9af;font-size:10px;white-space:nowrap;overflow:hidden}
+.live-market-tape b{font-size:8px;letter-spacing:.12em;color:#6fe0a8;flex:none}
+.live-market-tape span:last-child{overflow:hidden;text-overflow:ellipsis}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#68e0a8;box-shadow:0 0 10px #68e0a8;flex:none;animation:livePulse 1.3s infinite}
+.candle-terminal{background:linear-gradient(180deg,rgba(5,14,23,.98),rgba(7,19,29,.96))!important;border-color:rgba(119,190,202,.18)!important}
+.candle-terminal svg{height:300px!important}
+.chart-range-tabs{border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:9px}
+.chart-range-tabs button{font-size:9px!important}
+.chart-range-tabs button.active{color:#dffcff!important;background:linear-gradient(180deg,rgba(67,230,255,.13),rgba(67,230,255,.045))!important}
+@media(max-width:700px){.live-market-tape{white-space:normal}.candle-terminal svg{height:220px!important}}
