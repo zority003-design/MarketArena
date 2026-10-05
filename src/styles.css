@@ -2006,3 +2006,21 @@ body{overflow-x:hidden}
 .exchange-company-dossier{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
 .exchange-company-dossier p{margin:7px 0 0;color:#718995;font-size:9px;line-height:1.55}
 @media(max-width:800px){.exchange-calendar,.exchange-company-dossier{grid-template-columns:1fr}.exchange-time-controls{justify-content:flex-start}.exchange-time-controls span{text-align:left}}
+
+/* Investor country dossier */
+.country-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.investor-box{border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:18px 20px;background:rgba(255,255,255,.025)}
+.investor-box>span{display:block;font-size:10px;letter-spacing:.13em;font-weight:800;color:#a9b8c4;margin-bottom:10px}
+.investor-box ul{margin:0;padding-left:19px;color:#b8c5ce;font-size:12px;line-height:1.7}
+.investor-box li+li{margin-top:6px}
+.investor-plus{border-color:rgba(105,215,170,.20)}
+.investor-minus{border-color:rgba(240,125,125,.20)}
+/* Capital and ticker labels are map-native overlays, not white rectangles. */
+.atlas-capital-marker{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;border:0!important;border-radius:999px!important;padding:4px 8px 4px 5px!important;background:rgba(8,25,31,.88)!important;color:#f4e9b0!important;box-shadow:0 6px 16px rgba(0,0,0,.32)!important;font:800 10px "Space Grotesk"!important;white-space:nowrap;pointer-events:auto}
+.atlas-capital-marker i{width:9px;height:9px;border-radius:50%;background:#f3d26f;box-shadow:0 0 9px rgba(243,210,111,.65);display:block!important}
+.atlas-capital-marker span{color:#f4e9b0!important;text-shadow:0 1px 2px #000}
+.atlas-company-marker{position:absolute;transform:translate(-50%,-100%);border:1px solid rgba(67,230,255,.45)!important;border-radius:7px!important;padding:4px 7px!important;background:rgba(6,22,30,.94)!important;color:#dffcff!important;box-shadow:0 6px 16px rgba(0,0,0,.32)!important;white-space:nowrap}
+.atlas-company-marker:after{content:"";position:absolute;left:50%;bottom:-7px;width:1px;height:7px;background:rgba(67,230,255,.65)}
+.premium-company-marker b{color:#70e7f7!important;font:800 10px "Space Grotesk"!important;letter-spacing:.08em}
+.atlas-3d .atlas-head span:last-child{font-size:0}
+.atlas-3d .atlas-head span:last-child:after{content:"ПЕРЕТАСКИВАНИЕ · МАСШТАБ";font-size:9px}
