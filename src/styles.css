@@ -2530,3 +2530,72 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   overflow:auto!important;
   overscroll-behavior:contain!important;
 }
+
+
+/* v1.6 command deck visual polish */
+.game-topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:5000!important;
+  overflow:visible!important;
+}
+.game-command-deck{
+  align-items:center!important;
+  height:70px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:3px 2px!important;
+}
+.game-command-deck button{
+  position:relative!important;
+  height:62px!important;
+  transform:none!important;
+  transition:box-shadow .18s ease,border-color .18s ease,background .18s ease,filter .18s ease!important;
+}
+.game-command-deck button:hover{
+  transform:none!important;
+  filter:brightness(1.12)!important;
+  box-shadow:0 8px 22px rgba(45,180,195,.20)!important;
+}
+.game-command-deck button:active{
+  transform:scale(.985)!important;
+}
+.game-command-deck .nav-glyph{
+  width:28px!important;
+  height:28px!important;
+  border-radius:8px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:linear-gradient(145deg,rgba(77,205,218,.13),rgba(20,54,63,.42))!important;
+  border:1px solid rgba(98,218,229,.28)!important;
+}
+.game-command-deck .nav-glyph svg{
+  width:17px!important;
+  height:17px!important;
+  display:block!important;
+}
+.game-command-deck .nav-label{
+  display:block!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.game-command-deck button.active .nav-glyph{
+  background:linear-gradient(145deg,rgba(83,221,232,.25),rgba(27,89,99,.55))!important;
+  box-shadow:inset 0 0 14px rgba(81,215,226,.10)!important;
+}
+@media(max-width:720px){
+  .game-command-deck{
+    height:64px!important;
+    padding:2px 1px!important;
+  }
+  .game-command-deck button{
+    height:58px!important;
+  }
+}
+
+/* The horizontal scroller clips only along X; avoid any hover motion toward
+   the top edge, so cards remain completely inside the sticky header. */
+.game-command-deck button:hover{
+  margin-top:0!important;
+  top:0!important;
+}
