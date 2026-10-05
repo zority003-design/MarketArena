@@ -163,11 +163,12 @@ export const countries: Country[] = [
 
 type ExpansionCompany = [string,string,string,string,string,string,number,string,number,number];
 
-const toCompanyPreview = (x: ExpansionCompany): CompanyPreview => ({
-  name: x[0], ticker: x[1], sector: x[2], note: x[3], ceo: x[4], ceoRole: x[5],
-  ceoAge: x[6], ceoBio: x[7], x: x[8], y: x[9]
+const toCompanyPreview = (x: readonly (string | number)[]): CompanyPreview => ({
+  name: String(x[0] ?? ""), ticker: String(x[1] ?? ""), sector: String(x[2] ?? ""), note: String(x[3] ?? ""),
+  ceo: String(x[4] ?? ""), ceoRole: String(x[5] ?? ""), ceoAge: Number(x[6] ?? 0), ceoBio: String(x[7] ?? ""),
+  x: Number(x[8] ?? 0), y: Number(x[9] ?? 0)
 });
-const expansionCompanies: Record<string, ExpansionCompany[]> = {
+const expansionCompanies: Record<string, CompanyPreview[]> = {
   slavoriya: [
     ["СлавБанк Капитал","SBK","Финансы","корпоративный кредит и инвестиции","Дмитрий Рейн","председатель правления",50,"Банкир, специализирующийся на промышленном финансировании.",198,158],
     ["Вектор Сталь","VKS","Металлы","листовой прокат и сплавы","Роман Глебов","генеральный директор",46,"Инженер-металлург, развивающий экспортные мощности.",190,128],
