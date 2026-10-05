@@ -240,7 +240,7 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   const sell=(company:CompanyPreview,quantity=1)=>{
     const owned=holdings[company.ticker]||0;
     if(owned<quantity){setNotice("У тебя нет "+quantity+" акций "+company.ticker+" для продажи.");return;}
-    const proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
+    const price=priceFor(company),proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
     setTransactions(v=>[{day,type:"SELL",ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
