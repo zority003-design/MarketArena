@@ -167,6 +167,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [marketPulse,setMarketPulse]=useState(0);
   useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString()};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab]);
+  useEffect(()=>{
+    if(tab==="exchange"){
+      setSelectedCompany(null);
+      if(!exchangeCompany && country.companies.length) setExchangeCompany(country.companies[0]);
+    }
+  },[tab,country.id,country.companies,exchangeCompany]);
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const events=[
