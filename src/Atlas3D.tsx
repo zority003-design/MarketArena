@@ -244,45 +244,6 @@ function polygonLine(poly: GeoPoint[], yOffset = 0.06) {
   return points;
 }
 
-function makeRiver(points: GeoPoint[], width = 0.08) {
-  const curve = new THREE.CatmullRomCurve3(points.map((p) => {
-    const v = worldFromGeo(p);
-    v.y = terrainHeight(v.x, v.z) + 0.045;
-    return v;
-  }));
-  const geometry = new THREE.TubeGeometry(curve, 48, width, 6, false);
-  const material = new THREE.MeshStandardMaterial({
-    color: "#7bbbc8",
-    roughness: 0.28,
-    metalness: 0.05,
-    emissive: "#163b43",
-    emissiveIntensity: 0.12
-  });
-  return new THREE.Mesh(geometry, material);
-}
-
-function makeLake(points: GeoPoint[]) {
-  const shape = new THREE.Shape();
-  points.forEach(([u, v], i) => {
-    const p = worldFromGeo([u, v]);
-    if (i === 0) shape.moveTo(p.x, p.z);
-    else shape.lineTo(p.x, p.z);
-  });
-  shape.closePath();
-  const geometry = new THREE.ShapeGeometry(shape);
-  geometry.rotateX(-Math.PI / 2);
-  const material = new THREE.MeshStandardMaterial({
-    color: "#4d94aa",
-    roughness: 0.18,
-    metalness: 0.08,
-    transparent: true,
-    opacity: 0.88
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.y = 0.07;
-  return mesh;
-}
-
 function makeIsland(x: number, z: number, sx: number, sz: number) {
   const shape = new THREE.Shape();
   const points = Array.from({ length: 10 }, (_, i) => {
@@ -329,28 +290,6 @@ function safeCompanyGeo(countryId: string, company: CompanyPreview): GeoPoint {
   return [u, v];
 }
 
-function makeBuilding(x: number, z: number, scale = 1, industrial = false) {
-  const group = new THREE.Group();
-  const width = (industrial ? 0.42 : 0.28) * scale;
-  const depth = (industrial ? 0.34 : 0.24) * scale;
-  const height = (industrial ? 0.34 : 0.24) * scale;
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(width, height, depth),
-    new THREE.MeshStandardMaterial({ color: industrial ? "#66757a" : "#8a8170", roughness: 0.88 })
-  );
-  body.position.y = height / 2;
-  const roof = new THREE.Mesh(
-    new THREE.BoxGeometry(width * 1.05, 0.045 * scale, depth * 1.05),
-    new THREE.MeshStandardMaterial({ color: industrial ? "#3f4d52" : "#51483d", roughness: 0.9 })
-  );
-  roof.position.y = height + 0.025 * scale;
-  group.add(body, roof);
-  group.position.set(x, terrainHeight(x, z) + 0.025, z);
-  group.castShadow = true;
-  group.receiveShadow = true;
-  return group;
-}
-
 function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   const p1 = worldFromGeo(a), p2 = worldFromGeo(b);
   const dx = p2.x - p1.x, dz = p2.z - p1.z;
@@ -367,10 +306,6 @@ function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
     new THREE.Vector3(p2.x, terrainHeight(p2.x,p2.z)+0.078, p2.z)
   ]);
   return curve;
-}
-function makeRoad(a: GeoPoint, b: GeoPoint, bend = 0.12) {
-  const curve = roadCurve(a,b,bend);
-  return makeLine(curve.getPoints(18), 0xb9a37f, 0.72, 2);
 }
 function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend:number) {
   const poly=countryPolygons[countryId];
