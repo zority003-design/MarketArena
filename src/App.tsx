@@ -1,21 +1,59 @@
 import { useMemo, useState } from "react";
 import { countries, type Country, worldStats } from "./data/world";
 
+function Flag({ country }: { country: Country }) {
+  return (
+    <span className={`flag flag-${country.id}`} aria-label={`Флаг ${country.name}`}>
+      <span className="flag-symbol">{country.flag}</span>
+    </span>
+  );
+}
+
 function Map({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+  const capitals = [
+    { id: "liraniya", x: 126, y: 126 },
+    { id: "darvast", x: 372, y: 130 },
+    { id: "slavoriya", x: 220, y: 211 },
+    { id: "estraviya", x: 272, y: 329 },
+    { id: "saverniya", x: 398, y: 278 }
+  ];
+
   return (
     <div className="map-shell">
-      <div className="map-grid" />
-      <svg className="world-map" viewBox="0 0 430 350" role="img" aria-label="Карта мира MarketArena">
+      <div className="map-toolbar">
+        <span>СЕВЕРНЫЙ ОКЕАН</span>
+        <span>МАСШТАБ 1 : 18 000 000</span>
+      </div>
+
+      <svg className="world-map" viewBox="0 0 520 410" role="img" aria-label="Политическая карта вымышленного мира MarketArena">
         <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3.5" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+          <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000000" floodOpacity=".38" />
           </filter>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#102c43" />
+            <stop offset="100%" stopColor="#071722" />
+          </linearGradient>
+          <pattern id="map-lines" width="36" height="36" patternUnits="userSpaceOnUse">
+            <path d="M36 0H0V36" fill="none" stroke="#8aa4bd" strokeOpacity=".055" />
+          </pattern>
         </defs>
-        <path d="M12 176 C44 158 54 120 91 86 C133 47 196 48 232 68 C272 40 332 48 369 81 C405 113 411 163 401 205 C391 247 405 286 370 322 C333 351 275 338 239 325 C199 343 143 339 103 318 C60 296 34 259 26 226 C18 207 3 193 12 176Z" className="continent-outline" />
+
+        <rect width="520" height="410" fill="url(#sea)" />
+        <rect width="520" height="410" fill="url(#map-lines)" />
+
+        <g className="terrain-labels">
+          <text x="32" y="208">ЗАПАДНЫЙ ОКЕАН</text>
+          <text x="402" y="208">ВОСТОЧНОЕ МОРЕ</text>
+          <text x="238" y="398">ЮЖНОЕ МОРЕ</text>
+        </g>
+
+        <path
+          d="M55 105 C82 67 126 58 170 74 C208 47 257 55 289 77 C327 51 380 58 418 82 C458 108 478 149 461 189 C449 215 463 244 449 278 C433 318 397 354 353 364 C320 372 291 387 251 376 C218 367 187 381 153 362 C119 344 97 318 91 284 C65 259 48 225 57 191 C44 163 40 133 55 105Z"
+          className="land-shadow"
+          filter="url(#soft-shadow)"
+        />
+
         {countries.map((country) => (
           <path
             key={country.id}
@@ -25,22 +63,54 @@ function Map({ selected, onSelect }: { selected: string; onSelect: (id: string) 
             style={{ ["--country" as string]: country.color }}
           />
         ))}
-        {countries.map((country, index) => {
-          const positions = [
-            [151, 151], [294, 144], [213, 259], [91, 260], [337, 263]
-          ];
-          const [x, y] = positions[index];
+
+        <g className="mountain-range" aria-label="горный хребет">
+          <path d="M292 105 l13 -18 12 18 12 -27 14 27 14 -18 12 18" />
+          <path d="M315 151 l12 -20 12 20 12 -25 13 25 13 -16 11 16" />
+          <path d="M228 282 l12 -18 12 18 13 -22 13 22 12 -16 13 16" />
+        </g>
+
+        <g className="river-lines" aria-label="реки">
+          <path d="M327 88 C311 126 304 159 286 190 C270 216 261 242 252 270 C246 288 250 301 260 314" />
+          <path d="M331 174 C352 193 363 214 381 232 C397 249 409 263 425 278" />
+          <path d="M184 151 C197 170 207 186 221 201 C234 215 242 230 247 247" />
+        </g>
+
+        <g className="road-lines">
+          <path d="M126 126 C177 151 222 182 282 197 C331 209 366 226 398 278" />
+          <path d="M220 211 C238 243 254 279 272 329" />
+        </g>
+
+        {capitals.map((capital) => {
+          const country = countries.find((item) => item.id === capital.id)!;
           return (
-            <g key={country.id} className="capital-marker" onClick={() => onSelect(country.id)}>
-              <circle cx={x} cy={y} r="5" />
-              <circle cx={x} cy={y} r="11" />
+            <g key={capital.id} className="capital-marker" onClick={() => onSelect(capital.id)}>
+              <circle cx={capital.x} cy={capital.y} r="8" />
+              <circle cx={capital.x} cy={capital.y} r="3" />
+              <text x={capital.x + 10} y={capital.y - 8}>{country.capital}</text>
             </g>
           );
         })}
+
+        <g className="port-markers">
+          <path d="M86 147v14m-7-8h14" />
+          <path d="M438 171v14m-7-8h14" />
+          <path d="M328 339v14m-7-8h14" />
+          <path d="M157 350v14m-7-8h14" />
+        </g>
+
+        <g className="map-compass">
+          <circle cx="472" cy="35" r="20" />
+          <path d="M472 20v30M457 35h30" />
+          <text x="469" y="15">N</text>
+        </g>
       </svg>
-      <div className="map-caption">
-        <span>МИР MARKETARENA</span>
-        <span>СИМУЛЯЦИЯ · 01 / 05</span>
+
+      <div className="map-legend">
+        <span><i className="legend-capital" /> Столица</span>
+        <span><i className="legend-port" /> Порт</span>
+        <span><i className="legend-mountain" /> Горный хребет</span>
+        <span><i className="legend-road" /> Торговый путь</span>
       </div>
     </div>
   );
@@ -49,12 +119,12 @@ function Map({ selected, onSelect }: { selected: string; onSelect: (id: string) 
 function CountryCard({ country, active, onClick }: { country: Country; active: boolean; onClick: () => void }) {
   return (
     <button className={`country-card ${active ? "active" : ""}`} onClick={onClick}>
-      <span className="country-code" style={{ color: country.color }}>{country.flag}</span>
+      <Flag country={country} />
       <span className="country-main">
         <strong>{country.name}</strong>
         <small>{country.capital} · {country.currencySymbol}</small>
       </span>
-      <span className="country-arrow">↗</span>
+      <span className="country-arrow">→</span>
     </button>
   );
 }
@@ -79,36 +149,47 @@ export default function App() {
           </div>
         </div>
 
-        <div className="top-status">
-          <span className="live-dot" />
-          PROTOTYPE 0.1
-          <span className="divider" />
-          WORLD SEED <b>2042-A</b>
+        <div className="top-nav">
+          <span className="active">Карта</span>
+          <span>Биржа</span>
+          <span>Портфель</span>
+          <span>Компании</span>
+          <span>Персонаж</span>
+          <span>Задания</span>
+          <span>Новости</span>
         </div>
 
-        <button className="settings">⚙</button>
+        <div className="top-status">
+          <span className="live-dot" />
+          ПРОТОТИП
+          <span className="divider" />
+          МИР <b>2042-A</b>
+        </div>
       </header>
 
       <section className="hero">
         <div className="hero-copy">
           <div className="eyebrow">GLOBAL ECONOMIC SANDBOX</div>
-          <h1>Твой капитал.<br /><span>Твой рынок.</span><br />Твоя история.</h1>
+          <h1>Мир, в котором<br /><span>рынок живёт.</span></h1>
           <p>
-            Выбери страну, начни карьеру, выйди на биржу и наблюдай,
-            как решения миллионов участников меняют экономику мира.
+            Начни с работы и первых накоплений, выйди на биржу,
+            создай капитал и наблюдай, как решения государств,
+            компаний и игроков меняют экономику мира.
           </p>
 
           <div className="mode-switch">
             <button className={mode === "offline" ? "selected" : ""} onClick={() => setMode("offline")}>
-              <span>◉</span>
-              OFFLINE
-              <small>Песочница</small>
+              <span>●</span> OFFLINE <small>Своя история</small>
             </button>
             <button className={mode === "online" ? "selected" : ""} onClick={() => setMode("online")}>
-              <span>◌</span>
-              ONLINE
-              <small>Общий мир</small>
+              <span>●</span> ONLINE <small>Общий рынок</small>
             </button>
+          </div>
+
+          <div className="hero-metrics">
+            <div><b>{worldStats.totalCountries}</b><span>стран</span></div>
+            <div><b>{worldStats.publicCompanies}</b><span>компаний</span></div>
+            <div><b>{worldStats.currencies}</b><span>валют</span></div>
           </div>
         </div>
 
@@ -120,13 +201,11 @@ export default function App() {
       <section className="country-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">SELECT REGION</span>
-            <h2>Выбери рынок</h2>
+            <span className="eyebrow">POLITICAL & ECONOMIC MAP</span>
+            <h2>Страны мира</h2>
           </div>
           <div className="world-stats">
-            <span><b>{worldStats.totalCountries}</b> стран</span>
-            <span><b>{worldStats.publicCompanies}</b> компаний</span>
-            <span><b>{worldStats.currencies}</b> валют</span>
+            <span>Сейчас выбрана <b>{selected.name}</b></span>
           </div>
         </div>
 
@@ -144,12 +223,17 @@ export default function App() {
 
           <aside className="country-detail">
             <div className="detail-top">
-              <div>
-                <span className="eyebrow">MARKET PROFILE</span>
-                <h3>{selected.name}</h3>
+              <div className="detail-title">
+                <Flag country={selected} />
+                <div>
+                  <span className="eyebrow">MARKET PROFILE</span>
+                  <h3>{selected.name}</h3>
+                </div>
               </div>
-              <span className="large-code" style={{ color: selected.color }}>{selected.flag}</span>
+              <span className="large-code">{selected.currencySymbol}</span>
             </div>
+
+            <p className="country-description">{selected.description}</p>
 
             <div className="detail-grid">
               <div><span>СТОЛИЦА</span><b>{selected.capital}</b></div>
@@ -164,16 +248,28 @@ export default function App() {
             </div>
 
             <button className="continue-button">
-              ПРОДОЛЖИТЬ В {selected.name.toUpperCase()}
+              ОТКРЫТЬ РЫНОК {selected.name.toUpperCase()}
               <span>→</span>
             </button>
           </aside>
         </div>
       </section>
 
+      <section className="next-phase">
+        <div>
+          <span className="eyebrow">NEXT SYSTEM</span>
+          <h2>Человек → работа → капитал → рынок</h2>
+        </div>
+        <div className="phase-cards">
+          <article><b>01</b><strong>Жизнь</strong><span>Работа, расходы, образование и подработки.</span></article>
+          <article><b>02</b><strong>Биржа</strong><span>Акции, облигации, валюты и реальные рыночные события.</span></article>
+          <article><b>03</b><strong>Экономика</strong><span>Сырьё, компании, государства и цепочки поставок.</span></article>
+        </div>
+      </section>
+
       <footer>
         <span>MARKETARENA © 2026 · WORLD PROTOTYPE</span>
-        <span>Все государства, компании и события вымышлены.</span>
+        <span>Вымышленный мир · Все государства, компании и события созданы для игры.</span>
       </footer>
     </main>
   );
