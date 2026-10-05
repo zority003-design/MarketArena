@@ -529,25 +529,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     });
     scene.add(borderGroup);
 
-    const riverSets: GeoPoint[][] = [
-      [[47, 22], [46, 31], [47, 39], [45, 48], [44, 57], [46, 66], [45, 73], [43, 81]],
-      [[40, 28], [42, 35], [41, 43], [39, 52], [37, 61], [35, 70]],
-      [[54, 25], [53, 34], [55, 43], [58, 52], [63, 61], [67, 69]],
-      [[63, 30], [61, 39], [60, 48], [63, 57], [68, 65]],
-      [[73, 36], [69, 44], [66, 52], [64, 60]],
-      [[31, 37], [34, 45], [37, 53], [41, 59]],
-      [[51, 49], [50, 58], [52, 66], [55, 75]],
-      [[70, 54], [73, 61], [77, 68], [79, 76]]
-    ];
-    riverSets.forEach((points, i) => { if (showCompanies) scene.add(makeRiver(points, i === 0 ? 0.07 : 0.035)); });
-
-    scene.add(makeLake([[39, 59], [41, 57], [44, 58], [45, 60], [42, 62], [39, 61]]));
-    scene.add(makeLake([[66, 61], [69, 59], [72, 60], [73, 63], [70, 65], [67, 64]]));
-    scene.add(makeLake([[51, 76], [54, 75], [56, 77], [55, 79], [52, 79]]));
-
-    scene.add(makeIsland(-12.1, -4.7, 1.0, 0.52));
-    scene.add(makeIsland(13.8, 6.0, 0.72, 0.42));
-    scene.add(makeIsland(-10.0, 8.0, 0.48, 0.31));
+    // Rivers removed from the atlas overlay: the previous synthetic blue tubes read as floating lines.
     const selectedCountry = countries.find((c) => c.id === selected);
     if (selectedCountry) {
       const capital = capitalGeo[selectedCountry.id];
