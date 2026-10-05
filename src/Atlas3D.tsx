@@ -62,6 +62,48 @@ const labelGeo: Record<string, GeoPoint> = {
   saverniya: [72, 84]
 };
 
+
+const cityEconomyProfile: Record<string,{sites:number;factories:number;highRises:number;trees:number;people:number;port:boolean;portBonus:number}> = {
+  slavoriya:{sites:64,factories:18,highRises:14,trees:150,people:42,port:false,portBonus:0},
+  lirania:{sites:58,factories:8,highRises:16,trees:130,people:40,port:true,portBonus:1},
+  darvast:{sites:60,factories:24,highRises:7,trees:95,people:34,port:false,portBonus:0},
+  estraviya:{sites:62,factories:10,highRises:24,trees:145,people:48,port:false,portBonus:0},
+  saverniya:{sites:56,factories:9,highRises:11,trees:180,people:46,port:true,portBonus:1}
+};
+function coastalPoint(countryId:string): GeoPoint | null {
+  const poly=countryPolygons[countryId];
+  let best:GeoPoint|null=null,bestScore=Infinity;
+  for(let v=10;v<=90;v+=1){for(let u=10;u<=90;u+=1){
+    if(!pointInPolygon(u,v,poly)) continue;
+    const edge=[pointInPolygon(u+1.6,v,poly),pointInPolygon(u-1.6,v,poly),pointInPolygon(u,v+1.6,poly),pointInPolygon(u,v-1.6,poly)].filter(Boolean).length;
+    if(edge>2) continue;
+    const d=Math.hypot(u-capitalGeo[countryId][0],v-capitalGeo[countryId][1]);
+    if(d<bestScore){best=[u,v];bestScore=d;}
+  }}
+  return best;
+}
+function makePort(x:number,z:number,scale=1){
+  const g=new THREE.Group();
+  const quay=new THREE.Mesh(new THREE.BoxGeometry(.82*scale,.055,.22*scale),new THREE.MeshStandardMaterial({color:"#59676b",roughness:.9}));
+  quay.position.y=.04; g.add(quay);
+  for(let i=0;i<3;i++){
+    const crane=new THREE.Group();
+    const mast=new THREE.Mesh(new THREE.BoxGeometry(.018,.34*scale,.018),new THREE.MeshStandardMaterial({color:"#d1a25d",roughness:.75}));
+    mast.position.set((-0.27+i*.27)*scale,.22,0); crane.add(mast);
+    const arm=new THREE.Mesh(new THREE.BoxGeometry(.20*scale,.018,.018),new THREE.MeshStandardMaterial({color:"#d1a25d",roughness:.75}));
+    arm.position.set((-0.18+i*.27)*scale,.38*scale,0); crane.add(arm); g.add(crane);
+  }
+  g.position.set(x,surfaceHeight(x,z)+.03,z); g.castShadow=true; return g;
+}
+function makeFactory(x:number,z:number,scale=1){
+  const g=makeModernBuilding(x,z,scale,3);
+  for(let i=0;i<2;i++){
+    const chimney=new THREE.Mesh(new THREE.CylinderGeometry(.035*scale,.045*scale,.42*scale,8),new THREE.MeshStandardMaterial({color:"#566267",roughness:.85}));
+    chimney.position.set((i-.5)*.22*scale,.28*scale,.10*scale); g.add(chimney);
+  }
+  return g;
+}
+
 const colorStops = [
   { h: 0.00, c: new THREE.Color("#496b48") },
   { h: 0.18, c: new THREE.Color("#69875a") },
@@ -313,7 +355,7 @@ function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
   ]);
   return curve;
 }
-function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend=0) {
+function inCountryRoad(countryId:string,a:GeoPoint,b:GeoPoint,bend=0): THREE.CatmullRomCurve3 | null {
   const poly=countryPolygons[countryId];
   const candidates=[bend,0,-bend*.7,bend*.45];
   for(const amount of candidates){
@@ -589,7 +631,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
       const citySites:GeoPoint[]=[];
-      for(let i=0;i<90&&citySites.length<48;i++){
+      const cityProfile=cityEconomyProfile[selectedCountry.id]??cityEconomyProfile.saverniya;\n      for(let i=0;i<140&&citySites.length<cityProfile.sites;i++){
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
@@ -630,13 +672,13 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           }
         }
       }
-      for(let i=0;i<Math.min(18,roadCurves.length);i++){
+      if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }\n      for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
         car.userData.roadT=(i*0.071)%1;
         scene.add(car);
       }
       // Pedestrians and parking clusters stay close to built-up districts.
-      citySites.slice(0,32).forEach((geo,i)=>{
+      citySites.slice(0,cityProfile.people).forEach((geo,i)=>{
         const p=worldFromGeo(geo);
         if(i%4===0) scene.add(makeParking(p.x+.34,p.z+.22,.75));
         scene.add(makePerson(p.x-.18,p.z+.20,.8+(i%3)*.12));
