@@ -2274,3 +2274,44 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .game-heading h1{font-size:25px!important}
   .market-map-card{min-height:460px!important}
 }
+
+
+/* v1.2 player navigation + professional candle terminal */
+.game-routebar{
+  position:relative;z-index:3;
+  display:flex;align-items:center;gap:14px;
+  width:min(1700px,calc(100vw - 32px));margin:0 auto;
+  min-height:58px;padding:8px 12px;
+  border-bottom:1px solid rgba(101,205,216,.14);
+  background:linear-gradient(180deg,rgba(7,18,24,.92),rgba(5,12,17,.78));
+  box-shadow:0 10px 28px rgba(0,0,0,.22);
+  backdrop-filter:blur(14px);
+}
+.game-route-intro{display:flex;align-items:center;gap:9px;min-width:290px}
+.game-route-intro b{font-size:10px;letter-spacing:.16em;color:#c8f9ff}
+.game-route-intro span{font-size:11px;color:#71919a}
+.game-route-actions{display:flex;gap:5px;overflow:auto;scrollbar-width:none}
+.game-route-actions::-webkit-scrollbar{display:none}
+.game-route-actions button{
+  flex:0 0 auto;border:1px solid #203d47;border-radius:7px;
+  background:#091820;color:#9bb9c0;padding:8px 11px;
+  font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap;
+}
+.game-route-actions button:hover{border-color:#55cad7;color:#e9ffff;background:#0d2730}
+.candle-terminal{color:#b9d0d5}
+.candle-terminal svg{display:block;width:100%;height:300px!important;overflow:visible}
+.candle-terminal .grid-line{stroke:rgba(132,180,188,.16);stroke-width:.8}
+.candle-terminal .candle line{stroke-width:1.2;shape-rendering:crispEdges}
+.candle-terminal .candle rect{stroke-width:1;shape-rendering:crispEdges}
+.candle-terminal .candle.up rect,.candle-terminal .candle.up line{fill:#56d2a0;stroke:#56d2a0}
+.candle-terminal .candle.down rect,.candle-terminal .candle.down line{fill:#ef7180;stroke:#ef7180}
+.candle-ohlc{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 0 10px;border-bottom:1px solid rgba(100,190,201,.12);font-size:10px;color:#73939c}
+.candle-ohlc b{color:#d8ecef;font-size:11px}
+.candle-ohlc em{margin-left:auto;font-style:normal;color:#5d858f}
+.candle-head strong{font-size:24px!important}
+@media(max-width:850px){
+  .game-routebar{width:100%;margin:0;padding:7px 10px;display:block}
+  .game-route-intro{min-width:0;margin-bottom:7px}
+  .game-route-intro span{display:none}
+  .game-route-actions{width:100%}
+}
