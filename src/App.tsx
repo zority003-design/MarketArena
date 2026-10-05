@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type Country } from "./data/world";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news";
+type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
 
 const jobs = [
   { id: "analyst", title: "Помощник аналитика", pay: 18000, time: "2 часа", text: "Разбор отчётов и исследование компаний." },
@@ -79,6 +80,7 @@ function CompanyCard({ company, onBuy }: { company: CompanyPreview; onBuy: (pric
 }
 
 
+/* Maps are intentionally static: interaction is reserved for countries, capitals and companies. */
 function MapMotion({ children, className = "" }: { children: ReactNode; className?: string }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   return <div
@@ -200,7 +202,7 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
-  const [transactions,setTransactions]=useState<Array<{day:number;type:"BUY"|"SELL";ticker:string;quantity:number;price:number}>>([]);
+  const [transactions,setTransactions]=useState<Transaction[]>([]);
 
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
@@ -239,14 +241,14 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
     const price=priceFor(company),cost=price*quantity;
     if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
     setCash(v=>v-cost);setHoldings(v=>({...v,[company.ticker]:(v[company.ticker]||0)+quantity}));
-    setTransactions(v=>[{day,type:"BUY",ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс списан: -"+cost.toLocaleString("ru-RU")+" VLR.");
   };
   const sell=(company:CompanyPreview,quantity=1)=>{
     const owned=holdings[company.ticker]||0;
     if(owned<quantity){setNotice("У тебя нет "+quantity+" акций "+company.ticker+" для продажи.");return;}
     const price=priceFor(company),proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
-    setTransactions(v=>[{day,type:"SELL",ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
   const work=(id:string,pay:number)=>{setCash(v=>v+pay);setJobCooldown(id);setNotice("Работа завершена: +"+pay.toLocaleString("ru-RU")+" VLR.");setTimeout(()=>setJobCooldown(null),700);};
