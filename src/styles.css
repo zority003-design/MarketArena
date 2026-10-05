@@ -2315,3 +2315,5 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .game-route-intro span{display:none}
   .game-route-actions{width:100%}
 }
+
+.exchange-recovery{margin:24px 0;padding:28px;border:1px solid #31515b;border-radius:12px;background:linear-gradient(145deg,#0b2028,#071219);text-align:center}.exchange-recovery b{display:block;font-size:20px;color:#e2f8fb}.exchange-recovery p{margin:8px 0 18px;color:#8daab1;font-size:13px}
