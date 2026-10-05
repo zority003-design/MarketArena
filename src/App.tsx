@@ -191,6 +191,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     saverniya:{bias:.005,sectors:{"Агро":.024,"Ритейл":.018,"Логистика":.012},strength:"плодородные земли и большой потребительский рынок",risk:"погода, урожайность и инфляция спроса"}
   };
   const marketProfile=countryMarketProfile[country.id]??countryMarketProfile.slavoriya;
+  const commodityPulse=(sector:string,atDay:number)=>{
+    const map:Record<string,{name:string;wave:number}>={"Нефть":{name:"нефти",wave:.030},"Металлы":{name:"металлов",wave:.022},"Агро":{name:"зерна",wave:.018},"Энергетика":{name:"газа и электроэнергии",wave:.014},"Машиностроение":{name:"стали и оборудования",wave:.010},"Логистика":{name:"топлива",wave:.012},"Порты":{name:"фрахта",wave:.016},"Судоходство":{name:"фрахта",wave:.021}};
+    const c=map[sector]; if(!c) return {name:"ключевых компонентов",impact:Math.sin((atDay+sector.length)*.083)*.006};
+    return {name:c.name,impact:Math.sin((atDay+sector.length*11)*.071)*c.wave+Math.cos((atDay+sector.length)*.031)*c.wave*.45};
+  };
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const events=[
@@ -199,15 +204,24 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       {headline:"компания объявила программу расширения мощностей",impact:0.021},
       {headline:"слабый спрос заставил рынок пересмотреть прогнозы",impact:-0.024},
       {headline:"регулятор одобрил важный отраслевой проект",impact:0.017},
-      {headline:"перебои в цепочке поставок увеличили издержки",impact:-0.019},      {headline:"инвесторы позитивно оценили результаты квартала",impact:0.028},
+      {headline:"перебои в цепочке поставок увеличили издержки",impact:-0.019},
+      {headline:"инвесторы позитивно оценили результаты квартала",impact:0.028},
       {headline:"рынок зафиксировал прибыль после сильного роста",impact:-0.014}
     ];
-    const index=Math.floor((atDay+seed)/3)%events.length;
-    const event=events[index];
+    const event=events[Math.floor((atDay+seed)/3)%events.length];
+    const commodity=commodityPulse(company.sector,atDay);
     const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
     const countryBias=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
     const cycle=Math.sin((atDay+seed*0.17)*0.045)*0.012;
-    return {headline:event.headline,impact:event.impact+sectorBias+countryBias+cycle};
+    return {headline:event.headline+"; цены "+commodity.name+" меняются",impact:event.impact+commodity.impact+sectorBias+countryBias+cycle};
+  };
+  const quarterlyReport=(company:CompanyPreview,atDay:number)=>{
+    const event=marketEvent(company,atDay);
+    const commodity=commodityPulse(company.sector,atDay);
+    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+    const revenue=(4.8+(seed%120)/10)*(1+event.impact*1.7);
+    const profit=Math.max(.05,(.42+(seed%38)/20)*(1+event.impact*4+commodity.impact*2));
+    return {event,commodity,revenue,profit,outlook:event.impact>=0?"прогноз повышен":"прогноз снижен"};
   };
   const priceFor=(company:CompanyPreview, atDay=day)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
@@ -307,7 +321,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
               <CandleChart company={focus} points={points} range={chartRange}/>
               <div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button type="button" key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div>
               <div className="exchange-metrics"><div><span>КАПИТАЛИЗАЦИЯ</span><b>{profile.marketCap}</b></div><div><span>P / E</span><b>{profile.pe}</b></div><div><span>P / B</span><b>{profile.pb}</b></div><div><span>ДИВИДЕНД</span><b>{profile.dividendYield}</b></div></div>
-              <div className="company-report-card"><span>КВАРТАЛЬНЫЙ ОТЧЁТ · Q{reportNo}</span><h3>{focus.name}</h3><p>{profile.description}</p><div><b>Выручка {profile.revenue}</b><b>Чистая прибыль {profile.netProfit}</b></div></div>
+              <div className="company-report-card"><span>КВАРТАЛЬНЫЙ ОТЧЁТ · Q{reportNo}</span><h3>{focus.name}</h3><p>{profile.description} {quarterlyReport(focus,day).event.headline}; цены {quarterlyReport(focus,day).commodity.name} влияют на маржу, поэтому {quarterlyReport(focus,day).outlook}.</p><div><b>Выручка {quarterlyReport(focus,day).revenue.toFixed(1)} млрд VLR</b><b>Чистая прибыль {quarterlyReport(focus,day).profit.toFixed(2)} млрд VLR</b><b>Драйвер {((quarterlyReport(focus,day).event.impact)*100).toFixed(1)}%</b></div></div>
               <div className="exchange-company-dossier"><div><span>ПРЕИМУЩЕСТВО</span><p>{marketProfile.strength}. Эффект сектора: {((marketProfile.sectors[focus.sector]??marketProfile.bias)*100).toFixed(1)}%.</p></div><div><span>РИСК</span><p>{marketProfile.risk}. Сырьё: {profile.materials}.</p></div><div><span>CEO</span><p>{focus.ceo}, {focus.ceoAge} лет. {focus.ceoBio}</p></div></div>
               <div className="exchange-action-row"><div><span>В ПОРТФЕЛЕ</span><b>{owned} акций</b></div><div className="spotlight-actions"><button type="button" onClick={()=>sell(focus)} disabled={!owned}>Продать</button><button type="button" className="primary small" onClick={()=>buy(focus)}>Купить</button></div></div>
             </div>})() : <div className="exchange-empty">Выбери компанию выше.</div>}
