@@ -64,11 +64,11 @@ const labelGeo: Record<string, GeoPoint> = {
 
 
 const cityEconomyProfile: Record<string,{sites:number;factories:number;highRises:number;trees:number;people:number;port:boolean;portBonus:number}> = {
-  slavoriya:{sites:64,factories:18,highRises:14,trees:150,people:42,port:false,portBonus:0},
-  lirania:{sites:58,factories:8,highRises:16,trees:130,people:40,port:true,portBonus:1},
-  darvast:{sites:60,factories:24,highRises:7,trees:95,people:34,port:false,portBonus:0},
-  estraviya:{sites:62,factories:10,highRises:24,trees:145,people:48,port:false,portBonus:0},
-  saverniya:{sites:56,factories:9,highRises:11,trees:180,people:46,port:true,portBonus:1}
+  slavoriya:{sites:108,factories:20,highRises:18,trees:220,people:72,port:false,portBonus:0},
+  lirania:{sites:102,factories:10,highRises:20,trees:205,people:68,port:true,portBonus:1},
+  darvast:{sites:112,factories:27,highRises:9,trees:165,people:64,port:false,portBonus:0},
+  estraviya:{sites:116,factories:12,highRises:30,trees:230,people:80,port:false,portBonus:0},
+  saverniya:{sites:110,factories:11,highRises:14,trees:250,people:78,port:true,portBonus:1}
 };
 function coastalPoint(countryId:string): GeoPoint | null {
   const poly=countryPolygons[countryId];
@@ -327,15 +327,21 @@ function makeTree(x: number, z: number, scale = 1) {
 
 function safeCompanyGeo(countryId: string, company: CompanyPreview): GeoPoint {
   const poly = countryPolygons[countryId];
-  const original: GeoPoint = [company.x / 5, company.y / 3.5];
-  if (pointInPolygon(original[0], original[1], poly)) return original;
   const center = capitalGeo[countryId];
-  let u = original[0], v = original[1];
-  for (let i = 0; i < 18 && !pointInPolygon(u, v, poly); i += 1) {
-    u += (center[0] - u) * 0.18;
-    v += (center[1] - v) * 0.18;
+  const seed = company.ticker.split("").reduce((n,ch,i)=>n + ch.charCodeAt(0) * (i + 3), countryId.length * 97);
+  // Sample the whole country instead of pulling invalid coordinates back toward the capital.
+  // This keeps company markers and their physical offices distributed across the map.
+  for(let i=0;i<180;i++){
+    const u=8+hash(seed*0.013+i*17.17, countryId.length*3.71+i*0.41)*84;
+    const v=8+hash(seed*0.021+i*29.43, countryId.length*5.19+i*0.73)*84;
+    const margin=pointInPolygon(u+.9,v,poly)&&pointInPolygon(u-.9,v,poly)&&pointInPolygon(u,v+.9,poly)&&pointInPolygon(u,v-.9,poly);
+    const fromCapital=Math.hypot(u-center[0],v-center[1]);
+    if(margin && fromCapital>4.5) return [u,v];
   }
-  return [u, v];
+  // Deterministic fallback: original data if it is valid, otherwise the capital vicinity.
+  const original: GeoPoint = [company.x / 5, company.y / 3.5];
+  if(pointInPolygon(original[0],original[1],poly)) return original;
+  return [center[0]+2.2,center[1]+1.4];
 }
 
 function roadCurve(a: GeoPoint, b: GeoPoint, bend = 0.12) {
@@ -632,12 +638,12 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
       const citySites:GeoPoint[]=[];
       const cityProfile=cityEconomyProfile[selectedCountry.id]??cityEconomyProfile.saverniya;
-      for(let i=0;i<140&&citySites.length<cityProfile.sites;i++){
+      for(let i=0;i<520&&citySites.length<cityProfile.sites;i++){
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
         const margin=pointInPolygon(u+.9,v,selectedPoly)&&pointInPolygon(u-.9,v,selectedPoly)&&pointInPolygon(u,v+.9,selectedPoly)&&pointInPolygon(u,v-.9,selectedPoly);
-        const spaced=citySites.every(([su,sv])=>Math.hypot(u-su,v-sv)>3.2);
+        const spaced=citySites.every(([su,sv])=>Math.hypot(u-su,v-sv)>2.15);
         if(inside&&margin&&spaced){
           citySites.push([u,v]);
           const p=worldFromGeo([u,v]);
@@ -645,6 +651,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           const scale=.32+hash(i*4.2,selectedCountry.id.length)*.42;
           scene.add(makeCityBuilding(p.x,p.z,scale,type));
           if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
+          if(citySites.length<=cityProfile.highRises && citySites.length%2===0) scene.add(makeModernBuilding(p.x+.18,p.z-.16,0.78+(citySites.length%4)*.08,0));
+          if(citySites.length<=cityProfile.factories && citySites.length%2===1) scene.add(makeFactory(p.x-.16,p.z+.14,0.72+(citySites.length%3)*.10));
         }
       }
       // Local streets: connect nearby districts instead of drawing arbitrary long diagonals.
@@ -662,16 +670,14 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           roadCurves.push(curve);
         });
       }
-      for(let gy=0;gy<15;gy++){
-        for(let gx=0;gx<15;gx++){
-          const i=gy*15+gx;
-          const u=19+(gx+.5+(.32*hash(i,selectedCountry.id.length)))*70/15;
-          const v=19+(gy+.5+(.32*hash(i+41,selectedCountry.id.length*2)))*70/15;
-          if(pointInPolygon(u,v,selectedPoly)){
-            const p=worldFromGeo([u,v]);
-            scene.add(makeTree(p.x,p.z,.36+hash(i*1.7,4)*.30));
-          }
+      for(let i=0;i<cityProfile.trees;i++){
+        const u=10+hash(i*2.17,selectedCountry.id.length*3.1+i*.11)*80;
+        const v=10+hash(i*3.43+41,selectedCountry.id.length*2.2+i*.17)*80;
+        if(pointInPolygon(u,v,selectedPoly)){
+          const p=worldFromGeo([u,v]);
+          scene.add(makeTree(p.x,p.z,.34+hash(i*1.7,4)*.34));
         }
+      }
       }
       if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
@@ -680,7 +686,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         scene.add(car);
       }
       // Pedestrians and parking clusters stay close to built-up districts.
-      citySites.slice(0,cityProfile.people).forEach((geo,i)=>{
+      citySites.slice(0,Math.min(cityProfile.people,citySites.length)).forEach((geo,i)=>{
         const p=worldFromGeo(geo);
         if(i%4===0) scene.add(makeParking(p.x+.34,p.z+.22,.75));
         scene.add(makePerson(p.x-.18,p.z+.20,.8+(i%3)*.12));
@@ -704,9 +710,6 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       });
     }
 
-
-    const snowCaps: Array<[GeoPoint, number]> = [[[47, 23], 1.55], [[53, 25], 1.25], [[61, 30], 1.05], [[40, 29], 1.3 ]];
-    snowCaps.forEach(([geo, size]) => scene.add(makeSnowCap(geo, size)));
 
     const islandGeo: GeoPoint[] = [[91,76],[94,70],[9,58],[88,17]];
     islandGeo.forEach((geo,index)=>{
