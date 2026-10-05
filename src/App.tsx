@@ -333,6 +333,31 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
   const currentCrisis=macroCrisis(day);
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
+  const takeLoan=(amount:number)=>{
+    if(loan?.balance){setNotice("Сначала погаси текущий кредит.");return;}
+    const normalized=Math.min(Math.max(100000,Math.round(amount/10000)*10000),loanLimit);
+    if(normalized<100000){setNotice("Для кредита нужен капитал минимум 100 000 VLR.");return;}
+    setCash(v=>v+normalized);
+    setLoan({principal:normalized,balance:normalized,lastChargeDay:day,rate:.025});
+    setNotice("Кредит получен: "+normalized.toLocaleString("ru-RU")+" VLR. Ставка 2,5% каждые 30 игровых дней.");
+  };
+  const repayLoan=(amount:number)=>{
+    if(!loan?.balance)return;
+    const pay=Math.min(loan.balance,Math.max(0,Math.round(amount/10000)*10000),cash);
+    if(pay<=0){setNotice("Недостаточно свободных денег для погашения.");return;}
+    setCash(v=>v-pay);
+    const next=loan.balance-pay;
+    setLoan(next<=1?null:{...loan,balance:next});
+    setNotice(next<=1?"Кредит полностью погашен.":"Погашено "+pay.toLocaleString("ru-RU")+" VLR. Остаток: "+next.toLocaleString("ru-RU")+" VLR.");
+  };
+  const acquireCompany=(company:CompanyPreview)=>{
+    if(ownedCompanies.includes(company.ticker)){setNotice(company.name+" уже под твоим контролем.");return;}
+    const cost=takeoverCost(company);
+    if(cash<cost){setNotice("Для поглощения нужно "+cost.toLocaleString("ru-RU")+" VLR. Можно сначала использовать кредит.");return;}
+    setCash(v=>v-cost);
+    setOwnedCompanies(v=>[...v,company.ticker]);
+    setNotice("Поглощение завершено: "+company.name+" теперь входит в твою группу.");
+  };
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),cost=price*quantity;
     if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
@@ -347,8 +372,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
-  const startJobGame=(id:string)=>setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="analyst"?9:id==="logistics"?6:4)),score:0,started:Date.now()});
-  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setCareerXP(v=>Math.min(30,v+1));setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
+  const startJobGame=(id:string)=>{
+    if(lastJobDay===day){setNotice("На сегодня рабочая смена уже выполнена. Вернись завтра.");return;}
+    if(campaignFinished){setNotice("Кампания завершена: новый год пока не начат.");return;}
+    setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="analyst"?9:id==="logistics"?6:4)),score:0,started:Date.now()});
+  };
+  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setCareerXP(v=>Math.min(30,v+1));setLastJobDay(day);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR. Следующая работа — завтра.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
   const hitJobTarget=(index:number)=>{
     if(!jobGame)return;
     const size=jobGame.jobId==="analyst"?9:jobGame.jobId==="logistics"?6:4;
@@ -358,7 +387,23 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       else setJobGame({...jobGame,score:jobGame.score+1,target:next(),started:Date.now()});
     }else setJobGame({...jobGame,score:0,target:next(),started:Date.now()});
   };
-  const advance=()=>{setDay(v=>v+1);setNotice("Новый игровой день: котировки, новости и стоимость портфеля обновились.");};
+  const advance=()=>{
+    if(day>=365){setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Открой профиль, чтобы оценить результат кампании.");return;}
+    setDay(v=>Math.min(365,v+1));
+    setNotice("Новый игровой день: котировки, новости, кредиты и стоимость портфеля обновились.");
+  };
+  useEffect(()=>{
+    if(day<=1)return;
+    if(loan?.balance && day-loan.lastChargeDay>=30){
+      const charged=Math.round(loan.balance*loan.rate);
+      setLoan({...loan,balance:loan.balance+charged,lastChargeDay:day});
+      setNotice("Начислены проценты по кредиту: +"+charged.toLocaleString("ru-RU")+" VLR.");
+    }
+    if(day%30===0 && ownedCompanies.length){
+      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);return sum+(company?Math.round(takeoverCost(company)*.012):0);},0);
+      if(income>0){setCash(v=>v+income);setNotice("Доход холдинга: +"+income.toLocaleString("ru-RU")+" VLR.");}
+    }
+  },[day]);
   const startMiniGame=()=>setMiniGame({active:true,score:0,target:Math.floor(Math.random()*6),started:Date.now()});
   const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));setCash(v=>v+reward);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
   const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"],["profile","Профиль"]];
