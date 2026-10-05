@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type Country } from "./data/world";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
