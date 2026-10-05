@@ -981,3 +981,217 @@ button{cursor:pointer}
   .panel-title{min-height:68px}
   .spotlight-actions{justify-content:flex-start;flex-wrap:wrap}
 }
+
+
+/* Stability + premium dashboard surfaces */
+.game-body{min-height:calc(100vh - 72px);align-items:start}
+.game-sidebar{
+  position:sticky;
+  top:72px;
+  height:calc(100vh - 72px);
+  min-height:0 !important;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:thin;
+  z-index:15;
+}
+.game-sidebar>button{
+  min-height:42px;
+  border:1px solid transparent;
+  margin:2px 0;
+  padding:10px 11px;
+  border-radius:9px;
+}
+.game-sidebar>button:hover{border-color:rgba(119,190,202,.14);background:rgba(119,190,202,.055)}
+.game-sidebar>button.side-active{
+  border-color:rgba(119,190,202,.28);
+  background:linear-gradient(90deg,rgba(67,174,194,.16),rgba(67,174,194,.045));
+  box-shadow:inset 3px 0 rgba(125,221,235,.8),0 6px 18px rgba(0,0,0,.12);
+}
+.side-bottom{
+  margin-top:auto !important;
+  padding-top:14px !important;
+  border-top:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,transparent,rgba(3,12,18,.34));
+}
+.side-bottom button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center !important;
+  min-height:42px;
+  padding:0 12px !important;
+  border-radius:9px !important;
+  font-size:10px !important;
+  letter-spacing:.02em;
+}
+.side-bottom .logout-button{
+  color:#ffb6bf !important;
+  background:rgba(255,95,119,.055) !important;
+}
+
+/* The WebGL atlas must stay inside its card and never create page-height overflow. */
+.atlas-3d{
+  width:100%;
+  max-width:100%;
+  overflow:hidden !important;
+  border:1px solid rgba(139,190,201,.22);
+  border-radius:14px;
+  background:#061a25;
+}
+.atlas-3d-viewport{
+  position:relative;
+  width:100%;
+  height:clamp(360px,42vw,560px) !important;
+  min-height:360px !important;
+  max-height:560px !important;
+  overflow:hidden !important;
+  contain:layout paint size;
+}
+.atlas-3d-canvas{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+}
+.atlas-3d-overlay{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:5;
+}
+.atlas-3d-overlay button{pointer-events:auto}
+.atlas-3d-watermark{
+  position:absolute;
+  left:14px;
+  bottom:12px;
+  z-index:7;
+  pointer-events:none;
+  padding:6px 8px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:6px;
+  background:rgba(3,12,18,.56);
+  color:#7895a0;
+  font:700 8px "Space Grotesk";
+  letter-spacing:.12em;
+}
+.market-map-card .atlas-3d{margin-top:14px}
+.game-panel .atlas-3d{margin-top:18px}
+
+/* Distinct cards: clear boundaries, air between modules, no merged dashboard blocks. */
+.hero-map-grid{
+  gap:16px !important;
+}
+.hero-map-grid>.market-map-card,
+.hero-map-grid>.capital-card,
+.hero-map-grid>.jobs-card,
+.hero-map-grid>.companies-card,
+.hero-map-grid>.home-news-card{
+  border:1px solid rgba(133,181,192,.17) !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.035);
+}
+.hero-map-grid>.capital-card,
+.hero-map-grid>.jobs-card,
+.hero-map-grid>.companies-card,
+.hero-map-grid>.home-news-card{
+  background:linear-gradient(145deg,rgba(11,27,37,.98),rgba(7,17,25,.98)) !important;
+}
+.hero-map-grid>.capital-card:hover,
+.hero-map-grid>.jobs-card:hover,
+.hero-map-grid>.companies-card:hover,
+.hero-map-grid>.home-news-card:hover{
+  border-color:rgba(118,195,207,.34) !important;
+}
+.hero-map-grid .card-head{min-height:56px;align-items:center}
+.hero-map-grid .card-head h2{margin:5px 0 0}
+.jobs-card,.companies-card,.home-news-card{border-radius:12px !important}
+.jobs-card{padding:18px 20px !important}
+.companies-card{padding:18px 20px !important}
+.home-news-card{padding:18px 20px !important}
+.job-row,.ticker-row{
+  min-height:62px;
+  padding:12px 0 !important;
+}
+.job-row button,.capital-actions button,.day-button,.spotlight-actions button,.trade-actions button,.company-focus-footer button,.life-job button{
+  border-radius:8px !important;
+  min-height:38px;
+  padding:0 13px !important;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.job-row button:hover,.capital-actions button:hover,.day-button:hover,.spotlight-actions button:hover,.trade-actions button:hover,.company-focus-footer button:hover,.life-job button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,.22);
+}
+.primary.small{border-radius:8px !important}
+
+/* Life/jobs: stable rows, no text collision or overflow. */
+.life-job{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:18px;
+  padding:18px 0;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.life-job>div{min-width:0}
+.life-job b{font-size:13px}
+.life-job span{color:#758d99;font-size:10px;max-width:720px}
+.life-job strong{align-self:center;white-space:nowrap;font:600 14px "Space Grotesk"}
+.life-job button{align-self:center;min-width:116px}
+
+/* Market/company navigation */
+.ticker-row,.ticker-link,.company-focus-card,.table-row button{cursor:pointer}
+.ticker-row{background:transparent !important;border-radius:8px}
+.ticker-row:hover{background:rgba(67,174,194,.045) !important}
+.company-focus-card{
+  border:1px solid rgba(133,181,192,.14) !important;
+  background:linear-gradient(145deg,rgba(11,25,35,.97),rgba(7,16,24,.97)) !important;
+  border-radius:13px !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.14);
+}
+.company-focus-card:hover{border-color:rgba(118,195,207,.35) !important;box-shadow:0 18px 38px rgba(0,0,0,.22)}
+.exchange-spotlight{
+  border:1px solid rgba(118,195,207,.20) !important;
+  background:linear-gradient(145deg,rgba(9,24,34,.99),rgba(5,14,22,.98)) !important;
+  border-radius:14px !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.2);
+}
+.table-card{
+  border:1px solid rgba(133,181,192,.15) !important;
+  border-radius:12px !important;
+  overflow:hidden;
+}
+.table-row{min-height:54px}
+.table-row:not(.table-head){border-top:1px solid rgba(255,255,255,.055) !important}
+.table-row:not(.table-head):hover{background:rgba(67,174,194,.035)}
+.news-transactions{
+  margin-top:16px;
+  border:1px solid rgba(133,181,192,.14);
+  border-radius:12px;
+  background:rgba(255,255,255,.018);
+  overflow:hidden;
+}
+.news-transactions>span{display:block;padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.07)}
+.news-transactions>div{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:12px 15px;border-top:1px solid rgba(255,255,255,.045)}
+.news-transactions>div:first-of-type{border-top:0}
+
+/* Keep the game content comfortably bounded on desktop. */
+.game-main{max-width:1540px}
+@media(max-width:900px){
+  .game-sidebar{position:relative;top:auto;height:auto;max-height:none;overflow:visible}
+  .game-body{grid-template-columns:1fr}
+  .game-main{padding:24px 18px}
+  .hero-map-grid{grid-template-columns:1fr !important}
+  .market-map-card{grid-row:auto !important}
+  .atlas-3d-viewport{height:clamp(320px,70vw,500px) !important;min-height:320px !important}
+  .life-job{grid-template-columns:1fr auto}
+  .life-job strong{grid-column:1}
+}
+@media(max-width:600px){
+  .atlas-3d-viewport{height:320px !important;min-height:320px !important}
+  .game-topbar{padding:0 14px;gap:12px}
+  .game-topbar nav{display:none}
+  .news-transactions>div{grid-template-columns:1fr auto}
+}
