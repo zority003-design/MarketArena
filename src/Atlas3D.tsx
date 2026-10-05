@@ -175,7 +175,7 @@ function isLand(u: number, v: number) {
   return Object.values(countryPolygons).some((poly) => pointInPolygon(u, v, poly));
 }
 
-function makeTerrain() {
+function makeTerrain(selectedId?: string) {
   const nx = 150, nz = 108;
   const positions: number[] = [];
   const colors: number[] = [];
@@ -186,7 +186,7 @@ function makeTerrain() {
       const px = (x / nx - 0.5) * W;
       const pz = (z / nz - 0.5) * D;
       const edge = Math.min((x / nx) * 7, ((nx - x) / nx) * 7, (z / nz) * 7, ((nz - z) / nz) * 7);
-      const land = isLand(x / nx * 100, z / nz * 100);
+      const land = selectedId ? pointInPolygon(x / nx * 100, z / nz * 100, countryPolygons[selectedId]) : isLand(x / nx * 100, z / nz * 100);
       const h = land ? Math.max(-0.08, terrainHeight(px, pz) * clamp(edge, 0, 1)) : -0.48;
       positions.push(px, h, pz);
       const c = heightColor(h, px, pz);
@@ -299,6 +299,26 @@ function makeIsland(x: number, z: number, sx: number, sz: number) {
   return mesh;
 }
 
+function makeTree(x: number, z: number, scale = 1) {
+  const group = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.035 * scale, 0.05 * scale, 0.28 * scale, 6), new THREE.MeshStandardMaterial({ color: "#5a4934", roughness: 1 }));
+  trunk.position.y = 0.16 * scale;
+  const crown = new THREE.Mesh(new THREE.ConeGeometry(0.16 * scale, 0.42 * scale, 7), new THREE.MeshStandardMaterial({ color: "#315a3c", roughness: 0.96 }));
+  crown.position.y = 0.43 * scale;
+  group.add(trunk, crown);
+  const h = terrainHeight(x, z);
+  group.position.set(x, h + 0.02, z);
+  group.castShadow = true;
+  return group;
+}
+
+function makeRoad(a: GeoPoint, b: GeoPoint) {
+  const p1 = worldFromGeo(a), p2 = worldFromGeo(b);
+  p1.y = terrainHeight(p1.x, p1.z) + 0.075;
+  p2.y = terrainHeight(p2.x, p2.z) + 0.075;
+  return makeLine([p1, p2], 0xb39d7a, 0.72, 2);
+}
+
 function makeSnowCap(geo: GeoPoint, size: number) {
   const p = worldFromGeo(geo);
   const h = terrainHeight(p.x, p.z);
@@ -341,8 +361,11 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     scene.fog = new THREE.Fog("#062536", 25, 48);
 
     const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 100);
-    const target = new THREE.Vector3(0, 0.5, 0);
-    camera.position.set(0, 17.5, 17.5);
+    const selectedPoly = countryPolygons[selected];
+    const centerGeo = selectedPoly.reduce((acc, p) => [acc[0] + p[0] / selectedPoly.length, acc[1] + p[1] / selectedPoly.length] as GeoPoint, [0, 0]);
+    const centerWorld = worldFromGeo(centerGeo);
+    const target = new THREE.Vector3(centerWorld.x, 0.5, centerWorld.z);
+    camera.position.set(centerWorld.x, 11.5, centerWorld.z + 11.5);
     camera.lookAt(target);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -376,7 +399,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     fill.position.set(14, 8, 12);
     scene.add(fill);
 
-    const terrain = makeTerrain();
+    const terrain = makeTerrain(selected);
     scene.add(terrain);
 
     const ocean = new THREE.Mesh(
@@ -401,7 +424,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const line = makeLine(
         polygonLine(countryPolygons[country.id]),
         selected === country.id ? 0xf4e5b7 : 0xcbd7ca,
-        selected === country.id ? 0.95 : 0.68
+        selected === country.id ? 0.98 : 0
       );
       line.userData.countryId = country.id;
       borderGroup.add(line);
@@ -427,6 +450,29 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     scene.add(makeIsland(-12.1, -4.7, 1.0, 0.52));
     scene.add(makeIsland(13.8, 6.0, 0.72, 0.42));
     scene.add(makeIsland(-10.0, 8.0, 0.48, 0.31));
+    const selectedCountry = countries.find((c) => c.id === selected);
+    if (selectedCountry) {
+      const capital = capitalGeo[selectedCountry.id];
+      selectedCountry.companies.forEach((company, index) => {
+        const geo: GeoPoint = [company.x / 5, company.y / 3.5];
+        scene.add(makeRoad(capital, geo));
+        const p = worldFromGeo(geo);
+        scene.add(makeTree(p.x + 0.28, p.z + 0.18, 0.55 + (index % 3) * 0.08));
+        scene.add(makeTree(p.x - 0.22, p.z + 0.26, 0.45 + (index % 2) * 0.1));
+      });
+      const treeSeeds = [
+        [capital[0] - 4, capital[1] + 2], [capital[0] - 2, capital[1] + 3],
+        [capital[0] + 3, capital[1] - 2], [capital[0] + 4, capital[1] + 1],
+        [capital[0] - 5, capital[1] - 3], [capital[0] + 2, capital[1] + 4]
+      ] as GeoPoint[];
+      treeSeeds.forEach((geo, i) => {
+        if (pointInPolygon(geo[0], geo[1], countryPolygons[selectedCountry.id])) {
+          const p = worldFromGeo(geo);
+          scene.add(makeTree(p.x, p.z, 0.5 + (i % 3) * 0.08));
+        }
+      });
+    }
+
 
     [[47, 23], [53, 25], [61, 30], [40, 29]].forEach((p, i) => scene.add(makeSnowCap(p as GeoPoint, 0.6 + i * 0.05)));
 
@@ -445,7 +491,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const material = new THREE.MeshStandardMaterial({
         color: new THREE.Color(country.color),
         transparent: true,
-        opacity: selected === country.id ? 0.20 : 0.035,
+        opacity: selected === country.id ? 0.28 : 0,
         roughness: 1,
         depthWrite: false,
         depthTest: false,
@@ -466,14 +512,14 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     let moved = false;
     let lastX = 0;
     let lastY = 0;
-    let zoom = 1;
+    let zoom = 1.22;
     let panX = 0;
     let panZ = 0;
 
     const updateCamera = () => {
-      const distance = 24 / zoom;
-      camera.position.set(panX, distance * 0.76, distance * 0.76 + panZ);
-      target.set(panX, 0.25, panZ * 0.32);
+      const distance = 17 / zoom;
+      camera.position.set(centerWorld.x + panX, distance * 0.76, centerWorld.z + distance * 0.76 + panZ);
+      target.set(centerWorld.x + panX * 0.55, 0.25, centerWorld.z + panZ * 0.32);
       camera.lookAt(target);
     };
 
@@ -493,11 +539,11 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const cp = project(worldFromGeo(capitalGeo[country.id]));
         if (label) {
           label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
-          label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0.78";
+          label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0";
         }
         if (capital) {
           capital.style.transform = `translate3d(${cp.x}px,${cp.y}px,0) translate(-50%,-50%)`;
-          capital.style.opacity = cp.z > 1 ? "0" : "1";
+          capital.style.opacity = cp.z > 1 && country.id === selected ? "0" : country.id === selected ? "1" : "0";
         }
       });
 
