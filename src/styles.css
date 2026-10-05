@@ -2126,3 +2126,151 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
 
 /* Market terminal readability */
 .exchange-safe{font-size:14px}.exchange-safe-top h2{font-size:30px!important;letter-spacing:-.02em}.exchange-safe-top p,.exchange-safe-focushead p{font-size:14px!important;line-height:1.65}.exchange-safe-clock{min-width:250px!important;padding:14px!important;border:1px solid rgba(97,215,228,.28)!important;border-radius:10px!important;background:linear-gradient(145deg,#0d232c,#08131a)!important}.exchange-safe-clock b{font-size:24px!important}.exchange-safe-clock span{font-size:12px!important}.exchange-safe-marketline{font-size:14px!important;padding:14px 0!important}.exchange-safe-marketline b{font-size:16px!important}.exchange-safe-companies button{min-height:100px!important;padding:13px!important}.exchange-safe-companies button b{font-size:16px!important}.exchange-safe-companies button span{font-size:13px!important}.exchange-safe-companies button small{font-size:11px!important}.exchange-safe-companies button strong{font-size:14px!important}.exchange-safe-companies button em{font-size:13px!important}.exchange-safe-focushead h2{font-size:32px!important}.exchange-safe-focushead>div:last-child>b{font-size:25px!important}.exchange-safe-focushead>div:last-child>strong{display:block;font-size:18px!important;margin-top:5px}.exchange-safe-metrics{gap:10px!important}.exchange-safe-metrics div{padding:15px!important}.exchange-safe-metrics span{font-size:10px!important}.exchange-safe-metrics b{font-size:15px!important}.exchange-safe-report,.exchange-safe-dossier{font-size:14px!important}.exchange-safe-report h3{font-size:19px!important}.exchange-safe-report p,.exchange-safe-dossier p{font-size:14px!important;line-height:1.7!important}.exchange-safe-actions{font-size:14px!important}.exchange-safe-actions button{font-size:13px!important;padding:10px 14px!important}.exchange-safe-chart{min-height:340px!important;padding:18px!important}.exchange-safe-chart svg{height:250px!important}.exchange-safe-chart .chart-title span{font-size:11px!important}.exchange-safe-chart .chart-title b{font-size:19px!important}.chart-range-tabs button{font-size:12px!important;padding:9px 13px!important}
+
+/* v1.1 game shell — command deck, animated world backdrop, no sidebar */
+.game-shell{
+  min-height:100vh!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(900px 520px at 50% -10%,rgba(49,153,176,.20),transparent 65%),
+    radial-gradient(700px 500px at 90% 45%,rgba(88,68,184,.14),transparent 70%),
+    radial-gradient(700px 500px at 5% 80%,rgba(20,126,106,.12),transparent 70%),
+    #03080d!important;
+}
+.game-shell:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.34;
+  background-image:
+    linear-gradient(rgba(116,190,204,.075) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(116,190,204,.075) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(to bottom,black 0%,rgba(0,0,0,.7) 55%,transparent 100%);
+}
+.game-shell:after{
+  content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(circle at 25% 30%,rgba(83,222,211,.10),transparent 13%),
+    radial-gradient(circle at 72% 68%,rgba(115,92,221,.09),transparent 16%);
+  animation:worldPulse 14s ease-in-out infinite alternate;
+}
+@keyframes worldPulse{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.06)}}
+.game-topbar,.game-body{position:relative;z-index:2}
+.game-topbar{
+  height:76px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:18px!important;
+  padding:10px 18px!important;
+  background:linear-gradient(180deg,rgba(7,17,24,.96),rgba(5,12,17,.88))!important;
+  border-bottom:1px solid rgba(106,201,215,.18)!important;
+  box-shadow:0 14px 45px rgba(0,0,0,.38),inset 0 -1px rgba(255,255,255,.025)!important;
+  backdrop-filter:blur(18px)!important;
+}
+.game-brand{
+  flex:0 0 auto!important;
+  display:flex!important;align-items:center!important;gap:10px!important;
+  border:0!important;background:transparent!important;color:#ecffff!important;
+  padding:4px!important;cursor:pointer!important;text-align:left!important;
+}
+.game-brand>span{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:11px;
+  border:1px solid rgba(100,221,231,.42);
+  background:linear-gradient(145deg,#123541,#07151d);
+  box-shadow:0 0 24px rgba(71,211,225,.12),inset 0 0 18px rgba(71,211,225,.07);
+  font:900 14px "Space Grotesk";
+}
+.game-brand b{display:block;font-size:15px;letter-spacing:.03em}
+.game-brand small{display:block;margin-top:2px;font-size:7px;letter-spacing:.2em;color:#638d98;font-weight:900}
+.game-command-deck{
+  flex:1!important;display:flex!important;justify-content:center!important;gap:5px!important;
+  overflow:auto!important;scrollbar-width:none!important;
+}
+.game-command-deck::-webkit-scrollbar{display:none}
+.game-command-deck button{
+  min-width:74px!important;height:50px!important;padding:6px 9px!important;
+  border:1px solid transparent!important;border-radius:9px!important;
+  background:rgba(8,20,27,.62)!important;color:#6f919a!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;
+  font-size:9px!important;font-weight:900!important;white-space:nowrap!important;cursor:pointer!important;
+}
+.game-command-deck button:hover{border-color:rgba(101,215,228,.28)!important;background:#0b222b!important;color:#cceef2!important}
+.game-command-deck button.active,.game-command-deck button.exchange-nav.active{
+  border-color:rgba(103,220,230,.58)!important;
+  background:linear-gradient(180deg,#10313b,#0a2029)!important;
+  color:#efffff!important;
+  box-shadow:0 0 24px rgba(75,207,220,.10),inset 0 0 18px rgba(75,207,220,.05)!important;
+}
+.nav-glyph{font-size:15px;line-height:1;color:#5fcbd7}
+.game-command-deck button.active .nav-glyph{color:#baf8ff}
+.game-right{
+  flex:0 0 auto!important;display:flex!important;align-items:center!important;gap:9px!important;
+  padding-left:8px!important;
+}
+.game-right .topbar-day{
+  font:900 14px "Space Grotesk"!important;color:#dffbff!important;letter-spacing:.04em;
+}
+.game-right>b{
+  padding:9px 11px;border:1px solid rgba(103,215,228,.22);border-radius:8px;
+  background:#091b23;color:#dffcff!important;font-size:12px!important;
+}
+.game-body{display:block!important;min-height:calc(100vh - 76px)!important}
+.game-main{
+  width:min(1700px,calc(100vw - 32px))!important;
+  margin:0 auto!important;
+  padding:24px 0 60px!important;
+}
+.game-heading{
+  min-height:92px!important;
+  padding:8px 2px 20px!important;
+}
+.game-heading h1{font-size:34px!important;letter-spacing:-.04em!important;text-shadow:0 0 28px rgba(96,215,228,.10)}
+.hero-map-grid{gap:14px!important}
+.market-map-card{
+  min-height:590px!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.market-map-card:after{
+  content:"LIVE ECONOMY MAP";position:absolute;right:18px;bottom:15px;z-index:2;
+  padding:6px 8px;border:1px solid rgba(95,214,226,.18);border-radius:5px;
+  color:#557f89;background:rgba(3,10,14,.75);font-size:8px;font-weight:900;letter-spacing:.16em;
+}
+.capital-card,.jobs-card,.companies-card,.home-news-card{
+  border-radius:13px!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.capital-card:before,.jobs-card:before,.companies-card:before,.home-news-card:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(120deg,rgba(109,225,236,.045),transparent 35%,rgba(132,102,226,.035));
+}
+.capital-card strong{font-size:34px!important;text-shadow:0 0 20px rgba(99,218,229,.12)}
+.ticker-row{min-height:64px!important}
+.ticker-row strong{font-size:17px!important}
+.exchange-safe-focushead>div:last-child>strong{font-size:24px!important}
+.exchange-safe-companies button strong{font-size:18px!important}
+.exchange-safe-chart{border:1px solid rgba(102,211,222,.18)!important;box-shadow:inset 0 0 45px rgba(55,167,180,.045),0 16px 36px rgba(0,0,0,.22)!important}
+.exchange-safe-chart svg{height:290px!important}
+.exchange-safe-chart .candle rect{rx:0!important}
+.exchange-safe-chart .chart-title b{font-size:23px!important}
+.company-modal{box-shadow:0 30px 100px rgba(0,0,0,.62),0 0 70px rgba(74,203,218,.08)!important}
+.analyst-quote{display:block;margin-top:9px;padding:8px 10px;border-left:2px solid #4ecbd8;color:#b2cbd1!important;font-size:11px!important;line-height:1.55;font-style:italic}
+@media(max-width:1050px){
+  .game-brand div{display:none}
+  .game-topbar{gap:8px!important;padding:8px 10px!important}
+  .game-command-deck{justify-content:flex-start!important}
+  .game-command-deck button{min-width:62px!important}
+  .game-right>b{display:none}
+  .game-main{width:calc(100vw - 20px)!important}
+}
+@media(max-width:720px){
+  .game-topbar{height:64px!important}
+  .game-brand>span{width:36px;height:36px}
+  .game-right .offline-pill{display:none}
+  .game-right .topbar-day{font-size:11px!important}
+  .game-command-deck button{min-width:54px!important;height:44px!important;font-size:8px!important}
+  .nav-glyph{font-size:13px}
+  .game-main{padding-top:14px!important}
+  .game-heading h1{font-size:25px!important}
+  .market-map-card{min-height:460px!important}
+}
