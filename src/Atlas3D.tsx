@@ -613,7 +613,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           const key=i<j?i+"-"+j:j+"-"+i;
           if(localPairs.has(key)) return;
           localPairs.add(key);
-          const curve=inCountryRoad(selectedCountry.id,citySites[i],citySites[j],(hash(i*7.1+j*3.3)-.5)*.055);
+          const curve=inCountryRoad(selectedCountry.id,citySites[i],citySites[j],(hash(i*7.1,j*3.3)-.5)*.055);
           scene.add(makeHighway(curve,.095));
           scene.add(makeSidewalk(curve,.022));
           roadCurves.push(curve);
