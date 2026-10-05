@@ -82,7 +82,7 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         <rect x="145" y="232" width="145" height="92" fill="url(#forestTexture)" opacity=".82"/>
         <rect x="296" y="224" width="130" height="82" fill="url(#forestTexture)" opacity=".38"/>
 
-        <!-- broad mountain systems -->
+        {/* broad mountain systems */}
         <g fill="#263a35" stroke="#182b2b" strokeWidth=".7" strokeLinejoin="round">
           <path d="M68 123l15-36 13 25 17-43 15 34 17-28 16 33 17-24 17 33 17-29 17 37 17-27 18 34 17-25 16 32 17-24 18 30 17-22 16 28" opacity=".96"/>
           <path d="M157 112l15-31 13 23 16-39 16 34 15-27 17 34 15-22 17 31 16-25 16 31 17-23 16 31" opacity=".9"/>
@@ -99,7 +99,7 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
           <path d="M313 80l-6 16 6-4 6 4z"/><path d="M350 91l-6 14 6-4 6 4z"/><path d="M392 100l-6 13 6-4 6 4z"/>
         </g>
 
-        <!-- elevation contours -->
+        {/* elevation contours */}
         <g fill="none" stroke="#e2e4c8" strokeOpacity=".22" strokeWidth=".7">
           <path d="M52 139C91 112 126 116 159 136S218 161 251 143 309 126 342 143 402 158 447 132"/>
           <path d="M50 160C88 135 124 139 156 158S216 183 250 164 309 147 341 164 401 179 447 154"/>
@@ -107,7 +107,7 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
           <path d="M68 207C102 188 131 191 164 209S218 227 250 213 307 197 340 214 390 226 428 210"/>
         </g>
 
-        <!-- rivers: all originate in the northern mountains -->
+        {/* rivers: all originate in the northern mountains */}
         <g fill="none" strokeLinecap="round">
           <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#274f58" strokeWidth="4.8" opacity=".48"/>
           <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#a9dce0" strokeWidth="1.8"/>
@@ -126,7 +126,7 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         </g>
       </g>
 
-      <!-- exact political borders are the country paths themselves -->
+      {/* exact political borders are the country paths themselves */}
       <g fill="none" stroke="#f4eed8" strokeOpacity=".72" strokeWidth="1.15">
         {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
       </g>
