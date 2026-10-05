@@ -997,3 +997,110 @@ button{cursor:pointer}
   transform:none !important;
   transform-style:flat !important;
 }
+
+
+/* ATLAS GEOGRAPHY REBUILD — inline SVG is now the source of truth */
+.atlas-realistic .atlas-world-svg{
+  background:none !important;
+  background-image:none !important;
+  aspect-ratio:500/350 !important;
+  width:100% !important;
+  height:auto !important;
+  transform:none !important;
+  filter:none !important;
+  overflow:visible !important;
+}
+.atlas-realistic .atlas-world-svg > rect{
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.atlas-realistic .atlas-world-svg .bathymetry path{
+  opacity:1 !important;
+}
+.atlas-realistic .atlas-world-svg .capital{
+  cursor:pointer;
+}
+.atlas-realistic .atlas-world-svg .capital .country-name-label{
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:8.5px !important;
+  font-weight:600 !important;
+  letter-spacing:2px !important;
+  fill:#f6f0d9 !important;
+  stroke:#172b2e !important;
+  stroke-width:2.5px !important;
+  paint-order:stroke !important;
+}
+.atlas-realistic .atlas-world-svg .capital > circle:first-of-type{
+  fill:#f5edcf !important;
+  stroke:#173136 !important;
+  stroke-width:1.5px !important;
+}
+.atlas-realistic .atlas-world-svg .capital > circle:nth-of-type(2){
+  fill:#173136 !important;
+}
+.atlas-realistic .atlas-world-svg .capital > text:not(.country-name-label){
+  fill:#f8f3df !important;
+  font:6.5px Georgia,"Times New Roman",serif !important;
+  stroke:#14282c !important;
+  stroke-width:1.8px !important;
+  paint-order:stroke !important;
+}
+.atlas-realistic .atlas-world-svg .capital-active .country-name-label{
+  fill:#ffffff !important;
+  filter:drop-shadow(0 0 5px rgba(207,241,222,.4));
+}
+.atlas-realistic .atlas-world-svg .company-marker{
+  cursor:pointer;
+}
+.atlas-realistic .atlas-world-svg .company-marker circle:first-of-type{
+  fill:#f3e9c8 !important;
+  stroke:#1b3438 !important;
+  stroke-width:1.5px !important;
+}
+.atlas-realistic .atlas-world-svg .company-marker circle:nth-of-type(2){
+  fill:#17343a !important;
+}
+.atlas-realistic .atlas-world-svg .company-label-bg{
+  fill:rgba(5,22,29,.88) !important;
+  stroke:rgba(231,224,195,.34) !important;
+}
+.atlas-realistic .atlas-world-svg .company-marker text{
+  fill:#f4eed8 !important;
+  font:6px ui-monospace,SFMono-Regular,Menlo,monospace !important;
+  font-weight:700 !important;
+}
+.atlas-realistic .atlas-world-svg .sea-label{
+  fill:rgba(215,235,231,.58) !important;
+  font:6.5px Georgia,serif !important;
+  letter-spacing:1.5px !important;
+}
+.atlas-realistic .atlas-world-svg .compass circle{
+  fill:rgba(3,22,30,.18) !important;
+  stroke:#f2ecd8 !important;
+  stroke-width:1.2px !important;
+}
+.atlas-realistic .atlas-world-svg .compass text,
+.atlas-realistic .atlas-world-svg .compass path{
+  fill:#f2ecd8 !important;
+  stroke:#f2ecd8 !important;
+}
+.atlas-realistic .atlas-world-svg .company-leader{
+  stroke:rgba(244,238,216,.65) !important;
+  stroke-width:.8px !important;
+}
+.atlas-realistic .map-key{
+  min-height:38px !important;
+}
+
+/* The landing view must remain straight and stable at first paint. */
+.auth-art .atlas-realistic{
+  width:min(99%,1120px) !important;
+  max-width:none !important;
+  transform:none !important;
+  margin:auto !important;
+}
+.auth-art .atlas-realistic .atlas-world-svg{
+  transform:none !important;
+  width:100% !important;
+  height:auto !important;
+}
