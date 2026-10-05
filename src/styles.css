@@ -476,3 +476,6 @@ button{cursor:pointer}
 .company-focus-card{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.company-focus-card:hover{transform:translateY(-3px);border-color:rgba(125,231,213,.35);box-shadow:0 18px 40px rgba(0,0,0,.2)}
 .ticker-link,.company-focus-card button,.trade-actions button,.job-row button,.day-button,.capital-actions button{transition:transform .16s ease,filter .16s ease}.ticker-link:hover,.company-focus-card button:hover,.trade-actions button:hover,.job-row button:hover,.day-button:hover,.capital-actions button:hover{transform:translateY(-1px);filter:brightness(1.08)}
 @media(max-width:760px){.company-modal .modal-grid{grid-template-columns:1fr}.company-modal .company-metrics{grid-template-columns:repeat(2,1fr)}.atlas-world-svg{min-height:260px}.modern-portrait{width:62px;height:76px}}
+
+.portrait-tone-0 .portrait-face,.portrait-tone-0 .portrait-neck{background:#c78d6b}.portrait-tone-1 .portrait-face,.portrait-tone-1 .portrait-neck{background:#a96f55}.portrait-tone-2 .portrait-face,.portrait-tone-2 .portrait-neck{background:#d7a07a}.portrait-tone-3 .portrait-face,.portrait-tone-3 .portrait-neck{background:#8f5c49}
+.portrait-tone-1 .portrait-hair{background:#17191d}.portrait-tone-2 .portrait-hair{background:#5a3b2d}.portrait-tone-3 .portrait-hair{background:#241d1b}
