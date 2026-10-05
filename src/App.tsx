@@ -29,97 +29,87 @@ function Terrain({ detailed = false }: { detailed?: boolean }) {
 }
 function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { selected: string; onSelect: (id: string) => void; showCompanies?: boolean; onCompany?: (company: CompanyPreview) => void }) {
   return <div className="atlas atlas-realistic">
-    <div className="atlas-head"><span>АТЛАС · ЕДИНЫЙ ЭКОНОМИЧЕСКИЙ СОЮЗ</span><span>СЕВЕР ↑</span></div>
-    <svg viewBox="0 0 500 350" className="atlas-svg" role="img" aria-label="Физико-политическая карта пяти вымышленных государств">
+    <div className="atlas-head"><span>АТЛАС · ФИЗИКО-ПОЛИТИЧЕСКАЯ КАРТА</span><span>СЕВЕР ↑</span></div>
+    <svg viewBox="0 0 500 350" className="atlas-svg atlas-world-svg" role="img" aria-label="Физико-политическая карта пяти вымышленных государств">
       <defs>
-        <linearGradient id="oceanDeep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#103c58"/><stop offset=".55" stopColor="#0a2b42"/><stop offset="1" stopColor="#061a2b"/></linearGradient>
-        <linearGradient id="land" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9c7a3"/><stop offset=".55" stopColor="#b9ad8d"/><stop offset="1" stopColor="#7e896f"/></linearGradient>
-        <pattern id="waves" width="38" height="20" patternUnits="userSpaceOnUse"><path d="M0 10 C8 5 12 15 20 10 S32 5 38 10" fill="none" stroke="#8cb9cc" strokeOpacity=".09" /></pattern>
-        <filter id="mapShadow"><feDropShadow dx="0" dy="8" stdDeviation="7" floodColor="#000" floodOpacity=".32"/></filter>
-        <clipPath id="continentClip"><path d="M44 93 C55 67 78 52 103 48 C126 44 144 50 161 61 C183 48 207 43 229 50 C247 54 261 68 276 76 C297 55 323 45 350 50 C377 54 399 69 416 88 C439 105 453 128 449 151 C466 170 460 197 445 214 C452 238 440 264 421 279 C405 300 379 310 354 307 C333 324 303 324 280 311 C255 327 224 326 202 312 C177 320 148 310 133 293 C106 295 80 281 69 261 C45 252 33 229 39 207 C24 185 29 160 43 143 C32 124 34 107 44 93 Z"/></clipPath>
+        <linearGradient id="oceanWorld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b4561"/><stop offset=".5" stopColor="#082f49"/><stop offset="1" stopColor="#041c2c"/></linearGradient>
+        <pattern id="oceanWaves" width="48" height="24" patternUnits="userSpaceOnUse"><path d="M0 12 C9 7 15 17 24 12 S39 7 48 12" fill="none" stroke="#9bd2df" strokeOpacity=".08"/></pattern>
+        {countries.map(c=><clipPath id={"countryClip-"+c.id} key={c.id}><path d={c.mapPath}/></clipPath>)}
+        <filter id="countryReliefShadow"><feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#001018" floodOpacity=".45"/></filter>
       </defs>
-      <rect width="500" height="350" fill="url(#oceanDeep)"/>
-      <rect width="500" height="350" fill="url(#waves)"/>
-      <g filter="url(#mapShadow)">
-        <path className="continent-base" d="M44 93 C55 67 78 52 103 48 C126 44 144 50 161 61 C183 48 207 43 229 50 C247 54 261 68 276 76 C297 55 323 45 350 50 C377 54 399 69 416 88 C439 105 453 128 449 151 C466 170 460 197 445 214 C452 238 440 264 421 279 C405 300 379 310 354 307 C333 324 303 324 280 311 C255 327 224 326 202 312 C177 320 148 310 133 293 C106 295 80 281 69 261 C45 252 33 229 39 207 C24 185 29 160 43 143 C32 124 34 107 44 93 Z"/>
-        <g clipPath="url(#continentClip)">
-          {countries.map(c => <path key={c.id} d={c.mapPath} className={`atlas-country ${selected === c.id ? "selected" : ""}`} style={{fill:c.color}} onClick={() => onSelect(c.id)}/>)}
-          <path className="terrain-wash" d="M45 220 C100 200 135 217 176 236 C217 256 246 251 289 232 C337 211 374 205 451 222 L451 350 L45 350 Z"/>
-          <Terrain detailed/>
+      <rect width="500" height="350" fill="url(#oceanWorld)"/>
+      <rect width="500" height="350" fill="url(#oceanWaves)"/>
+      <g className="ocean-depth-lines"><path d="M12 72 C88 50 125 62 186 45 S307 48 365 33 S454 42 493 24"/><path d="M2 306 C67 286 114 301 174 286 S301 298 356 279 S440 289 500 270"/><path d="M16 184 C69 170 105 179 143 166 M359 150 C405 137 446 149 489 132"/></g>
+      {countries.map((c, index) => <g key={c.id} className={"world-country-group "+(selected===c.id?"selected":"")} filter="url(#countryReliefShadow)">
+        <path d={c.mapPath} className="country-land-base" style={{fill:c.color}} onClick={()=>onSelect(c.id)}/>
+        <g clipPath={"url(#countryClip-"+c.id+")"}>
+          
+          <path className="forest-patch" d={"M "+(c.capitalX-45)+" "+(c.capitalY+18)+" C "+(c.capitalX-15)+" "+(c.capitalY-2)+" "+(c.capitalX+35)+" "+(c.capitalY+4)+" "+(c.capitalX+60)+" "+(c.capitalY+32)+" L "+(c.capitalX+48)+" "+(c.capitalY+75)+" C "+(c.capitalX+5)+" "+(c.capitalY+61)+" "+(c.capitalX-35)+" "+(c.capitalY+67)+" "+(c.capitalX-55)+" "+(c.capitalY+42)+" Z"}/>
+          <path className="terrain-hill" d={"M "+(c.capitalX-75)+" "+(c.capitalY-25)+" C "+(c.capitalX-50)+" "+(c.capitalY-60)+" "+(c.capitalX-10)+" "+(c.capitalY-38)+" "+(c.capitalX+18)+" "+(c.capitalY-54)+" C "+(c.capitalX+42)+" "+(c.capitalY-68)+" "+(c.capitalX+68)+" "+(c.capitalY-31)+" "+(c.capitalX+88)+" "+(c.capitalY-8)+" L "+(c.capitalX+88)+" "+(c.capitalY+18)+" C "+(c.capitalX+38)+" "+(c.capitalY-2)+" "+(c.capitalX-22)+" "+(c.capitalY+12)+" "+(c.capitalX-75)+" "+(c.capitalY-25)+" Z"}/>
+          <path className="mountain-range" d={"M "+(c.capitalX-82)+" "+(c.capitalY-24)+" l 14 -28 15 24 18 -37 17 34 20 -24 17 31 18 -18 18 31"}/>
+          <path className="mountain-snow" d={"M "+(c.capitalX-50)+" "+(c.capitalY-52)+" l 12 18 -9 -4 -7 8 Z M "+(c.capitalX+2)+" "+(c.capitalY-59)+" l 12 19 -10 -4 -7 7 Z"}/>
+          <path className="river-wide" d={"M "+(c.capitalX-38)+" "+(c.capitalY-78)+" C "+(c.capitalX-25)+" "+(c.capitalY-45)+" "+(c.capitalX-47)+" "+(c.capitalY-18)+" "+(c.capitalX-22)+" "+(c.capitalY+12)+" C "+(c.capitalX-3)+" "+(c.capitalY+35)+" "+(c.capitalX+4)+" "+(c.capitalY+57)+" "+(c.capitalX-14)+" "+(c.capitalY+88)}/>
+          <path className="river-thin" d={"M "+(c.capitalX+35)+" "+(c.capitalY-62)+" C "+(c.capitalX+17)+" "+(c.capitalY-30)+" "+(c.capitalX+46)+" "+(c.capitalY-2)+" "+(c.capitalX+25)+" "+(c.capitalY+30)}/>
+          <ellipse className="country-lake" cx={c.capitalX-42} cy={c.capitalY+55} rx="13" ry="6"/>
+          <g className="forest-dots">{Array.from({length:9},(_,i)=><circle key={i} cx={c.capitalX-35+(i%3)*17} cy={c.capitalY+28+Math.floor(i/3)*11} r="2.4"/>)}</g>
         </g>
-        <path className="coastline" d="M44 93 C55 67 78 52 103 48 C126 44 144 50 161 61 C183 48 207 43 229 50 C247 54 261 68 276 76 C297 55 323 45 350 50 C377 54 399 69 416 88 C439 105 453 128 449 151 C466 170 460 197 445 214 C452 238 440 264 421 279 C405 300 379 310 354 307 C333 324 303 324 280 311 C255 327 224 326 202 312 C177 320 148 310 133 293 C106 295 80 281 69 261 C45 252 33 229 39 207 C24 185 29 160 43 143 C32 124 34 107 44 93 Z"/>
-        <path className="border-line" d="M151 91 C171 69 202 62 226 71 C246 78 262 94 270 111 L258 137 C248 154 246 174 229 190 L207 207 M270 109 C283 87 306 69 332 64 C357 60 384 68 406 84 M137 183 L158 195 L181 201 L207 206 L229 194 L249 200 L267 214 M267 170 L292 173 L319 184 L342 195 L364 211 L382 232 M258 259 L270 280 L292 293 L319 304 L346 306"/>
-      </g>
-      <path className="trade-route" d="M91 130 C151 126 191 151 222 168 C266 193 305 197 344 181 C376 168 401 156 421 165"/>
-      <path className="trade-route alt" d="M117 252 C168 242 205 250 239 265 C282 284 322 278 370 249"/>
-      {countries.map(c => <g key={c.id} className={`capital ${selected===c.id?"capital-active":""}`} onClick={() => onSelect(c.id)}><circle cx={c.capitalX} cy={c.capitalY} r="7"/><circle cx={c.capitalX} cy={c.capitalY} r="2.4"/><text x={c.capitalX+9} y={c.capitalY-8}>{c.capital}</text></g>)}
-      {showCompanies && countries.find(c=>c.id===selected)?.companies.map(company => <g key={company.ticker} className="company-marker" onClick={(e)=>{e.stopPropagation();onCompany?.(company)}}><circle cx={company.x} cy={company.y} r="9"/><circle cx={company.x} cy={company.y} r="3"/><text x={company.x+12} y={company.y+3}>{company.ticker}</text></g>)}
-      <text className="sea-label" x="20" y="180">ЗАПАДНОЕ МОРЕ</text><text className="sea-label" x="385" y="205">ВОСТОЧНОЕ МОРЕ</text><text className="sea-label" x="205" y="338">ЮЖНЫЙ ПРОЛИВ</text>
+        <path d={c.mapPath} className="country-coastline" onClick={()=>onSelect(c.id)}/>
+      </g>)}
+      {countries.map(c=><g key={c.id} className={"capital "+(selected===c.id?"capital-active":"")} onClick={()=>onSelect(c.id)}><circle cx={c.capitalX} cy={c.capitalY} r="7"/><circle cx={c.capitalX} cy={c.capitalY} r="2.4"/><text x={c.capitalX+10} y={c.capitalY-9}>{c.capital}</text></g>)}
+      {showCompanies && countries.find(c=>c.id===selected)?.companies.map((company,index)=>{
+        const dx=index%2===0?14:-14, dy=index<2?-16:17;
+        return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}><line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/><circle cx={company.x} cy={company.y} r="6"/><circle cx={company.x} cy={company.y} r="2"/><g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g></g>;
+      })}
+      <text className="sea-label" x="24" y="30">СЕВЕРНЫЙ ОКЕАН</text><text className="sea-label" x="382" y="330">ЮЖНОЕ МОРЕ</text>
       <g className="compass"><circle cx="466" cy="30" r="17"/><text x="463" y="16">N</text><path d="M466 19V41M455 30H477"/></g>
     </svg>
-    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="line"/> торговый маршрут</span><span><b className="mount"/> горный хребет</span>{showCompanies&&<span><b className="company-dot"/> публичная компания</span>}</div>
+    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="line"/> торговый маршрут</span><span><b className="mount"/> горы · леса · реки</span>{showCompanies&&<span><b className="company-dot"/> компания</span>}</div>
   </div>;
 }
-
-function CEOAvatar({ company }: { company: CompanyPreview }) {
-  const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
-  const tone=seed%3, hair=seed%4;
-  return <div className={"ceo-avatar portrait-tone-"+tone+" portrait-hair-"+hair} aria-label={"Портрет "+company.ceo}>
-    <div className="portrait-bg"><span className="portrait-light"/></div>
-    <div className="portrait-neck"/><div className="portrait-shoulders"/>
-    <div className="portrait-head"><i className="portrait-ear left"/><i className="portrait-ear right"/><span className="portrait-hair"/><span className="portrait-face"/><i className="portrait-eye left"/><i className="portrait-eye right"/><span className="portrait-nose"/><span className="portrait-mouth"/></div>
-  </div>;
-}
-
-function CompanyCard({ company, onBuy }: { company: CompanyPreview; onBuy: (price:number)=>void }) {
-  return <article className="company-focus-card">
-    <div className="company-focus-top"><span className="ticker">{company.ticker}</span><span className="sector-chip">{company.sector}</span></div>
-    <h3>{company.name}</h3><p>{company.note}</p>
-    <div className="company-ceo"><CEOAvatar company={company}/><div><span className="eyebrow">CEO · {company.ceoRole}</span><b>{company.ceo}</b><small>{company.ceoAge} лет</small></div></div>
-    <div className="company-focus-footer"><span>Цена <b>15 000 VLR</b></span><button onClick={()=>onBuy(15000)}>Купить акцию</button></div>
-  </article>;
-}
-
 
 function CountryMap({ country, onCompany }: { country: Country; onCompany?: (company: CompanyPreview) => void }) {
-  const scale = 2.15;
-  const tx = 250 - country.capitalX * scale;
-  const ty = 175 - country.capitalY * scale;
+  const scale=2.15, tx=250-country.capitalX*scale, ty=175-country.capitalY*scale;
   return <div className="map-static country-map atlas">
     <div className="atlas-head"><span>ФИЗИЧЕСКАЯ КАРТА · {country.name.toUpperCase()}</span><span>СЕВЕР ↑</span></div>
-    <svg viewBox="0 0 500 350" className="atlas-svg country-atlas-svg" role="img" aria-label={"Рельефная карта страны " + country.name + " с компаниями"}>
+    <svg viewBox="0 0 500 350" className="atlas-svg country-atlas-svg" role="img" aria-label={"Рельефная карта страны "+country.name+" с компаниями"}>
       <defs>
-        <linearGradient id={"countryOcean-" + country.id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#164a63"/><stop offset="1" stopColor="#061b2b"/></linearGradient>
-        <linearGradient id={"countryLand-" + country.id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d7c59f"/><stop offset=".5" stopColor="#a9a37f"/><stop offset="1" stopColor="#62745f"/></linearGradient>
-        <filter id={"countryShadow-" + country.id}><feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#000" floodOpacity=".42"/></filter>
+        <linearGradient id={"countryOcean-"+country.id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b4964"/><stop offset="1" stopColor="#041b2b"/></linearGradient>
+        <linearGradient id={"countryLand-"+country.id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#a9c58b"/><stop offset=".52" stopColor="#7f9e69"/><stop offset="1" stopColor="#536d55"/></linearGradient>
+        <clipPath id={"selectedCountryClip-"+country.id}><path d={country.mapPath}/></clipPath>
+        <filter id={"selectedCountryShadow-"+country.id}><feDropShadow dx="0" dy="12" stdDeviation="8" floodColor="#000" floodOpacity=".5"/></filter>
       </defs>
-      <rect width="500" height="350" fill={"url(#countryOcean-" + country.id + ")"}/>
-      <g transform={"translate(" + tx + " " + ty + ") scale(" + scale + ")"} filter={"url(#countryShadow-" + country.id + ")"}>
-        <path d={country.mapPath} className="country-land-fill" style={{ fill: "url(#countryLand-" + country.id + ")" }}/>
+      <rect width="500" height="350" fill={"url(#countryOcean-"+country.id+")"}/>
+      <path className="country-sea-contours" d="M20 80 C90 45 140 66 194 42 S310 57 365 38 S451 50 490 28 M10 278 C82 248 128 280 188 257 S309 276 365 249 S447 270 495 245"/>
+      <g transform={"translate("+tx+" "+ty+") scale("+scale+")"} filter={"url(#selectedCountryShadow-"+country.id+")"}>
+        <path d={country.mapPath} className="country-land-fill" style={{fill:"url(#countryLand-"+country.id+")"}}/>
+        <g clipPath={"url(#selectedCountryClip-"+country.id+")"} className="country-physical-detail">
+          <path className="biome-meadow" d="M70 215 C115 185 164 205 205 226 C250 248 294 230 340 215 C388 198 420 212 458 232 L458 350 L70 350Z"/>
+          <path className="forest-mass" d="M82 185 C130 160 170 173 204 196 C235 216 266 209 300 188 C339 165 378 169 423 190 L440 238 C391 219 356 218 318 237 C277 258 236 263 195 241 C154 220 121 222 88 240Z"/>
+          <path className="mountain-shadow" d="M65 155 C105 112 143 121 177 145 C210 168 242 164 274 139 C310 110 348 112 381 139 C408 161 430 155 452 133 L462 191 C426 209 390 200 357 181 C322 162 293 168 260 193 C224 218 192 208 160 188 C126 167 95 172 68 195Z"/>
+          <path className="mountain-range" d="M76 138 L91 109 106 130 124 94 143 129 161 102 179 137 198 112 218 144 237 120 257 148 M270 145 L288 111 305 134 322 95 340 133 359 106 377 139 395 118 416 149"/>
+          <path className="mountain-snow" d="M116 106 l8 -13 9 15 -8 -3z M315 107 l7 -13 10 15 -9 -3z M198 123 l8 -11 9 13 -8 -2z"/>
+          <path className="river-wide" d="M218 66 C213 98 228 119 216 145 C204 171 196 191 207 213 C217 232 234 242 241 264 C247 282 241 303 229 329"/>
+          <path className="river-thin" d="M302 75 C293 106 300 129 315 151 C330 172 344 182 351 204 C358 226 351 250 341 272"/>
+          <path className="river-thin" d="M154 106 C171 127 177 147 168 169 C160 189 166 208 181 226"/>
+          <ellipse className="country-lake" cx="143" cy="235" rx="22" ry="9"/><ellipse className="country-lake" cx="381" cy="215" rx="17" ry="7"/>
+          <path className="terrain-contour" d="M57 160 C100 137 131 141 163 160 C194 179 220 188 251 170 C282 151 312 153 343 170 C374 187 403 184 440 162 M58 183 C95 160 127 165 158 183 C191 203 220 210 252 192 C284 173 313 176 345 192 C377 209 404 205 438 185"/>
+          <g className="forest-dots">{Array.from({length:35},(_,i)=><circle key={i} cx={78+(i%7)*48} cy={205+Math.floor(i/7)*19+(i%2)*4} r={i%3===0?2.5:1.7}/>)}</g>
+        </g>
         <path d={country.mapPath} className="country-coastline"/>
-        <g className="terrain-layer"><path className="ridge" d="M76 89 C95 72 111 76 126 91 C141 70 159 73 174 91 C190 64 211 67 228 89 M275 90 C292 66 312 69 328 91 C344 63 365 68 380 92"/><path className="ridge light" d="M86 105 C101 88 114 92 126 105 M287 106 C302 88 315 91 328 105"/><path className="river" d="M220 73 C218 99 228 113 218 137 C208 161 199 182 207 202 C214 220 231 231 239 249 C245 264 241 279 232 293"/><path className="river" d="M303 76 C294 105 299 126 313 145 C327 164 341 174 348 193 C355 212 351 230 342 246"/><path className="river thin" d="M156 107 C174 126 178 143 170 163 C163 180 168 197 181 213"/></g>
-        {country.companies.map(company => <g key={company.ticker} className="company-marker country-company-marker" onClick={e => { e.stopPropagation(); onCompany?.(company); }}><circle cx={company.x} cy={company.y} r="7"/><circle cx={company.x} cy={company.y} r="2.2"/><text x={company.x+9} y={company.y+3}>{company.ticker}</text></g>)}
-        <g className="capital capital-active"><circle cx={country.capitalX} cy={country.capitalY} r="7"/><circle cx={country.capitalX} cy={country.capitalY} r="2.4"/><text x={country.capitalX+10} y={country.capitalY-9}>{country.capital}</text></g>
+        {country.companies.map((company,index)=>{
+          const dx=index%2===0?14:-14, dy=index<2?-15:18;
+          return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}><line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/><circle cx={company.x} cy={company.y} r="6"/><circle cx={company.x} cy={company.y} r="2"/><g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g></g>;
+        })}
+        <g className="capital capital-active"><circle cx={country.capitalX} cy={country.capitalY} r="8"/><circle cx={country.capitalX} cy={country.capitalY} r="2.6"/><text x={country.capitalX+12} y={country.capitalY-10}>{country.capital}</text></g>
       </g>
-      <g className="map-overlay-label"><text x="18" y="28">{country.region}</text><text x="18" y="48">ГОРЫ · РЕКИ · ГОРОДА · КОМПАНИИ</text></g>
+      <g className="map-overlay-label"><text x="18" y="28">{country.region}</text><text x="18" y="48">РЕЛЬЕФ · ЛЕСА · ВОДА · ГОРОДА · КОМПАНИИ</text></g>
     </svg>
-    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="mount"/> рельеф</span><span><b className="company-dot"/> публичная компания · нажми</span></div>
+    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="mount"/> горы · леса</span><span><b className="company-dot"/> компания · нажми</span></div>
   </div>;
 }
 
 function WorldPreview() {
-  return <div className="map-static world-preview atlas">
-    <div className="atlas-head"><span>ЭКОНОМИЧЕСКАЯ КАРТА МИРА</span><span>5 СТРАН · 1 ВАЛЮТА</span></div>
-    <svg viewBox="0 0 500 350" className="atlas-svg">
-      <defs><linearGradient id="worldOcean" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#15506b"/><stop offset="1" stopColor="#051a2a"/></linearGradient></defs>
-      <rect width="500" height="350" fill="url(#worldOcean)"/>
-      {countries.map(c => <path key={c.id} d={c.mapPath} style={{ fill: c.color }} className="world-country"/>)}
-      {countries.map(c => <g key={c.id} className="world-label"><circle cx={c.capitalX} cy={c.capitalY} r="5"/><text x={c.capitalX+8} y={c.capitalY+3}>{c.name}</text></g>)}
-      <path className="trade-route" d="M91 130 C151 126 191 151 222 168 C266 193 305 197 344 181 C376 168 401 156 421 165"/>
-      <path className="trade-route alt" d="M117 252 C168 242 205 250 239 265 C282 284 322 278 370 249"/>
-    </svg>
-    <div className="world-preview-footer"><span>Славория · Лирания · Дарваст · Эстравия · Саверния</span><b>VLR · валор</b></div>
-  </div>;
+  return <AtlasMap selected={countries[0].id} onSelect={()=>{}} />;
 }
 function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   const [name,setName]=useState("");

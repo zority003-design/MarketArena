@@ -392,3 +392,39 @@ button{cursor:pointer}
 /* Better responsive market terminal */
 @media (max-width:980px){.home-news-list,.exchange-overview{grid-template-columns:1fr}.spotlight-bottom{grid-template-columns:repeat(2,1fr)}.spotlight-news{grid-column:1/-1}.spotlight-actions{grid-column:1/-1}.company-metrics{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:700px){.company-metrics{grid-template-columns:1fr}.spotlight-head{flex-direction:column}.spotlight-price{text-align:left}.home-news-list{grid-template-columns:1fr}}
+
+
+/* Cartography rebuild: no enclosing blob, each state owns its coastline and relief */
+.atlas-realistic{background:#071f2e!important;overflow:hidden}
+.atlas-world-svg{background:#07283a}
+.ocean-depth-lines path{fill:none;stroke:#8fc9d8;stroke-width:.8;opacity:.12}
+.world-country-group{cursor:pointer;transition:filter .18s ease}
+.world-country-group:hover{filter:brightness(1.1) saturate(1.08)!important}
+.world-country-group.selected .country-land-base{stroke:#f7e5a6;stroke-width:2.4}
+.country-land-base{stroke:#dfe8d8;stroke-width:1.25;vector-effect:non-scaling-stroke}
+.country-land-fill{stroke:#dbe7d4;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.country-coastline{fill:none;stroke:#eef2dc;stroke-width:1.4;vector-effect:non-scaling-stroke;opacity:.9}
+.biome-green{fill:#608b58;opacity:.32}
+.forest-patch{fill:#345f43;opacity:.58}
+.terrain-hill{fill:#87976b;opacity:.28}
+.mountain-range{fill:none;stroke:#5f6954;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;opacity:.82}
+.mountain-snow{fill:#e9eee2;opacity:.86}
+.river-wide{fill:none;stroke:#63b7ce;stroke-width:2.4;stroke-linecap:round;opacity:.88}
+.river-thin{fill:none;stroke:#9ad6df;stroke-width:1.1;stroke-linecap:round;opacity:.78}
+.country-lake{fill:#4d9db6;stroke:#b6e2e5;stroke-width:.7;opacity:.8}
+.forest-dots circle{fill:#284e39;opacity:.7}
+.country-physical-detail .terrain-contour{fill:none;stroke:#677b62;stroke-width:1;opacity:.42}
+.country-sea-contours{fill:none;stroke:#8fc9d8;stroke-width:.8;opacity:.12}
+.map-company-callout{cursor:pointer}
+.map-company-callout .company-leader{stroke:#f6d77a;stroke-width:1;opacity:.7;vector-effect:non-scaling-stroke}
+.map-company-callout circle:first-of-type{fill:#55e4ff!important;stroke:#08202d!important;stroke-width:1.5}
+.map-company-callout circle:nth-of-type(2){fill:#fff!important}
+.company-label-bg{fill:#071825;fill-opacity:.9;stroke:#63ddec;stroke-opacity:.45;stroke-width:.7}
+.map-company-callout text{fill:#eff9f7;font-size:6.5px;font-weight:900;letter-spacing:.03em;paint-order:stroke;stroke:#071825;stroke-width:1.8px}
+.capital circle:first-child{fill:#ffd76a;stroke:#162a31;stroke-width:1.4}
+.capital text{fill:#f2f6ef;font-weight:800;font-size:7px;paint-order:stroke;stroke:#071c28;stroke-width:2.4px}
+.sea-label{fill:#a6cbd2!important;font-size:7px!important;letter-spacing:.16em;opacity:.55}
+.country-map .country-atlas-svg{background:#06253a}
+.country-map .map-overlay-label text:first-child{fill:#eef3e8;font-weight:900}
+.country-map .map-overlay-label text:last-child{fill:#9fc0c7;letter-spacing:.1em}
+.map-key{position:relative;z-index:2}
