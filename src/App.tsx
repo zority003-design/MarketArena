@@ -91,7 +91,7 @@ function CountryMap({ country, onCompany }: { country: Country; onCompany?: (com
   const scale = 2.15;
   const tx = 250 - country.capitalX * scale;
   const ty = 175 - country.capitalY * scale;
-  return <MapMotion className="country-map atlas">
+  return <div className="map-static country-map atlas">
     <div className="atlas-head"><span>ФИЗИЧЕСКАЯ КАРТА · {country.name.toUpperCase()}</span><span>СЕВЕР ↑</span></div>
     <svg viewBox="0 0 500 350" className="atlas-svg country-atlas-svg" role="img" aria-label={"Рельефная карта страны " + country.name + " с компаниями"}>
       <defs>
@@ -110,11 +110,11 @@ function CountryMap({ country, onCompany }: { country: Country; onCompany?: (com
       <g className="map-overlay-label"><text x="18" y="28">{country.region}</text><text x="18" y="48">ГОРЫ · РЕКИ · ГОРОДА · КОМПАНИИ</text></g>
     </svg>
     <div className="map-key"><span><b className="dot"/> столица</span><span><b className="mount"/> рельеф</span><span><b className="company-dot"/> публичная компания · нажми</span></div>
-  </MapMotion>;
+  </div>;
 }
 
 function WorldPreview() {
-  return <MapMotion className="world-preview atlas">
+  return <div className="map-static world-preview atlas">
     <div className="atlas-head"><span>ЭКОНОМИЧЕСКАЯ КАРТА МИРА</span><span>5 СТРАН · 1 ВАЛЮТА</span></div>
     <svg viewBox="0 0 500 350" className="atlas-svg">
       <defs><linearGradient id="worldOcean" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#15506b"/><stop offset="1" stopColor="#051a2a"/></linearGradient></defs>
@@ -125,7 +125,7 @@ function WorldPreview() {
       <path className="trade-route alt" d="M117 252 C168 242 205 250 239 265 C282 284 322 278 370 249"/>
     </svg>
     <div className="world-preview-footer"><span>Славория · Лирания · Дарваст · Эстравия · Саверния</span><b>VLR · валор</b></div>
-  </MapMotion>;
+  </div>;
 }
 function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   const [name,setName]=useState("");
@@ -173,6 +173,18 @@ function DifficultyScreen({country,onStart,onBack}:{country:Country;onStart:(id:
 
 function MiniChart(){return <svg className="mini-chart" viewBox="0 0 500 130" preserveAspectRatio="none"><path d="M0 103 L45 96 L74 101 L112 76 L150 83 L187 69 L221 75 L263 45 L301 59 L340 38 L382 47 L419 25 L456 33 L500 12"/><path d="M0 116H500M0 86H500M0 56H500M0 26H500" className="grid-line"/></svg>;}
 
+function CompanyChart({company,points}:{company:CompanyPreview;points:number[]}) {
+  const min=Math.min(...points), max=Math.max(...points), range=Math.max(1,max-min);
+  const path=points.map((p,i)=>`${(i/(points.length-1))*500},${112-((p-min)/range)*92}`).join(" ");
+  return <div className="company-chart">
+    <div className="chart-range"><span>30 ИГРОВЫХ ДНЕЙ</span><b>{points[points.length-1].toLocaleString("ru-RU")} VLR</b></div>
+    <svg viewBox="0 0 500 130" preserveAspectRatio="none" aria-label={`История котировки ${company.ticker}`}>
+      <path d="M0 112H500M0 82H500M0 52H500M0 22H500" className="grid-line"/>
+      <polyline points={path} fill="none" stroke="currentColor" strokeWidth="3" vectorEffect="non-scaling-stroke"/>
+    </svg>
+  </div>;
+}
+
 function Panel({title,eyebrow,children}:{title:string;eyebrow:string;children:ReactNode}){return <div className="game-panel"><div className="panel-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</div>;}
 
 function GameScreen({player,country,difficulty,onRestart}:{player:string;country:Country;difficulty:string;onRestart:()=>void}) {
@@ -183,36 +195,54 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
+  const [transactions,setTransactions]=useState<Array<{day:number;type:"BUY"|"SELL";ticker:string;quantity:number;price:number}>>([]);
 
-  const priceFor=(company:CompanyPreview)=>{
+  const marketEvent=(company:CompanyPreview, atDay:number)=>{
+    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+    const events=[
+      {headline:"новый экспортный контракт улучшил прогноз выручки",impact:0.032},
+      {headline:"рост стоимости сырья усилил давление на маржу",impact:-0.027},
+      {headline:"компания объявила программу расширения мощностей",impact:0.021},
+      {headline:"слабый спрос заставил рынок пересмотреть прогнозы",impact:-0.024},
+      {headline:"регулятор одобрил важный отраслевой проект",impact:0.017},
+      {headline:"перебои в цепочке поставок увеличили издержки",impact:-0.019},
+      {headline:"инвесторы позитивно оценили результаты квартала",impact:0.028},
+      {headline:"рынок зафиксировал прибыль после сильного роста",impact:-0.014}
+    ];
+    const index=Math.floor((atDay+seed)/3)%events.length;
+    const event=events[index];
+    const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
+    return {headline:event.headline,impact:event.impact+sectorBias};
+  };
+  const priceFor=(company:CompanyPreview, atDay=day)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const base=6500+(seed%18)*850;
-    const wave=Math.sin((day+seed)*0.37)*0.045+Math.cos((day+seed)*0.13)*0.025;
-    const trend=Math.sin((day+seed)*0.021)*0.08;
-    return Math.max(2500,Math.round(base*(1+wave+trend)/50)*50);
+    const wave=Math.sin((atDay+seed)*0.37)*0.045+Math.cos((atDay+seed)*0.13)*0.025;
+    const trend=Math.sin((atDay+seed)*0.021)*0.08;
+    const event=marketEvent(company,atDay).impact;
+    return Math.max(2500,Math.round(base*(1+wave+trend+event)/50)*50);
   };
   const priceChange=(company:CompanyPreview)=>{
-    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const oldDay=Math.max(1,day-1);
-    const base=6500+(seed%18)*850;
-    const oldWave=Math.sin((oldDay+seed)*0.37)*0.045+Math.cos((oldDay+seed)*0.13)*0.025;
-    const oldTrend=Math.sin((oldDay+seed)*0.021)*0.08;
-    const old=Math.max(2500,Math.round(base*(1+oldWave+oldTrend)/50)*50);
-    return ((priceFor(company)-old)/old)*100;
+    const old=priceFor(company,oldDay);
+    return ((priceFor(company,day)-old)/old)*100;
   };
+  const history=(company:CompanyPreview)=>Array.from({length:30},(_,i)=>priceFor(company,Math.max(1,day-29+i)));
   const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day]);
   const totalWealth=cash+portfolioValue;
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),cost=price*quantity;
     if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
     setCash(v=>v-cost);setHoldings(v=>({...v,[company.ticker]:(v[company.ticker]||0)+quantity}));
-    setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR.");
+    setTransactions(v=>[{day,type:"BUY",ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс списан: -"+cost.toLocaleString("ru-RU")+" VLR.");
   };
   const sell=(company:CompanyPreview,quantity=1)=>{
     const owned=holdings[company.ticker]||0;
     if(owned<quantity){setNotice("У тебя нет "+quantity+" акций "+company.ticker+" для продажи.");return;}
-    const price=priceFor(company);setCash(v=>v+price*quantity);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
-    setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR.");
+    const proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
+    setTransactions(v=>[{day,type:"SELL",ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
   const work=(id:string,pay:number)=>{setCash(v=>v+pay);setJobCooldown(id);setNotice("Работа завершена: +"+pay.toLocaleString("ru-RU")+" VLR.");setTimeout(()=>setJobCooldown(null),700);};
   const advance=()=>{setDay(v=>v+1);setNotice("Новый игровой день: котировки, новости и стоимость портфеля обновились.");};
@@ -236,10 +266,10 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
         {tab==="companies"&&<Panel title={"Компании · "+country.name} eyebrow="PUBLIC COMPANIES"><p className="panel-lead">Каждая компания получает собственную карточку, котировку и профиль CEO. Нажми на карточку для подробностей.</p><div className="company-grid">{country.companies.map(c=><article className="company-focus-card" key={c.ticker} onClick={()=>setSelectedCompany(c)}><div className="company-focus-top"><span className="ticker">{c.ticker}</span><span className="sector-chip">{c.sector}</span></div><h3>{c.name}</h3><p>{c.note}</p><div className="company-ceo"><CEOAvatar company={c}/><div><span className="eyebrow">CEO · {c.ceoRole}</span><b>{c.ceo}</b><small>{c.ceoAge} лет</small></div></div><div className="company-focus-footer"><span>Котировка <b>{priceFor(c).toLocaleString("ru-RU")} VLR</b></span><button onClick={e=>{e.stopPropagation();buy(c)}}>Купить 1 акцию</button></div></article>)}</div></Panel>}
         {tab==="life"&&<Panel title="Жизнь" eyebrow="CAREER & LIFE"><p className="panel-lead">До большого капитала можно дойти через работу: каждый игровой день ты выбираешь, где заработать деньги для следующих инвестиций.</p>{jobs.map(j=><div className="life-job" key={j.id}><div><b>{j.title}</b><span>{j.text}</span></div><strong>{j.pay.toLocaleString("ru-RU")} VLR</strong><button disabled={jobCooldown===j.id} onClick={()=>work(j.id,j.pay)}>Работать</button></div>)}</Panel>}
         {tab==="map"&&<Panel title={"Карта "+country.name} eyebrow="ATLAS"><p className="panel-lead">Здесь показана именно выбранная страна: её рельеф, реки, столица и расположение публичных компаний.</p><CountryMap country={country} onCompany={setSelectedCompany}/></Panel>}
-        {tab==="news"&&<Panel title="Новости" eyebrow="ECONOMIC NEWS"><p className="panel-lead">Экономические события будут связывать отрасли, компании и котировки. Пока это первый офлайн-набор новостей.</p><div className="news-list"><article><span>08:30</span><div><b>{country.name}: отраслевой сектор получил новый контракт</b><p>Событие поддерживает цепочку поставщиков и влияет на настроение инвесторов.</p></div><strong>ЭКОНОМИКА</strong></article><article><span>11:10</span><div><b>{country.name}: публичная компания увеличила инвестиции</b><p>Рынок пересматривает ожидания по будущей прибыли и капиталовложениям.</p></div><strong>КОМПАНИИ</strong></article><article><span>14:20</span><div><b>Индекс союза обновил дневной максимум</b><p>Финансовый сектор и логистика поддержали общий рынок.</p></div><strong>РЫНОК</strong></article></div></Panel>}
+        {tab==="news"&&<Panel title="Новости" eyebrow="ECONOMIC NEWS"><p className="panel-lead">Новости генерируются из игрового дня и напрямую входят в модель котировок. Поэтому события на рынке — не декоративный текст.</p><div className="news-list">{country.companies.slice(0,3).map((c,i)=>{const e=marketEvent(c,day);return <article key={c.ticker}><span>{String(8+i*3).padStart(2,"0")}:30</span><div><b>{c.name}: {e.headline}</b><p>Котировка {c.ticker}: <strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}%</strong> фактор события. Итоговая цена учитывает тренд, волатильность и этот информационный импульс.</p></div><strong>{c.sector.toUpperCase()}</strong></article>})}</div><div className="news-transactions"><span className="eyebrow">ИСТОРИЯ СДЕЛОК</span>{transactions.slice(0,6).map((t,i)=><div key={i}><b className={t.type==="BUY"?"loss":"gain"}>{t.type}</b><span>День {t.day} · {t.ticker} · {t.quantity} шт.</span><strong>{(t.price*t.quantity).toLocaleString("ru-RU")} VLR</strong></div>)}{transactions.length===0&&<p>Сделок пока нет. Первая покупка появится здесь сразу после подтверждения.</p>}</div></Panel>}
       </main>
     </div>
-    {selectedCompany&&<div className="company-modal-backdrop" onClick={()=>setSelectedCompany(null)}><div className="company-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setSelectedCompany(null)}>×</button><div className="modal-company-head"><CEOAvatar company={selectedCompany}/><div><span className="ticker">{selectedCompany.ticker}</span><h2>{selectedCompany.name}</h2><p>{selectedCompany.sector} · публичная компания · {country.name}</p></div></div><div className="modal-grid"><div><span className="eyebrow">О КОМПАНИИ</span><p>{selectedCompany.note}. Компания работает внутри экономической цепочки {country.name} и связана с другими секторами союза.</p><div className="quote-box"><span>ТЕКУЩАЯ КОТИРОВКА</span><b>{priceFor(selectedCompany).toLocaleString("ru-RU")} VLR</b><small className={priceChange(selectedCompany)>=0?"gain":"loss"}>{priceChange(selectedCompany)>=0?"+":""}{priceChange(selectedCompany).toFixed(2)}% за день</small></div><div className="modal-buy"><span>В портфеле: <b>{holdings[selectedCompany.ticker]||0} шт.</b></span><div><button className="secondary-action" onClick={()=>sell(selectedCompany)}>Продать</button><button className="primary small" onClick={()=>buy(selectedCompany)}>Купить акцию</button></div></div></div><div className="ceo-profile"><span className="eyebrow">CEO · ПЕРСОНАЖ</span><h3>{selectedCompany.ceo}</h3><b>{selectedCompany.ceoAge} лет · {selectedCompany.ceoRole}</b><p>{selectedCompany.ceoBio}</p><div className="ceo-tags"><span>Биография</span><span>Репутация</span><span>Стиль управления</span></div></div></div></div></div>}
+    {selectedCompany&&<div className="company-modal-backdrop" onClick={()=>setSelectedCompany(null)}><div className="company-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setSelectedCompany(null)}>×</button><div className="modal-company-head"><CEOAvatar company={selectedCompany}/><div><span className="ticker">{selectedCompany.ticker}</span><h2>{selectedCompany.name}</h2><p>{selectedCompany.sector} · публичная компания · {country.name}</p></div></div><div className="modal-grid"><div><span className="eyebrow">О КОМПАНИИ</span><p>{selectedCompany.note}. Компания работает внутри экономической цепочки {country.name} и связана с другими секторами союза.</p><CompanyChart company={selectedCompany} points={history(selectedCompany)}/><div className="quote-box"><span>ТЕКУЩАЯ КОТИРОВКА</span><b>{priceFor(selectedCompany).toLocaleString("ru-RU")} VLR</b><small className={priceChange(selectedCompany)>=0?"gain":"loss"}>{priceChange(selectedCompany)>=0?"+":""}{priceChange(selectedCompany).toFixed(2)}% за день</small><small>Дивидендная доходность · 2,4% годовых</small></div><div className="modal-buy"><span>В портфеле: <b>{holdings[selectedCompany.ticker]||0} шт.</b></span><div><button className="secondary-action" onClick={()=>sell(selectedCompany)}>Продать</button><button className="primary small" onClick={()=>buy(selectedCompany)}>Купить акцию</button></div></div></div><div className="ceo-profile"><span className="eyebrow">CEO · ПЕРСОНАЖ</span><h3>{selectedCompany.ceo}</h3><b>{selectedCompany.ceoAge} лет · {selectedCompany.ceoRole}</b><p>{selectedCompany.ceoBio}</p><div className="ceo-tags"><span>Биография</span><span>Репутация</span><span>Стиль управления</span></div></div></div></div></div>}
   </div>;
 }
 
