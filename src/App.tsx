@@ -295,7 +295,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,start)+(priceFor(company,end)-priceFor(company,start));});};
   const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{
     const configs:Record<ChartRange,{count:number;step:number;vol:number;label:string}>={
-      "1D":{count:78,step:0.01282,vol:0.0028,label:"5 мин"},
+      "1D":{count:78,step:1/288,vol:0.0028,label:"5 мин"},
       "1W":{count:56,step:0.125,vol:0.0045,label:"3 ч"},
       "1M":{count:30,step:1,vol:0.008,label:"1 день"},
       "6M":{count:60,step:3,vol:0.011,label:"3 дня"},
