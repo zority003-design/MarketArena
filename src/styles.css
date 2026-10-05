@@ -2412,3 +2412,121 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .game-command-deck button{flex:0 0 88px!important;min-width:88px!important;font-size:10px!important}
   .game-command-deck .nav-glyph{font-size:15px!important}
 }
+
+
+/* v1.5 navigation + exchange terminal fit */
+.game-topbar .game-command-deck{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:thin!important;
+}
+.game-topbar .game-command-deck button{
+  display:flex!important;
+  visibility:visible!important;
+  flex:0 0 104px!important;
+  min-width:104px!important;
+}
+@media(max-width:1250px){
+  .game-topbar .game-command-deck{
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+  }
+  .game-topbar .game-command-deck button{
+    flex:0 0 96px!important;
+    min-width:96px!important;
+  }
+}
+@media(max-width:1100px){
+  /* The old desktop stylesheet hid nav here; the command deck must remain the primary game navigation. */
+  .game-topbar nav.game-command-deck{
+    display:flex!important;
+  }
+  .game-topbar .game-command-deck button{
+    flex:0 0 94px!important;
+    min-width:94px!important;
+  }
+}
+@media(max-width:720px){
+  .game-topbar nav.game-command-deck{
+    display:flex!important;
+  }
+  .game-topbar .game-command-deck button{
+    flex:0 0 88px!important;
+    min-width:88px!important;
+  }
+}
+
+/* Keep the exchange status row inside the terminal instead of letting the
+   company count / cash / next-day control touch the viewport edge. */
+.exchange-safe-marketline{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  flex-wrap:wrap!important;
+  min-width:0!important;
+  padding:14px 2px!important;
+}
+.exchange-safe-marketline>span{
+  flex:0 0 auto!important;
+}
+.exchange-safe-marketline>button{
+  flex:0 0 auto!important;
+  margin-left:auto!important;
+  white-space:nowrap!important;
+  min-width:150px!important;
+}
+.exchange-safe-companies{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.exchange-safe-companies>button{
+  min-width:0!important;
+}
+@media(max-width:720px){
+  .exchange-safe-marketline>button{
+    margin-left:0!important;
+    width:100%!important;
+  }
+}
+
+/* Candles should read as one continuous price series. */
+.candle-terminal svg{
+  shape-rendering:geometricPrecision!important;
+}
+.candle-terminal .candle rect{
+  min-width:0!important;
+  rx:1.2!important;
+}
+.candle-terminal .candle line{
+  stroke-width:1.35!important;
+}
+.candle-terminal .grid-line{
+  stroke-dasharray:2 5!important;
+}
+.candle-axis{
+  display:flex!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding-top:5px!important;
+  font-size:9px!important;
+  color:#64838c!important;
+}
+
+/* Modal always sits above the sticky command deck and scrolls independently. */
+.company-modal-backdrop{
+  z-index:3000!important;
+  align-items:flex-start!important;
+  overflow:auto!important;
+  padding:108px 20px 32px!important;
+}
+.company-modal{
+  z-index:3001!important;
+  max-height:calc(100vh - 140px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+}
