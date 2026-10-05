@@ -150,11 +150,11 @@ function ExchangeScreen({country,day,cash,holdings,exchangeCompany,setExchangeCo
   const company=exchangeCompany??country.companies[0]??null;
   const lengths={ "1M":30, "3M":90, "1Y":365, "5Y":720 } as const;
   const len=lengths[range];
-  const points=company?Array.from({length:Math.min(len,180)},(_,i)=>priceFor(company,Math.max(1,day-(Math.min(len,180)-1)+i))):[];
+  const points=company?Array.from({length:Math.min(len,180)},(_,i)=>priceFor(company,day-(Math.min(len,180)-1)+i)):[];
   const min=points.length?Math.min(...points):0;
   const max=points.length?Math.max(...points):1;
   const span=Math.max(1,max-min);
-  const poly=points.map((v,i)=>`${(i/Math.max(1,points.length-1))*100},${94-((v-min)/span)*76}`).join(" ");
+  const bars=points.filter((_,i)=>i%Math.max(1,Math.floor(points.length/55))===0).map((close,i)=>{const open=i?points[Math.max(0,Math.floor((i-1)*Math.max(1,Math.floor(points.length/55))))]:close;const wiggle=Math.max(18,Math.round(close*.006));return{open,close,high:Math.max(open,close)+wiggle,low:Math.min(open,close)-wiggle}}); const lo=bars.length?Math.min(...bars.map(b=>b.low)):min; const hi=bars.length?Math.max(...bars.map(b=>b.high)):max; const candleSpan=Math.max(1,hi-lo); const cy=(v:number)=>94-((v-lo)/candleSpan)*76;
   const current=company?priceFor(company):0;
   const previous=company?priceFor(company,Math.max(1,day-1)):current;
   const delta=previous?((current-previous)/previous)*100:0;
@@ -171,7 +171,7 @@ function ExchangeScreen({country,day,cash,holdings,exchangeCompany,setExchangeCo
         <div className="chart-title"><span>КОТИРОВКА · {range}</span><b>{current.toLocaleString("ru-RU")} VLR</b></div>
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label={"График "+company.ticker}>
           <path d="M0 94H100M0 69H100M0 44H100M0 19H100" className="grid-line"/>
-          <polyline points={poly} fill="none" stroke="currentColor" strokeWidth="2.2" vectorEffect="non-scaling-stroke"/>
+          {bars.map((b,i)=>{const x=4+(i/Math.max(1,bars.length-1))*92;const up=b.close>=b.open;const top=cy(Math.max(b.open,b.close));const bottom=cy(Math.min(b.open,b.close));return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={cy(b.high)} y2={cy(b.low)}/><rect x={x-1} y={top} width="2" height={Math.max(1,bottom-top)}/></g>})}
         </svg>
         <div className="chart-range-tabs">{([["1M","1 мес."],["3M","3 мес."],["1Y","1 год"],["5Y","5 лет"]] as const).map(([id,label])=><button type="button" key={id} className={range===id?"active":""} onClick={()=>setRange(id)}>{label}</button>)}</div>
       </div>
@@ -255,7 +255,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const trend=Math.sin((atDay+seed)*0.021)*0.08;
     const event=marketEvent(company,atDay).impact;
     const countryDrift=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
-    const live=Math.sin(marketPulse/5200+seed)*0.0025+Math.cos(marketPulse/9100+seed*0.7)*0.0015;
+    const live=0;
     return Math.max(2500,Math.round(base*(1+wave+trend+event+countryDrift+live)/50)*50);
   };
   const priceChange=(company:CompanyPreview)=>{
