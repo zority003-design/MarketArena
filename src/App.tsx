@@ -253,12 +253,17 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const priceFor=(company:CompanyPreview, atDay=day)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const base=6500+(seed%18)*850;
-    const wave=Math.sin((atDay+seed)*0.37)*0.045+Math.cos((atDay+seed)*0.13)*0.025;
-    const trend=Math.sin((atDay+seed)*0.021)*0.08;
+    // Реалистичнее: цена строится как сумма медленного тренда, рыночного цикла
+    // и небольшого автокоррелированного шума. События не дают мгновенных
+    // скачков на несколько процентов внутри одной свечи.
+    const macro=Math.sin((atDay+seed)*0.018)*0.055+Math.cos((atDay+seed*0.37)*0.011)*0.032;
+    const sector=Math.sin((atDay+seed*1.7)*0.052)*0.014+Math.cos((atDay+seed)*0.027)*0.009;
     const event=marketEvent(company,atDay).impact;
-    const countryDrift=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
-    const live=Math.sin(marketPulse/5200+seed)*0.0025+Math.cos(marketPulse/9100+seed*0.7)*0.0015;
-    return Math.max(2500,Math.round(base*(1+wave+trend+event+countryDrift+live)/50)*50);
+    const eventMemory=Math.sin((atDay+seed)*0.015+event*4)*Math.min(0.012,Math.abs(event)*0.28);
+    const countryDrift=(marketProfile.bias+(marketProfile.sectors[company.sector]??0))*Math.min(1,Math.max(0.2,atDay/120));
+    const live=Math.sin(marketPulse/15000+seed)*0.0007+Math.cos(marketPulse/23000+seed*0.7)*0.0004;
+    const logReturn=macro+sector+eventMemory+countryDrift+live;
+    return Math.max(2500,Math.round(base*Math.exp(logReturn)/25)*25);
   };
   const priceChange=(company:CompanyPreview)=>{
     const oldDay=Math.max(1,day-1);
