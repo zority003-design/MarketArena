@@ -137,20 +137,8 @@ function CompanyChart({company,points}:{company:CompanyPreview;points:number[]})
 
 type ChartRange="ALL"|"10Y"|"5Y"|"1Y"|"6M"|"1M"|"1W"|"1D";
 const chartRangeLabels:[ChartRange,string][]=[["ALL","Всё время"],["10Y","10 лет"],["5Y","5 лет"],["1Y","1 год"],["6M","6 месяцев"],["1M","1 месяц"],["1W","1 неделя"],["1D","1 день"]];
-function CandleChart({company,points,range}:{company:CompanyPreview;points:number[];range:ChartRange}) {
-  const safe=points.length?points:[priceForFallback(company)];
-  const min=Math.min(...safe),max=Math.max(...safe),span=Math.max(1,max-min);
-  const path=safe.map((v,i)=>`${(i/Math.max(1,safe.length-1))*500},${96-((v-min)/span)*78}`).join(" ");
-  const first=safe[0]??0,last=safe[safe.length-1]??0,change=first?((last-first)/first)*100:0;
-  return <div className="candle-terminal">
-    <div className="candle-head"><div><span>ДИНАМИКА КОТИРОВКИ · {range}</span><b>{last.toLocaleString("ru-RU")} VLR</b></div><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div>
-    <svg viewBox="0 0 500 108" preserveAspectRatio="none" aria-label={"График "+company.ticker+", период "+range}>
-      <path d="M0 96H500M0 70H500M0 44H500M0 18H500" className="grid-line"/>
-      <polyline points={path} fill="none" stroke="currentColor" strokeWidth="2.5" vectorEffect="non-scaling-stroke"/>
-    </svg>
-    <div className="candle-axis"><span>начало периода</span><span>середина</span><span>сейчас</span></div>
-  </div>;
-}
+function CandleChart({company,points,range}:{company:CompanyPreview;points:number[];range:ChartRange}){const safe=points.length?points:[priceForFallback(company)];const step=Math.max(1,Math.floor(safe.length/70));const closes=safe.filter((_,i)=>i%step===0);const bars=closes.map((close,i)=>{const open=i?closes[i-1]:close;const wiggle=Math.max(20,Math.round(close*(.004+(i%5)*.001)));return{open,close,high:Math.max(open,close)+wiggle,low:Math.min(open,close)-wiggle}});const lo=Math.min(...bars.map(b=>b.low)),hi=Math.max(...bars.map(b=>b.high)),span=Math.max(1,hi-lo),y=(v:number)=>96-((v-lo)/span)*78,first=bars[0]?.open??0,last=bars[bars.length-1]?.close??0,change=first?((last-first)/first)*100:0;return <div className="candle-terminal"><div className="candle-head"><div><span>ЯПОНСКИЕ СВЕЧИ · {range}</span><b>{last.toLocaleString("ru-RU")} VLR</b></div><strong className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(2)}%</strong></div><svg viewBox="0 0 500 108" preserveAspectRatio="none" aria-label={"Свечной график "+company.ticker}><path d="M0 96H500M0 70H500M0 44H500M0 18H500" className="grid-line"/>{bars.map((b,i)=>{const x=5+(i/Math.max(1,bars.length-1))*490,up=b.close>=b.open,top=y(Math.max(b.open,b.close)),bottom=y(Math.min(b.open,b.close));return <g key={i} className={up?"candle up":"candle down"}><line x1={x} x2={x} y1={y(b.high)} y2={y(b.low)}/><rect x={x-1.7} y={top} width="3.4" height={Math.max(1.2,bottom-top)}/></g>})}</svg><div className="candle-axis"><span>начало периода</span><span>середина</span><span>сейчас</span></div></div>}
+
 function priceForFallback(company:CompanyPreview){const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);return 6500+(seed%18)*850;}
 
 function Panel({title,eyebrow,children}:{title:string;eyebrow:string;children:ReactNode}){return <div className="game-panel"><div className="panel-title"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</div>;}
