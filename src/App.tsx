@@ -45,7 +45,9 @@ function CEOAvatar({company}:{company:CompanyPreview}) {
   const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
   const hair=["short","side","wave","crop"][seed%4];
   const suit=["navy","slate","sand","black"][Math.floor(seed/4)%4];
-  return <div className={`ceo-avatar modern-portrait portrait-${hair} suit-${suit} tone-${seed%4}`} aria-label={`Портрет CEO ${company.ceo}`}>
+  const female=["Елена","Надежда","Марина","Алина","Вера","Ирина","Ольга","София","Кира","Дарья","Анна","Лилия","Нина","Светлана"];
+  const gender=female.includes(company.ceo.trim().split(/\s+/)[0])?"female":"male";
+  return <div className={`ceo-avatar modern-portrait portrait-${hair} suit-${suit} tone-${seed%4} portrait-${gender}`} aria-label={`Портрет CEO ${company.ceo}`}>
     <div className="portrait-bg"/><div className="portrait-shoulders"/><div className="portrait-neck"/>
     <div className="portrait-face"><i className="portrait-ear left"/><i className="portrait-ear right"/><b className="portrait-hair"/><i className="portrait-eye left"/><i className="portrait-eye right"/><span className="portrait-nose"/><span className="portrait-mouth"/></div>
   </div>;
