@@ -217,6 +217,8 @@ function GameScreen({player,country,difficulty,onRestart}:{player:string;country
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
   const [transactions,setTransactions]=useState<Transaction[]>([]);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
+  const [marketPulse,setMarketPulse]=useState(0);
+  useEffect(()=>{const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[]);
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const events=[
