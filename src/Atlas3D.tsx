@@ -345,6 +345,39 @@ function makeCar(curve: THREE.CatmullRomCurve3, scale = 1) {
   group.userData.roadT=Math.random();
   return group;
 }
+function makeSidewalk(curve: THREE.CatmullRomCurve3, width = 0.055) {
+  const samples=curve.getPoints(24), vertices:number[]=[], indices:number[]=[];
+  samples.forEach((p,i)=>{
+    const prev=samples[Math.max(0,i-1)], next=samples[Math.min(samples.length-1,i+1)];
+    const dx=next.x-prev.x,dz=next.z-prev.z,len=Math.max(.001,Math.hypot(dx,dz));
+    const nx=-dz/len,nz=dx/len;
+    const lx=p.x+nx*width*1.9,lz=p.z+nz*width*1.9,rx=p.x-nx*width*1.9,rz=p.z-nz*width*1.9;
+    vertices.push(lx,surfaceHeight(lx,lz)+.058,lz,rx,surfaceHeight(rx,rz)+.058,rz);
+  });
+  for(let i=0;i<samples.length-1;i++){const a=i*2,b=a+1,c=a+2,d=a+3;indices.push(a,c,b,b,c,d);}
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute("position",new THREE.Float32BufferAttribute(vertices,3));
+  geometry.setIndex(indices); geometry.computeVertexNormals();
+  const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:"#a6aaa0",roughness:.95,metalness:0,side:THREE.DoubleSide}));
+  mesh.receiveShadow=true;
+  return mesh;
+}
+function makePerson(x:number,z:number,scale=.45){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.025*scale,.032*scale,.11*scale,6),new THREE.MeshStandardMaterial({color:"#7f9eab",roughness:.9}));
+  body.position.y=.09*scale;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.035*scale,7,6),new THREE.MeshStandardMaterial({color:"#caa58d",roughness:1}));
+  head.position.y=.17*scale; g.add(body,head);
+  g.position.set(x,surfaceHeight(x,z)+.04,z); g.castShadow=true; return g;
+}
+function makeParking(x:number,z:number,scale=.6){
+  const g=new THREE.Group();
+  const base=new THREE.Mesh(new THREE.BoxGeometry(.46*scale,.018,.30*scale),new THREE.MeshStandardMaterial({color:"#4b5355",roughness:1}));
+  base.position.y=.018; g.add(base);
+  for(let i=0;i<3;i++){const line=new THREE.Mesh(new THREE.BoxGeometry(.018,.006,.22*scale),new THREE.MeshStandardMaterial({color:"#d7d3bd",roughness:1}));line.position.set((-1+i)*.14*scale,.032,0);g.add(line);}
+  g.position.set(x,surfaceHeight(x,z),z); return g;
+}
+
 function makeModernBuilding(x:number,z:number,scale=1,type=0) {
   const group=new THREE.Group();
   const tower=type%3===0;
@@ -571,12 +604,20 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
         }
       }
-      // Secondary roads spread through the whole selected country, not only between company nodes.
-      for(let i=0;i<citySites.length;i+=2){
-        const a=citySites[i], b=citySites[(i+7)%citySites.length];
-        const curve=inCountryRoad(selectedCountry.id,a,b,(hash(i*2.2,selectedCountry.id.length)-.5)*.10);
-        scene.add(makeHighway(curve,.13));
-        roadCurves.push(curve);
+      // Local streets: connect nearby districts instead of drawing arbitrary long diagonals.
+      const localPairs=new Set<string>();
+      for(let i=0;i<citySites.length;i++){
+        const nearest=citySites.map((q,j)=>({j,d:j===i?Infinity:Math.hypot(q[0]-citySites[i][0],q[1]-citySites[i][1])}))
+          .sort((a,b)=>a.d-b.d).slice(0,2);
+        nearest.forEach(({j})=>{
+          const key=i<j?i+"-"+j:j+"-"+i;
+          if(localPairs.has(key)) return;
+          localPairs.add(key);
+          const curve=inCountryRoad(selectedCountry.id,citySites[i],citySites[j],(hash(i*7.1+j*3.3)-.5)*.055);
+          scene.add(makeHighway(curve,.095));
+          scene.add(makeSidewalk(curve,.022));
+          roadCurves.push(curve);
+        });
       }
       for(let gy=0;gy<13;gy++){
         for(let gx=0;gx<13;gx++){
@@ -589,7 +630,18 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           }
         }
       }
-      for(let i=0;i<Math.min(12,roadCurves.length);i++){ const car=makeCar(roadCurves[i],.82+(i%3)*.12); scene.add(car); }
+      for(let i=0;i<Math.min(18,roadCurves.length);i++){
+        const car=makeCar(roadCurves[i],.72+(i%4)*.10);
+        car.userData.roadT=(i*0.071)%1;
+        scene.add(car);
+      }
+      // Pedestrians and parking clusters stay close to built-up districts.
+      citySites.slice(0,32).forEach((geo,i)=>{
+        const p=worldFromGeo(geo);
+        if(i%4===0) scene.add(makeParking(p.x+.34,p.z+.22,.75));
+        scene.add(makePerson(p.x-.18,p.z+.20,.8+(i%3)*.12));
+        if(i%5===0) scene.add(makePerson(p.x+.16,p.z-.08,.62));
+      });
       const capitalPoint = worldFromGeo(capital);
       scene.add(makeModernBuilding(capitalPoint.x+.42,capitalPoint.z+.22,1.45,0));
       scene.add(makeModernBuilding(capitalPoint.x-.46,capitalPoint.z-.18,1.65,1));
