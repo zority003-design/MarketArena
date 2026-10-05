@@ -277,7 +277,7 @@ function makeTree(x: number, z: number, scale = 1) {
   const crown = new THREE.Mesh(new THREE.ConeGeometry(0.16 * scale, 0.42 * scale, 7), new THREE.MeshStandardMaterial({ color: "#315a3c", roughness: 0.96 }));
   crown.position.y = 0.43 * scale;
   group.add(trunk, crown);
-  const h = terrainHeight(x, z);
+  const h = surfaceHeight(x, z);
   group.position.set(x, h + 0.02, z);
   group.castShadow = true;
   return group;
@@ -368,7 +368,7 @@ function makeModernBuilding(x:number,z:number,scale=1,type=0) {
       tank.position.set((i-.5)*.17*scale,.15*scale,.18*scale); group.add(tank);
     }
   }
-  group.position.set(x,terrainHeight(x,z)+.025,z);
+  group.position.set(x,surfaceHeight(x,z)+.025,z);
   group.castShadow=true; group.receiveShadow=true;
   return group;
 }
