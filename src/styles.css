@@ -1104,3 +1104,150 @@ button{cursor:pointer}
   width:100% !important;
   height:auto !important;
 }
+
+
+/* MarketArena 3D terrain renderer — WebGL replaces the old flat atlas artwork. */
+.atlas-3d{
+  position:relative;
+  overflow:hidden;
+  background:#061b27!important;
+  border-color:rgba(156,190,190,.24)!important;
+}
+.atlas-3d-viewport{
+  position:relative;
+  height:clamp(430px,54vw,700px);
+  min-height:420px;
+  overflow:hidden;
+  background:#062536;
+  touch-action:none;
+}
+.atlas-3d-canvas{
+  position:absolute!important;
+  inset:0;
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  cursor:grab;
+  touch-action:none;
+}
+.atlas-3d-canvas:active{cursor:grabbing}
+.atlas-3d-overlay{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  overflow:hidden;
+}
+.atlas-country-label,
+.atlas-capital-marker,
+.atlas-company-marker{
+  position:absolute;
+  margin:0;
+  border:0;
+  pointer-events:auto;
+  cursor:pointer;
+  transform-origin:center;
+  will-change:transform;
+}
+.atlas-country-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border:1px solid rgba(229,235,218,.24);
+  border-radius:5px;
+  background:rgba(7,19,25,.60);
+  color:#f3f0df;
+  box-shadow:0 8px 22px rgba(0,0,0,.24);
+  backdrop-filter:blur(4px);
+  font:700 10px/1 "Georgia","Times New Roman",serif;
+  letter-spacing:.13em;
+  white-space:nowrap;
+  transition:border-color .18s,background .18s,box-shadow .18s,opacity .18s;
+}
+.atlas-country-label:hover,
+.atlas-country-label.selected{
+  border-color:rgba(246,215,126,.9);
+  background:rgba(13,29,34,.82);
+  box-shadow:0 0 0 1px rgba(246,215,126,.14),0 10px 28px rgba(0,0,0,.35);
+}
+.atlas-country-label.selected{color:#fff7d8}
+.atlas-country-label .flag{
+  width:30px!important;
+  height:19px!important;
+  border-radius:2px;
+  box-shadow:0 3px 9px rgba(0,0,0,.35)!important;
+}
+.atlas-capital-marker{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:3px 6px;
+  background:rgba(5,16,21,.58);
+  color:#f5f1df;
+  border:1px solid rgba(235,232,210,.16);
+  border-radius:4px;
+  font:600 9px/1 "Space Grotesk",sans-serif;
+  white-space:nowrap;
+  text-shadow:0 1px 4px #000;
+}
+.atlas-capital-marker i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  display:block;
+  background:#f5f0d7;
+  border:1px solid #22363b;
+  box-shadow:0 0 0 2px rgba(245,240,215,.13),0 0 10px rgba(245,214,126,.38);
+}
+.atlas-capital-marker.selected{
+  border-color:rgba(246,215,126,.68);
+  color:#ffe7a1;
+}
+.atlas-capital-marker.selected i{
+  background:#f6d77a;
+  box-shadow:0 0 0 3px rgba(246,215,122,.18),0 0 14px rgba(246,215,122,.72);
+}
+.atlas-company-marker{
+  padding:5px 7px;
+  border:1px solid rgba(104,221,235,.42);
+  border-radius:5px;
+  background:rgba(5,21,28,.88);
+  color:#d9fbff;
+  box-shadow:0 4px 14px rgba(0,0,0,.34),0 0 10px rgba(77,208,222,.12);
+  font:700 8px/1 "Space Grotesk",sans-serif;
+}
+.atlas-company-marker:hover{
+  border-color:#83e8f0;
+  background:#0a2934;
+  transform:translate3d(var(--x,0),var(--y,0),0) translate(-50%,-50%) scale(1.06);
+}
+.atlas-3d-watermark{
+  position:absolute;
+  left:14px;
+  bottom:13px;
+  z-index:4;
+  padding:6px 8px;
+  border:1px solid rgba(190,220,218,.12);
+  border-radius:4px;
+  color:rgba(205,221,214,.48);
+  background:rgba(4,16,22,.36);
+  backdrop-filter:blur(3px);
+  font:700 7px/1 "Space Grotesk",sans-serif;
+  letter-spacing:.12em;
+  pointer-events:none;
+}
+.atlas-3d .map-key{position:relative;z-index:6}
+.atlas-3d .atlas-head{position:relative;z-index:7}
+@media (max-width:900px){
+  .atlas-3d-viewport{height:clamp(390px,70vw,580px)}
+  .atlas-country-label{font-size:8px;padding:5px 7px;gap:5px}
+  .atlas-country-label .flag{width:25px!important;height:16px!important}
+  .atlas-capital-marker{font-size:8px;padding:2px 4px}
+}
+@media (max-width:620px){
+  .atlas-3d-viewport{height:390px;min-height:350px}
+  .atlas-country-label{font-size:7px;letter-spacing:.08em}
+  .atlas-country-label .flag{display:none}
+  .atlas-3d-watermark{display:none}
+}
