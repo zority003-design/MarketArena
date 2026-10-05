@@ -162,6 +162,20 @@ function heightColor(h: number, x: number, z: number) {
   return color;
 }
 
+function pointInPolygon(u: number, v: number, poly: GeoPoint[]) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+    const hit = ((yi > v) !== (yj > v)) && (u < (xj - xi) * (v - yi) / ((yj - yi) || 1e-6) + xi);
+    if (hit) inside = !inside;
+  }
+  return inside;
+}
+
+function isLand(u: number, v: number) {
+  return Object.values(countryPolygons).some((poly) => pointInPolygon(u, v, poly));
+}
+
 function makeTerrain() {
   const nx = 150, nz = 108;
   const positions: number[] = [];
@@ -173,7 +187,8 @@ function makeTerrain() {
       const px = (x / nx - 0.5) * W;
       const pz = (z / nz - 0.5) * D;
       const edge = Math.min((x / nx) * 7, ((nx - x) / nx) * 7, (z / nz) * 7, ((nz - z) / nz) * 7);
-      const h = Math.max(-0.15, terrainHeight(px, pz) * clamp(edge, 0, 1));
+      const land = isLand(x / nx * 100, z / nz * 100);
+      const h = land ? Math.max(-0.08, terrainHeight(px, pz) * clamp(edge, 0, 1)) : -0.48;
       positions.push(px, h, pz);
       const c = heightColor(h, px, pz);
       colors.push(c.r, c.g, c.b);
