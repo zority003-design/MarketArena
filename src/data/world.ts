@@ -1,3 +1,10 @@
+export type CompanyPreview = {
+  name: string;
+  ticker: string;
+  sector: string;
+  note: string;
+};
+
 export type Country = {
   id: string;
   name: string;
@@ -5,15 +12,40 @@ export type Country = {
   currency: string;
   currencySymbol: string;
   exchange: string;
-  flag: string;
   economy: string;
   population: string;
   color: string;
-  mapPath: string;
   description: string;
+  region: string;
+  companies: CompanyPreview[];
+  mapPath: string;
+  capitalX: number;
+  capitalY: number;
 };
 
 export const countries: Country[] = [
+  {
+    id: "slovenia",
+    name: "Словения",
+    capital: "Любляна",
+    currency: "евро",
+    currencySymbol: "EUR",
+    exchange: "Люблянский рынок капитала",
+    economy: "Промышленность • Фармацевтика • Логистика",
+    population: "2,1 млн",
+    color: "#2d6da3",
+    region: "Центральная Европа",
+    description: "Небольшая открытая экономика между Альпами и Адриатикой. Сильны промышленность, фармацевтика, экспорт и транспортные связи.",
+    companies: [
+      { name: "Alpina Motors", ticker: "ALM", sector: "Промышленность", note: "компоненты и инженерные системы" },
+      { name: "Sava Medica", ticker: "SMD", sector: "Фармацевтика", note: "лекарственные препараты" },
+      { name: "Adria Freight", ticker: "ADF", sector: "Логистика", note: "складские и портовые перевозки" },
+      { name: "Triglav Systems", ticker: "TRS", sector: "Технологии", note: "промышленная автоматизация" }
+    ],
+    mapPath: "M236 178 L250 168 L267 173 L274 188 L267 204 L252 211 L239 201 L230 188 Z",
+    capitalX: 252,
+    capitalY: 190
+  },
   {
     id: "slavoriya",
     name: "Славория",
@@ -21,26 +53,42 @@ export const countries: Country[] = [
     currency: "сольд",
     currencySymbol: "SLD",
     exchange: "Велиградская биржа",
-    flag: "SL",
     economy: "Промышленность • Энергетика • Финансы",
     population: "48,7 млн",
-    color: "#4f8fbd",
-    mapPath: "M118 188 C145 158 188 143 229 151 C258 157 278 176 296 197 L285 238 C268 262 237 275 203 274 L157 259 C132 245 111 218 118 188 Z",
-    description: "Крупнейшая индустриальная экономика материка. Сильный внутренний рынок, развитая энергетика и центральное положение между восточными и западными торговыми путями."
+    color: "#527f9e",
+    region: "Центральный материк",
+    description: "Крупная индустриальная экономика с развитой энергетикой, машиностроением и большим внутренним рынком.",
+    companies: [
+      { name: "Slavor Steel", ticker: "SVS", sector: "Металлы", note: "сталь и промышленный прокат" },
+      { name: "NordPower", ticker: "NDP", sector: "Энергетика", note: "электроэнергия и сети" },
+      { name: "Veligrad Bank", ticker: "VLB", sector: "Финансы", note: "банковские и инвестиционные услуги" },
+      { name: "Krona Machinery", ticker: "KRM", sector: "Машиностроение", note: "оборудование для заводов" }
+    ],
+    mapPath: "M150 138 L184 119 L220 126 L238 151 L230 181 L210 204 L181 211 L154 197 L136 173 Z",
+    capitalX: 196,
+    capitalY: 166
   },
   {
-    id: "liraniya",
+    id: "lirania",
     name: "Лирания",
     capital: "Элион",
     currency: "лирон",
     currencySymbol: "LRN",
     exchange: "Лиранская фондовая биржа",
-    flag: "LR",
     economy: "Финансы • Судоходство • Страхование",
     population: "31,2 млн",
-    color: "#7187a6",
-    mapPath: "M65 116 C90 91 125 78 161 86 L191 109 L183 143 L158 165 L119 168 L88 151 L65 137 Z",
-    description: "Западный финансовый центр с крупными портами и развитым страховым рынком. Лирания особенно важна для международного капитала."
+    color: "#657f9f",
+    region: "Западное побережье",
+    description: "Морская финансовая экономика с крупными портами, страхованием и международными перевозками.",
+    companies: [
+      { name: "Elion Maritime", ticker: "ELM", sector: "Судоходство", note: "контейнерные перевозки" },
+      { name: "Lira Insurance", ticker: "LIS", sector: "Страхование", note: "корпоративное страхование" },
+      { name: "Westline Bank", ticker: "WLB", sector: "Финансы", note: "кредитование и управление активами" },
+      { name: "Blueport Terminals", ticker: "BPT", sector: "Порты", note: "терминалы и складская инфраструктура" }
+    ],
+    mapPath: "M65 113 L92 91 L126 88 L151 105 L157 132 L143 151 L112 158 L83 148 L61 132 Z",
+    capitalX: 111,
+    capitalY: 123
   },
   {
     id: "darvast",
@@ -49,12 +97,20 @@ export const countries: Country[] = [
     currency: "дарст",
     currencySymbol: "DVT",
     exchange: "Дарвастская биржа",
-    flag: "DV",
     economy: "Нефть • Металлы • Тяжёлая промышленность",
     population: "56,4 млн",
-    color: "#a87358",
-    mapPath: "M294 93 C333 66 379 67 416 86 L447 119 L438 169 L420 205 L383 218 L344 201 L312 172 L286 133 Z",
-    description: "Горная сырьевая держава. Экспорт нефти и металлов связывает её с промышленностью Славории и портами Лирании."
+    color: "#9a6d52",
+    region: "Восточные ресурсы",
+    description: "Сырьевая держава с нефтяными месторождениями, металлургией и экспортными железнодорожными коридорами.",
+    companies: [
+      { name: "Darvast Oil", ticker: "DOL", sector: "Нефть", note: "добыча и переработка" },
+      { name: "Kadar Metals", ticker: "KMT", sector: "Металлы", note: "медь и сталь" },
+      { name: "EastRail Cargo", ticker: "ERC", sector: "Логистика", note: "железнодорожные перевозки" },
+      { name: "DVT Energy", ticker: "DVE", sector: "Энергетика", note: "газовые электростанции" }
+    ],
+    mapPath: "M286 93 L321 72 L362 77 L391 98 L405 126 L394 157 L368 176 L330 171 L302 151 L280 120 Z",
+    capitalX: 346,
+    capitalY: 116
   },
   {
     id: "estraviya",
@@ -63,12 +119,20 @@ export const countries: Country[] = [
     currency: "эстель",
     currencySymbol: "EST",
     exchange: "Эстравийская биржа",
-    flag: "ES",
     economy: "Технологии • Биотех • Электроника",
     population: "27,9 млн",
-    color: "#527d78",
-    mapPath: "M214 284 C245 268 280 267 310 281 L331 314 L319 350 L287 371 L248 367 L214 345 L198 315 Z",
-    description: "Молодая технологическая экономика южного побережья. Быстро растущие компании, университеты и экспорт электроники."
+    color: "#4e8178",
+    region: "Южное побережье",
+    description: "Технологический кластер с университетами, биотехнологиями и производством электроники.",
+    companies: [
+      { name: "Selena Devices", ticker: "SLD", sector: "Электроника", note: "сенсоры и микросистемы" },
+      { name: "Estra Bio", ticker: "ESB", sector: "Биотех", note: "лабораторные разработки" },
+      { name: "Vector Cloud", ticker: "VCL", sector: "Технологии", note: "облачная инфраструктура" },
+      { name: "Esteron Robotics", ticker: "ESR", sector: "Робототехника", note: "промышленные роботы" }
+    ],
+    mapPath: "M188 246 L214 226 L249 228 L273 247 L278 278 L263 304 L235 315 L204 304 L184 281 Z",
+    capitalX: 231,
+    capitalY: 265
   },
   {
     id: "saverniya",
@@ -77,19 +141,51 @@ export const countries: Country[] = [
     currency: "савер",
     currencySymbol: "SVR",
     exchange: "Ривенская биржа",
-    flag: "SV",
     economy: "Агро • Логистика • Потребительский сектор",
     population: "39,6 млн",
-    color: "#718f67",
-    mapPath: "M329 226 C359 210 397 213 426 231 L455 262 L449 307 L421 338 L382 346 L348 327 L325 292 Z",
-    description: "Зелёная торговая страна с плодородными равнинами, крупными речными портами и сильным агропромышленным сектором."
+    color: "#718b62",
+    region: "Юго-восточные равнины",
+    description: "Агропромышленная и логистическая экономика с речными портами и большим внутренним потребительским рынком.",
+    companies: [
+      { name: "Riven Foods", ticker: "RVF", sector: "Агро", note: "продукты и переработка" },
+      { name: "Savera Logistics", ticker: "SVL", sector: "Логистика", note: "сухопутные перевозки" },
+      { name: "GreenField Retail", ticker: "GFR", sector: "Ритейл", note: "розничные сети" },
+      { name: "Delta Grain", ticker: "DGR", sector: "Агро", note: "зерно и экспорт" }
+    ],
+    mapPath: "M278 192 L309 176 L345 183 L371 205 L377 239 L361 265 L331 276 L300 264 L278 238 Z",
+    capitalX: 328,
+    capitalY: 222
   }
 ];
 
 export const worldStats = {
   totalCountries: countries.length,
-  publicCompanies: countries.length * 12,
+  publicCompanies: 60,
   exchanges: countries.length,
   currencies: countries.length,
-  sectors: 15,
+  sectors: 15
 };
+
+export const difficultyLevels = [
+  {
+    id: "easy",
+    name: "Старт",
+    money: "₽ 500 000",
+    description: "Большой запас прочности. Подходит, чтобы спокойно изучить работу, расходы и первые сделки.",
+    rules: "Низкие расходы • мягкая волатильность • подсказки включены"
+  },
+  {
+    id: "normal",
+    name: "Инвестор",
+    money: "₽ 250 000",
+    description: "Сбалансированный режим: капитал уже есть, но ошибки в стратегии ощущаются.",
+    rules: "Средние расходы • обычная волатильность • подсказки по ключевым событиям"
+  },
+  {
+    id: "hard",
+    name: "Профессионал",
+    money: "₽ 100 000",
+    description: "Минимальная подушка. Придётся совмещать карьеру, накопления и рынок.",
+    rules: "Высокий риск • строгий бюджет • минимум подсказок"
+  }
+] as const;
