@@ -115,6 +115,20 @@ function DifficultyScreen({country,onStart,onBack}:{country:Country;onStart:(id:
   </div></div>;
 }
 
+function NavIcon({id}:{id:GameTab}) {
+  const common={viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"1.8",strokeLinecap:"round" as const,strokeLinejoin:"round" as const,ariaHidden:true};
+  if(id==="overview") return <svg {...common}><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/></svg>;
+  if(id==="exchange") return <svg {...common}><path d="M4 17 9 12l3 3 7-8"/><path d="M15 7h4v4"/><path d="M4 20h16"/></svg>;
+  if(id==="portfolio") return <svg {...common}><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M8 5V3h8v2M3 10h18"/><path d="M10 14h4"/></svg>;
+  if(id==="companies") return <svg {...common}><path d="M4 21V6l8-3 8 3v15"/><path d="M8 9h2M14 9h2M8 13h2M14 13h2M8 17h2M14 17h2"/></svg>;
+  if(id==="life") return <svg {...common}><circle cx="12" cy="7" r="3"/><path d="M6 21v-3a6 6 0 0 1 12 0v3M4 13h4M16 13h4"/></svg>;
+  if(id==="map") return <svg {...common}><path d="M4 6l6-3 8 3 2-1v15l-6 3-8-3-2 1V6Z"/><path d="M10 3v17M18 6v17"/></svg>;
+  if(id==="news") return <svg {...common}><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>;
+  if(id==="events") return <svg {...common}><path d="m13 2-8 12h6l-1 8 8-12h-6l1-8Z"/></svg>;
+  if(id==="history") return <svg {...common}><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2M4 5 2 7"/></svg>;
+  return <svg {...common}><path d="M4 5h16M4 12h16M4 19h16"/><path d="M8 3v4M16 10v4M10 17v4"/></svg>;
+}
+
 function MiniChart({points}:{points:number[]}) {
   const min=Math.min(...points),max=Math.max(...points),range=Math.max(1,max-min);
   const path=points.map((p,i)=>(i/(points.length-1))*500+","+(116-((p-min)/range)*98)).join(" ");
@@ -313,7 +327,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
 
   return <div className="game-shell">
-    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><div><b>MarketArena</b><small>ECONOMIC STRATEGY</small></div></button><nav className="game-command-deck">{tabs.map(([id,label])=><button type="button" key={id} className={id==="exchange"?(tab===id?"exchange-nav active":"exchange-nav"):tab===id?"active":""} aria-label={id==="exchange"?"Открыть биржу":label} onClick={e=>{e.preventDefault();e.stopPropagation();if(id==="exchange") openExchange(); else setTab(id)}}><span className="nav-glyph">{id==="overview"?"⌂":id==="exchange"?"◈":id==="portfolio"?"▣":id==="companies"?"◆":id==="life"?"✦":id==="map"?"⌖":id==="news"?"≡":id==="events"?"⚡":id==="history"?"◷":"+"}</span>{label}</button>)}</nav><div className="game-right"><span className="offline-pill live-pill"><i/> MARKET LIVE</span><span className="topbar-day">DAY {day}</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
+    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><div><b>MarketArena</b><small>ECONOMIC STRATEGY</small></div></button><nav className="game-command-deck">{tabs.map(([id,label])=><button type="button" key={id} className={id==="exchange"?(tab===id?"exchange-nav active":"exchange-nav"):tab===id?"active":""} aria-label={id==="exchange"?"Открыть биржу":label} onClick={e=>{e.preventDefault();e.stopPropagation();if(id==="exchange") openExchange(); else setTab(id)}}><span className="nav-glyph"><NavIcon id={id}/></span><span className="nav-label">{label}</span></button>)}</nav><div className="game-right"><span className="offline-pill live-pill"><i/> MARKET LIVE</span><span className="topbar-day">DAY {day}</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
     <div className="game-body">
             <main className="game-main">
         {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>{country.name}: экономический центр</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
