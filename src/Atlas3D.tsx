@@ -316,6 +316,41 @@ function makeTree(x: number, z: number, scale = 1) {
   return group;
 }
 
+function safeCompanyGeo(countryId: string, company: CompanyPreview): GeoPoint {
+  const poly = countryPolygons[countryId];
+  const original: GeoPoint = [company.x / 5, company.y / 3.5];
+  if (pointInPolygon(original[0], original[1], poly)) return original;
+  const center = capitalGeo[countryId];
+  let u = original[0], v = original[1];
+  for (let i = 0; i < 18 && !pointInPolygon(u, v, poly); i += 1) {
+    u += (center[0] - u) * 0.18;
+    v += (center[1] - v) * 0.18;
+  }
+  return [u, v];
+}
+
+function makeBuilding(x: number, z: number, scale = 1, industrial = false) {
+  const group = new THREE.Group();
+  const width = (industrial ? 0.42 : 0.28) * scale;
+  const depth = (industrial ? 0.34 : 0.24) * scale;
+  const height = (industrial ? 0.34 : 0.24) * scale;
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(width, height, depth),
+    new THREE.MeshStandardMaterial({ color: industrial ? "#66757a" : "#8a8170", roughness: 0.88 })
+  );
+  body.position.y = height / 2;
+  const roof = new THREE.Mesh(
+    new THREE.BoxGeometry(width * 1.05, 0.045 * scale, depth * 1.05),
+    new THREE.MeshStandardMaterial({ color: industrial ? "#3f4d52" : "#51483d", roughness: 0.9 })
+  );
+  roof.position.y = height + 0.025 * scale;
+  group.add(body, roof);
+  group.position.set(x, terrainHeight(x, z) + 0.025, z);
+  group.castShadow = true;
+  group.receiveShadow = true;
+  return group;
+}
+
 function makeRoad(a: GeoPoint, b: GeoPoint) {
   const p1 = worldFromGeo(a), p2 = worldFromGeo(b);
   p1.y = terrainHeight(p1.x, p1.z) + 0.075;
@@ -457,22 +492,38 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     const selectedCountry = countries.find((c) => c.id === selected);
     if (selectedCountry) {
       const capital = capitalGeo[selectedCountry.id];
+      const selectedPoly = countryPolygons[selectedCountry.id];
       selectedCountry.companies.forEach((company, index) => {
-        const geo: GeoPoint = [company.x / 5, company.y / 3.5];
+        const geo = safeCompanyGeo(selectedCountry.id, company);
         scene.add(makeRoad(capital, geo));
         const p = worldFromGeo(geo);
         scene.add(makeTree(p.x + 0.28, p.z + 0.18, 0.55 + (index % 3) * 0.08));
         scene.add(makeTree(p.x - 0.22, p.z + 0.26, 0.45 + (index % 2) * 0.1));
+        scene.add(makeBuilding(p.x + 0.34, p.z - 0.18, 0.72 + (index % 3) * 0.08, index % 3 === 0));
+        scene.add(makeBuilding(p.x - 0.38, p.z + 0.12, 0.58 + (index % 2) * 0.08, index % 4 === 0));
       });
-      const treeSeeds = [
-        [capital[0] - 4, capital[1] + 2], [capital[0] - 2, capital[1] + 3],
-        [capital[0] + 3, capital[1] - 2], [capital[0] + 4, capital[1] + 1],
-        [capital[0] - 5, capital[1] - 3], [capital[0] + 2, capital[1] + 4]
-      ] as GeoPoint[];
-      treeSeeds.forEach((geo, i) => {
-        if (pointInPolygon(geo[0], geo[1], countryPolygons[selectedCountry.id])) {
-          const p = worldFromGeo(geo);
-          scene.add(makeTree(p.x, p.z, 0.5 + (i % 3) * 0.08));
+      for (let i = 0; i < 120; i += 1) {
+        const u = 18 + hash(i * 1.73, selectedCountry.id.length * 2.1) * 70;
+        const v = 18 + hash(i * 2.37 + 7, selectedCountry.id.length * 3.4) * 70;
+        if (pointInPolygon(u, v, selectedPoly)) {
+          const p = worldFromGeo([u, v]);
+          scene.add(makeTree(p.x, p.z, 0.38 + hash(i, 4) * 0.34));
+        }
+      }
+      const capitalPoint = worldFromGeo(capital);
+      scene.add(makeBuilding(capitalPoint.x + 0.42, capitalPoint.z + 0.22, 1.2, false));
+      scene.add(makeBuilding(capitalPoint.x - 0.46, capitalPoint.z - 0.18, 1.35, false));
+      scene.add(makeBuilding(capitalPoint.x + 0.02, capitalPoint.z - 0.52, 1.05, true));
+    } else {
+      countries.forEach((country) => {
+        const poly = countryPolygons[country.id];
+        for (let i = 0; i < 18; i += 1) {
+          const u = 18 + hash(i * 1.91 + country.id.length, i * 2.13) * 70;
+          const v = 18 + hash(i * 2.71, country.id.length * 4.1) * 70;
+          if (pointInPolygon(u, v, poly)) {
+            const p = worldFromGeo([u, v]);
+            scene.add(makeTree(p.x, p.z, 0.3 + hash(i, country.id.length) * 0.2));
+          }
         }
       });
     }
@@ -556,7 +607,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         selectedCountry?.companies.forEach((company) => {
           const marker = companyRefs.current[company.ticker];
           if (!marker) return;
-          const p = project(worldFromGeo([company.x / 5, company.y / 3.5]));
+          const p = project(worldFromGeo(safeCompanyGeo(selected, company)));
           marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-50%)`;
           marker.style.opacity = p.z > 1 ? "0" : "1";
         });
@@ -739,7 +790,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       <div className="map-key">
         <span><b className="dot" /> столица</span>
         <span><b className="mount" /> физический рельеф</span>
-        <span><b className="company-dot" /> компания · нажми</span>
+        <span><b className="company-dot" /> компания · нажми</span><span><b className="water-dot" /> вода</span>
       </div>
     </div>
   );
