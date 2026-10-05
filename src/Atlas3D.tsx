@@ -682,6 +682,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           scene.add(makeTree(p.x,p.z,.34+hash(i*1.7,4)*.34));
         }
       }
+      for(let i=0;i<Math.floor(cityProfile.trees*.55);i++){const u=11+hash(i*5.31+17,selectedCountry.id.length*4.2)*78;const v=11+hash(i*2.77+83,selectedCountry.id.length*6.4)*78;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);if(i%4===0)scene.add(makePine(p.x,p.z,.55+hash(i,3)*.35));else if(i%3===0)scene.add(makeBush(p.x,p.z,.65+hash(i,7)*.35));else scene.add(makeGrassPatch(p.x,p.z,.8+hash(i,11)*.5))}}
       if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
@@ -993,4 +994,4 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     </div>
   );
 }
-for(let i=0;i<Math.floor(cityProfile.trees*.55);i++){const u=11+hash(i*5.31+17,selectedCountry.id.length*4.2)*78;const v=11+hash(i*2.77+83,selectedCountry.id.length*6.4)*78;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);if(i%4===0)scene.add(makePine(p.x,p.z,.35+hash(i,3)*.22));else if(i%3===0)scene.add(makeBush(p.x,p.z,.55+hash(i,7)*.3));else scene.add(makeGrassPatch(p.x,p.z,.7+hash(i,11)*.4))}}
+
