@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
 import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type Country } from "./data/world";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
@@ -79,20 +78,6 @@ function CompanyCard({ company, onBuy }: { company: CompanyPreview; onBuy: (pric
   </article>;
 }
 
-
-/* Maps are intentionally static: interaction is reserved for countries, capitals and companies. */
-function MapMotion({ children, className = "" }: { children: ReactNode; className?: string }) {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  return <div
-    className={"map-motion " + className}
-    style={{ "--mx": pos.x + "px", "--my": pos.y + "px" } as CSSProperties}
-    onMouseMove={e => {
-      const r = e.currentTarget.getBoundingClientRect();
-      setPos({ x: (e.clientX - (r.left + r.width / 2)) / 28, y: (e.clientY - (r.top + r.height / 2)) / 28 });
-    }}
-    onMouseLeave={() => setPos({ x: 0, y: 0 })}
-  >{children}</div>;
-}
 
 function CountryMap({ country, onCompany }: { country: Country; onCompany?: (company: CompanyPreview) => void }) {
   const scale = 2.15;
