@@ -579,7 +579,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     }
 
 
-    [[47, 23], [53, 25], [61, 30], [40, 29]].forEach((p, i) => scene.add(makeSnowCap(p[0], p[1])));
+    const snowCaps: Array<[GeoPoint, number]> = [[[47, 23], 1.55], [[53, 25], 1.25], [[61, 30], 1.05], [[40, 29], 1.3]];\n    snowCaps.forEach(([geo, size]) => scene.add(makeSnowCap(geo, size)));
 
     const islandGeo: GeoPoint[] = [[91,76],[94,70],[9,58],[88,17]];
     islandGeo.forEach((geo,index)=>{
