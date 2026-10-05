@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root{font-family:"DM Sans",system-ui,sans-serif;color:#eaf1f4;background:#061018;font-synthesis:none;text-rendering:optimizeLegibility}
 *{box-sizing:border-box}body{margin:0;min-width:320px;background:#061018}button,input{font:inherit;color:inherit}button{cursor:pointer}
@@ -1723,4 +1723,175 @@ body{overflow-x:hidden}
 @media(max-width:900px){
   .history-stat-grid{grid-template-columns:1fr!important}
   .game-main:before{left:0}
+}
+
+
+/* 2026-10-05 — interactive landing + reliable exchange + modern atlas */
+.auth-visual-core,
+.auth-float{
+  will-change:transform;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease;
+}
+.auth-visual-core{
+  transform:none!important;
+  font-family:"Manrope",sans-serif!important;
+}
+.auth-visual-core b{
+  font:800 20px/1.12 "Manrope",sans-serif!important;
+  letter-spacing:-.025em!important;
+  text-align:center!important;
+}
+.auth-visual-core small{font-family:"Manrope",sans-serif!important;letter-spacing:.13em!important}
+.auth-visual-core:hover{
+  transform:translate3d(0,-8px,0) scale(1.025)!important;
+  border-color:rgba(154,225,232,.38)!important;
+  box-shadow:0 0 0 22px rgba(75,203,224,.035),0 42px 110px rgba(0,0,0,.54),inset 0 1px rgba(255,255,255,.10)!important;
+}
+.auth-float{
+  font-family:"Manrope",sans-serif!important;
+  cursor:default;
+}
+.auth-float:hover{
+  transform:translate3d(0,-8px,0) scale(1.035)!important;
+  border-color:rgba(141,207,215,.34)!important;
+  box-shadow:0 28px 65px rgba(0,0,0,.34),0 0 30px rgba(85,201,216,.06)!important;
+}
+.auth-float-a:hover{transform:translate3d(5px,-9px,0) scale(1.035)!important}
+.auth-float-b:hover{transform:translate3d(-5px,-9px,0) scale(1.035)!important}
+.auth-float-c:hover{transform:translate3d(4px,-7px,0) scale(1.035)!important}
+
+@keyframes authGridDrift{
+  from{background-position:0 0,0 0}
+  to{background-position:52px 28px,-34px 52px}
+}
+@keyframes authOrbitA{
+  0%,100%{transform:rotate(-18deg) scale(1)}
+  50%{transform:rotate(-12deg) scale(1.045)}
+}
+@keyframes authOrbitB{
+  0%,100%{transform:rotate(26deg) scale(1)}
+  50%{transform:rotate(34deg) scale(.96)}
+}
+.auth-visual-grid{
+  animation:authGridDrift 18s linear infinite;
+}
+.auth-orbit.orbit-a{animation:authOrbitA 12s ease-in-out infinite}
+.auth-orbit.orbit-b{animation:authOrbitB 15s ease-in-out infinite}
+.auth-visual:after{
+  content:"";
+  position:absolute;
+  width:320px;height:320px;
+  border-radius:50%;
+  border:1px solid rgba(104,213,225,.08);
+  box-shadow:0 0 90px rgba(80,199,218,.06);
+  animation:authCorePulse 7s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes authCorePulse{
+  0%,100%{transform:scale(.88);opacity:.35}
+  50%{transform:scale(1.08);opacity:.8}
+}
+@media(prefers-reduced-motion:reduce){
+  .auth-visual-grid,.auth-orbit,.auth-visual:after{animation:none!important}
+  .auth-visual-core,.auth-float{transition:none!important}
+}
+
+/* Country names are intentionally removed from the 3D atlas: the terrain itself is the selector. */
+.atlas-country-label,
+.atlas-country-label.selection-hidden{
+  opacity:0!important;
+  pointer-events:none!important;
+  visibility:hidden!important;
+}
+
+/* Exchange: a real, always-visible terminal rather than a gray placeholder. */
+.exchange-terminal-root{
+  min-height:520px!important;
+  padding:6px 0 34px!important;
+  background:
+    radial-gradient(circle at 84% 0%,rgba(74,202,220,.09),transparent 30%),
+    radial-gradient(circle at 8% 35%,rgba(120,101,220,.07),transparent 28%)!important;
+}
+.exchange-terminal-head{
+  display:flex;justify-content:space-between;gap:24px;align-items:flex-start;
+  padding:4px 2px 18px;
+}
+.exchange-terminal-head h2{
+  margin:8px 0 6px!important;
+  font:800 30px/1 "Manrope",sans-serif!important;
+  letter-spacing:-.04em;
+}
+.exchange-terminal-head p{margin:0;max-width:720px;color:#8198a3;font-size:12px;line-height:1.65}
+.exchange-live-state{
+  flex:0 0 auto;padding:9px 11px;border:1px solid rgba(103,213,176,.22);border-radius:9px;
+  background:rgba(62,187,145,.06);color:#86d9b7;font:800 9px "Manrope";letter-spacing:.12em;
+}
+.exchange-live-state i{display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:#76ddb5;box-shadow:0 0 10px #76ddb5}
+.exchange-company-strip{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin:0 0 16px!important;
+}
+.exchange-company{
+  min-width:0;padding:13px!important;text-align:left!important;border:1px solid rgba(132,185,196,.13)!important;
+  border-radius:12px!important;background:rgba(9,22,31,.88)!important;color:#dcebed!important;
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.exchange-company:hover,.exchange-company.active{
+  transform:translateY(-3px);
+  border-color:rgba(105,214,224,.42)!important;
+  background:linear-gradient(145deg,rgba(22,48,59,.95),rgba(8,19,28,.98))!important;
+  box-shadow:0 16px 30px rgba(0,0,0,.20);
+}
+.exchange-company .ticker{display:block;font:800 10px "Space Grotesk";color:#76d7e2;letter-spacing:.09em}
+.exchange-company b{display:block;margin-top:6px;font:700 12px/1.25 "Manrope";white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exchange-company small{display:block;margin-top:5px;color:#718995;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exchange-company strong{display:block;margin-top:10px;font:800 13px "Space Grotesk"}
+.exchange-company em{display:block;margin-top:4px;font:800 9px "Space Grotesk";font-style:normal}
+.exchange-focus{
+  border:1px solid rgba(93,202,215,.20)!important;border-radius:17px!important;
+  background:linear-gradient(145deg,rgba(14,31,42,.98),rgba(7,16,24,.98))!important;
+  padding:20px!important;box-shadow:0 20px 55px rgba(0,0,0,.20);
+}
+.exchange-focus-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.exchange-focus-head h2{margin:7px 0 3px;font:800 26px/1.1 "Manrope";letter-spacing:-.035em}
+.exchange-focus-head p{margin:0;color:#8197a3;font-size:11px}
+.exchange-focus-price{text-align:right}.exchange-focus-price b{display:block;font:800 25px "Space Grotesk"}.exchange-focus-price span{display:block;margin-top:5px;font:800 11px "Space Grotesk"}
+.exchange-chart{
+  height:270px;margin:12px 0 14px;border:1px solid rgba(124,191,202,.10);border-radius:12px;
+  background:
+    linear-gradient(rgba(142,204,212,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(142,204,212,.035) 1px,transparent 1px),
+    radial-gradient(circle at 50% 0%,rgba(79,194,211,.08),transparent 60%);
+  background-size:44px 44px,44px 44px,100% 100%;
+  overflow:hidden;
+}
+.exchange-chart svg{width:100%;height:100%;display:block}
+.exchange-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.exchange-metrics>div{
+  padding:12px;border:1px solid rgba(255,255,255,.065);border-radius:10px;background:rgba(255,255,255,.022);
+}
+.exchange-metrics span,.exchange-action-row>div>span{display:block;color:#718995;font-size:8px;letter-spacing:.12em;font-weight:800}
+.exchange-metrics b{display:block;margin-top:7px;font:800 13px "Space Grotesk"}
+.exchange-action-row{
+  display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-top:10px;
+  padding-top:12px;border-top:1px solid rgba(255,255,255,.055);
+}
+.exchange-action-row>div:first-child{min-width:0}.exchange-action-row b{display:block;margin-top:6px;color:#d5e5e8;font-size:11px;line-height:1.4}
+.exchange-action-row .spotlight-actions{margin:0!important}
+.exchange-terminal-root .chart-range-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.exchange-terminal-root .chart-range-tabs button{border:1px solid rgba(130,180,191,.13);background:rgba(255,255,255,.025);color:#708995;border-radius:7px;padding:7px 9px;font-size:9px}
+.exchange-terminal-root .chart-range-tabs button.active{color:#dff7f9;border-color:rgba(104,213,224,.38);background:rgba(86,204,216,.09)}
+
+@media(max-width:900px){
+  .exchange-company-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .exchange-terminal-head,.exchange-focus-head{flex-direction:column}
+  .exchange-live-state{align-self:flex-start}
+  .exchange-focus-price{text-align:left}
+  .exchange-metrics{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .exchange-company-strip{grid-template-columns:1fr!important}
+  .exchange-action-row{grid-template-columns:1fr}
 }
