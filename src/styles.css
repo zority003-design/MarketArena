@@ -2777,3 +2777,144 @@ body{background:#050b10!important}.game-shell{background:radial-gradient(circle 
   .career-banner,.campaign-goals-card{grid-template-columns:1fr}
   .campaign-card{padding:16px}
 }
+
+/* v2.0 economic strategy visual refresh */
+.game-shell{
+  background:
+    radial-gradient(circle at 12% 8%,rgba(34,154,173,.09),transparent 26%),
+    radial-gradient(circle at 86% 20%,rgba(72,103,183,.07),transparent 24%),
+    linear-gradient(180deg,#061016 0%,#07151c 48%,#061116 100%)!important;
+}
+.game-main{
+  max-width:1540px!important;
+  margin:0 auto!important;
+  padding:26px clamp(14px,2.2vw,34px) 60px!important;
+}
+.game-heading{
+  padding:8px 2px 18px!important;
+  align-items:flex-end!important;
+}
+.game-heading h1{
+  font-size:clamp(26px,3vw,42px)!important;
+  letter-spacing:-.035em!important;
+}
+.game-heading p{max-width:760px!important;color:#8faab3!important;font-size:14px!important}
+.day-button{
+  min-height:44px!important;
+  padding:0 18px!important;
+  border-radius:11px!important;
+  border:1px solid rgba(89,210,221,.45)!important;
+  background:linear-gradient(135deg,#12343d,#0b2028)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.22)!important;
+}
+.campaign-card,.risk-dashboard,.finance-card,.jobs-card,.companies-card,.home-news-card,.market-map-card,.capital-card{
+  border-radius:16px!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.18)!important;
+}
+.campaign-card{
+  position:relative!important;
+  overflow:hidden!important;
+}
+.campaign-card:after{
+  content:"";position:absolute;right:-70px;top:-80px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,214,226,.13),transparent 68%);
+  pointer-events:none;
+}
+.risk-dashboard{
+  grid-column:1 / -1;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:18px 20px;
+  border:1px solid rgba(239,113,128,.28);
+  background:linear-gradient(135deg,rgba(63,29,36,.72),rgba(11,24,31,.96));
+}
+.risk-dashboard h3{margin:4px 0;font-size:21px;color:#eef7f8}
+.risk-dashboard p{margin:0;color:#9aaeb4;line-height:1.45}
+.risk-dashboard>strong{font-size:16px;white-space:nowrap}
+.finance-card{
+  grid-column:1 / -1;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:18px 20px;
+  border:1px solid rgba(83,180,197,.24);
+  background:linear-gradient(135deg,#0b2028,#09171e);
+}
+.finance-card h2{margin:4px 0;font-size:20px}
+.finance-card p{margin:0;color:#849fa7}
+.finance-actions{display:flex;gap:8px;flex-wrap:wrap}
+.finance-actions button,.takeover-button{
+  min-height:40px;padding:0 13px;border-radius:9px;
+  border:1px solid #365d67;background:#102831;color:#dff5f7;
+  font-weight:800;cursor:pointer;
+}
+.finance-actions button:hover,.takeover-button:hover{border-color:#63d8e2;filter:brightness(1.1)}
+.finance-actions button:disabled{opacity:.4;cursor:not-allowed}
+.company-focus-footer>div{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.takeover-button{
+  background:linear-gradient(135deg,#3a2930,#2b1e25)!important;
+  border-color:rgba(225,111,127,.5)!important;
+  color:#ffdce0!important;
+}
+.owned-company-tag{
+  display:inline-block!important;
+  margin-left:8px!important;
+  padding:3px 6px!important;
+  border-radius:5px!important;
+  background:rgba(66,211,171,.12)!important;
+  color:#65d8b0!important;
+  font-size:9px!important;
+  font-weight:900!important;
+}
+.job-row button:disabled{opacity:.55!important}
+.job-game-modal{
+  border:1px solid rgba(90,211,222,.35)!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.58)!important;
+}
+.job-risk-strip{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin:12px 0 18px;padding:9px 11px;border:1px solid #23444d;
+  border-radius:9px;background:#0a1b22;color:#75939b;font-size:10px;
+}
+.job-risk-strip b{color:#dceff1;margin-right:10px}
+.exchange-safe{
+  border-radius:18px!important;
+  overflow:hidden!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.2)!important;
+}
+.exchange-safe-top{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(65,207,219,.09),transparent 32%),
+    linear-gradient(135deg,#0a1c24,#071219)!important;
+}
+.exchange-safe-focus{
+  background:linear-gradient(180deg,#081820,#061116)!important;
+}
+.exchange-safe-chart{
+  border:1px solid rgba(76,164,178,.18)!important;
+  border-radius:14px!important;
+  background:#061218!important;
+  padding:10px!important;
+}
+.chart-range-tabs button{
+  border-radius:7px!important;
+}
+.game-panel{
+  border-radius:18px!important;
+  border-color:rgba(78,156,170,.22)!important;
+  background:linear-gradient(180deg,rgba(9,23,30,.98),rgba(6,16,22,.98))!important;
+  box-shadow:0 20px 60px rgba(0,0,0,.20)!important;
+}
+.panel-title h1{letter-spacing:-.025em!important}
+.ticker-row,.life-job,.news-item,.event-card{
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease!important;
+}
+.ticker-row:hover,.life-job:hover,.news-item:hover,.event-card:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(91,211,222,.42)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.16)!important;
+}
+@media(max-width:760px){
+  .game-main{padding:16px 10px 42px!important}
+  .risk-dashboard,.finance-card{align-items:flex-start;flex-direction:column}
+  .finance-actions{width:100%}
+  .finance-actions button{flex:1}
+  .company-focus-footer>div{justify-content:flex-start;width:100%}
+}
