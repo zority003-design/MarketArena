@@ -17,11 +17,16 @@ function Flag({ country }: { country: Country }) {
 
 function Terrain({ detailed = false }: { detailed?: boolean }) {
   return <g className="terrain-layer">
+    <path className="biome" d="M48 215 C92 188 136 198 174 221 C214 245 249 244 292 222 C340 197 392 203 448 226 L448 310 C387 295 345 302 300 288 C247 270 203 279 158 293 C108 307 72 284 48 258 Z"/>
     <path className="ridge" d="M76 89 C95 72 111 76 126 91 C141 70 159 73 174 91 C190 64 211 67 228 89 M275 90 C292 66 312 69 328 91 C344 63 365 68 380 92" />
     <path className="ridge light" d="M86 105 C101 88 114 92 126 105 M287 106 C302 88 315 91 328 105" />
+    <path className="contour" d="M67 128 C102 106 137 110 165 130 C194 151 219 153 246 138 C275 122 301 121 331 137 C358 151 391 147 425 128 M58 149 C91 130 126 132 153 150 C184 170 213 176 243 159 C276 140 303 141 336 157 C366 171 397 166 438 148 M67 172 C101 151 129 156 160 174 C190 192 218 199 250 180 C281 162 310 164 341 180 C373 197 403 191 429 175"/>
     <path className="river" d="M220 73 C218 99 228 113 218 137 C208 161 199 182 207 202 C214 220 231 231 239 249 C245 264 241 279 232 293" />
     <path className="river" d="M303 76 C294 105 299 126 313 145 C327 164 341 174 348 193 C355 212 351 230 342 246" />
-    {detailed && <><path className="river thin" d="M156 107 C174 126 178 143 170 163 C163 180 168 197 181 213" /><path className="river thin" d="M386 115 C375 133 374 149 383 165 C391 180 395 193 391 207" /></>}
+    <ellipse className="lake" cx="145" cy="225" rx="18" ry="7"/>
+    <ellipse className="lake" cx="376" cy="214" rx="13" ry="6"/>
+    <path className="snow" d="M180 72 L191 63 L202 72 L194 78 Z M319 74 L329 63 L341 74 L333 80 Z"/>
+    {detailed && <><path className="river thin" d="M156 107 C174 126 178 143 170 163 C163 180 168 197 181 213" /><path className="river thin" d="M386 115 C375 133 374 149 383 165 C391 180 395 193 391 207" /><path className="contour" d="M105 236 C142 217 177 221 207 240 C239 260 271 260 306 241 C343 220 378 224 414 241" /></>}
   </g>;
 }
 
