@@ -4,7 +4,7 @@ import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type 
 import { Atlas3D } from "./Atlas3D";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
-type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates";
+type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates" | "profile";
 type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
 type GameSave = {
   player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
@@ -126,6 +126,7 @@ function NavIcon({id}:{id:GameTab}) {
   if(id==="news") return <svg {...common}><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>;
   if(id==="events") return <svg {...common}><path d="m13 2-8 12h6l-1 8 8-12h-6l1-8Z"/></svg>;
   if(id==="history") return <svg {...common}><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2M4 5 2 7"/></svg>;
+  if(id==="profile") return <svg {...common}><circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0M18 5l2 2-2 2"/></svg>;
   return <svg {...common}><path d="M4 5h16M4 12h16M4 19h16"/><path d="M8 3v4M16 10v4M10 17v4"/></svg>;
 }
 
@@ -317,7 +318,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const advance=()=>{setDay(v=>v+1);setNotice("Новый игровой день: котировки, новости и стоимость портфеля обновились.");};
   const startMiniGame=()=>setMiniGame({active:true,score:0,target:Math.floor(Math.random()*6),started:Date.now()});
   const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));setCash(v=>v+reward);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
-  const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"]];
+  const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"],["profile","Профиль"]];
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
   const openExchange=(company?:CompanyPreview)=>{
     const next=company??exchangeCompany??country.companies[0]??null;
@@ -373,6 +374,28 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   <div><span>СДЕЛОК</span><b>{transactions.length}</b><small>{transactions.length?"активность на рынке":"пока без сделок"}</small></div>
   <div><span>ПОЗИЦИЙ</span><b>{Object.values(holdings).filter(Boolean).length}</b><small>{Object.values(holdings).filter(Boolean).length?"открытые активы":"портфель пуст"}</small></div>
 </div></Panel>}
+        {tab==="profile"&&<Panel title={"Профиль · "+player} eyebrow="PLAYER PROFILE">
+          <div className="profile-hero-card">
+            <div className="profile-avatar">{player.trim().slice(0,1).toUpperCase()}</div>
+            <div><span className="eyebrow">АККАУНТ И ПРОГРЕСС</span><h2>{player}</h2><p>{country.name} · {difficultyLevels.find(x=>x.id===difficulty)?.name??difficulty} · День {day}</p></div>
+            <button type="button" className="profile-logout" onClick={onLogout}>Выйти из аккаунта</button>
+          </div>
+          <div className="profile-stat-grid">
+            <div><span>КАПИТАЛ</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b><small>текущее состояние</small></div>
+            <div><span>ДЕНЬ</span><b>{day}</b><small>игровой прогресс</small></div>
+            <div><span>СДЕЛОК</span><b>{transactions.length}</b><small>покупки и продажи</small></div>
+            <div><span>ПОЗИЦИЙ</span><b>{Object.values(holdings).filter(Boolean).length}</b><small>активы в портфеле</small></div>
+          </div>
+          <div className="profile-records">
+            <div><span className="eyebrow">РЕКОРДЫ</span><h3>Личные достижения</h3>
+              <div className="profile-record-row"><span>Лучший капитал</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div>
+              <div className="profile-record-row"><span>Самая крупная сделка</span><b>{transactions.length?Math.max(...transactions.map(t=>t.price*t.quantity)).toLocaleString("ru-RU")+" VLR":"—"}</b></div>
+              <div className="profile-record-row"><span>Максимальная позиция</span><b>{Math.max(0,...Object.values(holdings))} акций</b></div>
+              <div className="profile-record-row"><span>Активных компаний</span><b>{Object.values(holdings).filter(Boolean).length} / {country.companies.length}</b></div>
+            </div>
+            <div className="profile-account-card"><span className="eyebrow">АККАУНТ</span><h3>Смена игрока</h3><p>Выйди из текущего аккаунта, чтобы вернуться на экран входа и выбрать другого игрока. Сохранение текущей игры останется в браузере.</p><button type="button" className="secondary-action" onClick={onLogout}>Выйти и сменить аккаунт</button></div>
+          </div>
+        </Panel>}
         {tab==="updates"&&<Panel title="Updates & Patch Notes" eyebrow="ИСТОРИЯ РАЗВИТИЯ"><p className="panel-lead">История обновлений MarketArena: новые функции, улучшения и исправления.</p><div className="patch-timeline">{PATCH_NOTES.map(p=><article className="patch-item" key={p.version}><div className="patch-dot"/><div className="patch-card"><div className="patch-head"><div><span>{p.version}</span><h2>{p.title}</h2></div><time>{p.date}</time></div><div className="patch-columns"><div><b>Добавлено</b>{p.added.map(x=><span key={x}>+ {x}</span>)}</div><div><b>Улучшено</b>{p.improved.map(x=><span key={x}>↗ {x}</span>)}</div><div><b>Исправлено</b>{p.fixed.map(x=><span key={x}>✓ {x}</span>)}</div></div></div></article>)}</div></Panel>}
         {tab==="news"&&<Panel title="Новости" eyebrow="ECONOMIC NEWS"><p className="panel-lead">Новости поступают в живую ленту симуляции: информационные импульсы меняют котировки, а новые сообщения появляются независимо от нажатия «Следующий день».</p><div className="news-list">{country.companies.slice(0,8).map((c,i)=>{const e=marketEvent(c,day);return <button className={selectedNews===c.ticker?"news-item active":"news-item"} key={c.ticker} onClick={()=>setSelectedNews(c.ticker)}><span>{String(8+i*2).padStart(2,"0")}:30</span><div><b>{c.name}: {e.headline}</b><p>Котировка {c.ticker}: <strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}%</strong> фактор события. Итоговая цена учитывает тренд, волатильность и этот информационный импульс.</p></div><strong>{c.sector.toUpperCase()}</strong></button>})}</div>{selectedNews&&(()=>{const focus=country.companies.find(c=>c.ticker===selectedNews);if(!focus)return null;const e=marketEvent(focus,day);return <article className="news-detail-card"><div className="news-detail-head"><div><span className="eyebrow">ПОДРОБНЫЙ РЕПОРТАЖ · {focus.ticker}</span><h2>{focus.name}</h2></div><button onClick={()=>setSelectedNews(null)}>Закрыть</button></div><p>{focus.name} {e.headline}. Рынок оценивает событие через изменение ожиданий по выручке, марже и будущему денежному потоку. В этой симуляции информационный импульс напрямую влияет на дневную котировку компании.</p><div className="news-detail-grid"><div><span>СЕКТОР</span><b>{focus.sector}</b></div><div><span>ИМПУЛЬС</span><b className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}%</b></div><div><span>КОТИРОВКА</span><b>{priceFor(focus).toLocaleString("ru-RU")} VLR</b></div></div></article>})()}<div className="news-transactions"><span className="eyebrow">ИСТОРИЯ СДЕЛОК</span>{transactions.slice(0,6).map((t,i)=><div key={i}><b className={t.type==="BUY"?"loss":"gain"}>{t.type}</b><span>День {t.day} · {t.ticker} · {t.quantity} шт.</span><strong>{(t.price*t.quantity).toLocaleString("ru-RU")} VLR</strong></div>)}{transactions.length===0&&<p>Сделок пока нет. Первая покупка появится здесь сразу после подтверждения.</p>}</div></Panel>}
       </main>
