@@ -542,7 +542,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
-        const margin=pointInPolygon(u+.9,v)&&pointInPolygon(u-.9,v)&&pointInPolygon(u,v+.9)&&pointInPolygon(u,v-.9);
+        const margin=pointInPolygon(u+.9,v,selectedPoly)&&pointInPolygon(u-.9,v,selectedPoly)&&pointInPolygon(u,v+.9,selectedPoly)&&pointInPolygon(u,v-.9,selectedPoly);
         if(inside&&margin){
           const p=worldFromGeo([u,v]);
           const type=i%7;
@@ -579,7 +579,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     }
 
 
-    [[47, 23], [53, 25], [61, 30], [40, 29]].forEach((p, i) => scene.add(makeSnowCap(p[0], p[1], 0.6 + i * 0.05)));
+    [[47, 23], [53, 25], [61, 30], [40, 29]].forEach((p, i) => scene.add(makeSnowCap(p[0], p[1])));
 
     const islandGeo: GeoPoint[] = [[91,76],[94,70],[9,58],[88,17]];
     islandGeo.forEach((geo,index)=>{
