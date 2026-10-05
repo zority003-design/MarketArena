@@ -48,88 +48,114 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
     <div className="atlas-head"><span>АТЛАС · ФИЗИКО-ПОЛИТИЧЕСКАЯ КАРТА</span><span>СЕВЕР ↑</span></div>
     <svg viewBox="0 0 500 350" className="atlas-svg atlas-world-svg" role="img" aria-label="Физико-политическая карта пяти вымышленных государств">
       <defs>
-        <linearGradient id="oceanWorld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b4561"/><stop offset=".5" stopColor="#082f49"/><stop offset="1" stopColor="#041c2c"/></linearGradient>
-        <pattern id="oceanWaves" width="48" height="24" patternUnits="userSpaceOnUse"><path d="M0 12 C9 7 15 17 24 12 S39 7 48 12" fill="none" stroke="#9bd2df" strokeOpacity=".08"/></pattern>
-        <linearGradient id="terrain-slavoriya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#8ea96f"/><stop offset=".35" stopColor="#557a57"/><stop offset=".7" stopColor="#365a46"/><stop offset="1" stopColor="#203a34"/></linearGradient>
-        <linearGradient id="terrain-lirania" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#6f9b78"/><stop offset=".45" stopColor="#3f765b"/><stop offset="1" stopColor="#23483d"/></linearGradient>
-        <linearGradient id="terrain-darvast" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#b68b55"/><stop offset=".4" stopColor="#8b633e"/><stop offset=".72" stopColor="#6a4834"/><stop offset="1" stopColor="#3e3230"/></linearGradient>
-        <linearGradient id="terrain-estraviya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#79a97d"/><stop offset=".45" stopColor="#3d8069"/><stop offset="1" stopColor="#244e48"/></linearGradient>
-        <linearGradient id="terrain-saverniya" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#9eaf69"/><stop offset=".45" stopColor="#668957"/><stop offset="1" stopColor="#355745"/></linearGradient>
-        {countries.map(c=><clipPath id={"countryClip-"+c.id} key={c.id}><path d={c.mapPath}/></clipPath>)}
-        <filter id="countryReliefShadow"><feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#001018" floodOpacity=".45"/></filter>
+        <linearGradient id="oceanDeep" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#0b4b66"/><stop offset=".48" stopColor="#06344b"/><stop offset="1" stopColor="#021d2d"/></linearGradient>
+        <radialGradient id="oceanGlow" cx=".46" cy=".38" r=".72"><stop stopColor="#6baeb9" stopOpacity=".22"/><stop offset=".7" stopColor="#0b3348" stopOpacity="0"/><stop offset="1" stopColor="#00141f" stopOpacity=".55"/></radialGradient>
+        <linearGradient id="terrainBase" x1=".2" y1="0" x2=".85" y2="1"><stop stopColor="#a7b47e"/><stop offset=".28" stopColor="#718e67"/><stop offset=".62" stopColor="#49674e"/><stop offset="1" stopColor="#233b34"/></linearGradient>
+        <linearGradient id="terrainWarm" x1=".1" y1="0" x2=".9" y2="1"><stop stopColor="#c79b62"/><stop offset=".5" stopColor="#8b633f"/><stop offset="1" stopColor="#4c3b31"/></linearGradient>
+        <linearGradient id="terrainSouth" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#71966d"/><stop offset=".5" stopColor="#3d6955"/><stop offset="1" stopColor="#21423a"/></linearGradient>
+        <pattern id="terrainGrain" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".7" fill="#fff" opacity=".12"/><circle cx="13" cy="11" r=".8" fill="#142f2c" opacity=".16"/><path d="M0 15l5-2 4 2 5-2 4 2" fill="none" stroke="#e8e8cf" strokeOpacity=".07"/></pattern>
+        <pattern id="forestTexture" width="14" height="13" patternUnits="userSpaceOnUse"><path d="M7 1L2 8h3l-4 4h12L9 8h3z" fill="#183f35" opacity=".62"/></pattern>
+        <filter id="landShadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dy="6"/><feComponentTransfer><feFuncA type="linear" slope=".62"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="softRelief" x="-10%" y="-10%" width="120%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="3" seed="17" result="noise"/><feDiffuseLighting in="noise" surfaceScale="3.5" diffuseConstant=".85" lighting-color="#fff" result="light"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="light" in2="SourceGraphic" operator="in" result="lit"/><feBlend in="SourceGraphic" in2="lit" mode="soft-light"/></filter>
+        <clipPath id="landmassClip">{countries.map(c=><path key={c.id} d={c.mapPath}/>)}</clipPath>
       </defs>
-      <rect width="500" height="350" fill="url(#oceanWorld)"/>
-      <rect width="500" height="350" fill="url(#oceanWaves)"/>
-      <path className="continent-base" d="M48 113 C75 73 126 52 184 60 C231 46 273 54 319 61 C373 47 427 70 449 111 C466 142 453 184 428 210 C409 235 390 279 352 298 C308 320 252 320 210 304 C169 316 119 297 98 267 C74 247 54 212 60 179 C42 158 37 134 48 113Z"/><g className="ocean-depth-lines"><path d="M12 72 C88 50 125 62 186 45 S307 48 365 33 S454 42 493 24"/><path d="M2 306 C67 286 114 301 174 286 S301 298 356 279 S440 289 500 270"/><path d="M16 184 C69 170 105 179 143 166 M359 150 C405 137 446 149 489 132"/></g>
-      {countries.map((c, index) => <g key={c.id} className={"world-country-group "+(selected===c.id?"selected":"")} filter="url(#countryReliefShadow)">
-        <path d={c.mapPath} className="country-land-base" style={{fill:"url(#terrain-"+c.id+")"}} onClick={()=>onSelect(c.id)}/>
-        <g clipPath={"url(#countryClip-"+c.id+")"}>
-          <path d={c.mapPath} className="country-texture"/>
-          <path className="terrain-light" d={"M "+(c.capitalX-82)+" "+(c.capitalY-30)+" C "+(c.capitalX-30)+" "+(c.capitalY-70)+" "+(c.capitalX+28)+" "+(c.capitalY-48)+" "+(c.capitalX+78)+" "+(c.capitalY-5)+" C "+(c.capitalX+28)+" "+(c.capitalY-12)+" "+(c.capitalX-28)+" "+(c.capitalY+8)+" "+(c.capitalX-82)+" "+(c.capitalY-30)+" Z"}/>
-          <path className="forest-patch" d={"M "+(c.capitalX-45)+" "+(c.capitalY+18)+" C "+(c.capitalX-15)+" "+(c.capitalY-2)+" "+(c.capitalX+35)+" "+(c.capitalY+4)+" "+(c.capitalX+60)+" "+(c.capitalY+32)+" L "+(c.capitalX+48)+" "+(c.capitalY+75)+" C "+(c.capitalX+5)+" "+(c.capitalY+61)+" "+(c.capitalX-35)+" "+(c.capitalY+67)+" "+(c.capitalX-55)+" "+(c.capitalY+42)+" Z"}/>
-          <path className="terrain-hill" d={"M "+(c.capitalX-75)+" "+(c.capitalY-25)+" C "+(c.capitalX-50)+" "+(c.capitalY-60)+" "+(c.capitalX-10)+" "+(c.capitalY-38)+" "+(c.capitalX+18)+" "+(c.capitalY-54)+" C "+(c.capitalX+42)+" "+(c.capitalY-68)+" "+(c.capitalX+68)+" "+(c.capitalY-31)+" "+(c.capitalX+88)+" "+(c.capitalY-8)+" L "+(c.capitalX+88)+" "+(c.capitalY+18)+" C "+(c.capitalX+38)+" "+(c.capitalY-2)+" "+(c.capitalX-22)+" "+(c.capitalY+12)+" "+(c.capitalX-75)+" "+(c.capitalY-25)+" Z"}/>
-          <path className="mountain-range" d={"M "+(c.capitalX-82)+" "+(c.capitalY-24)+" l 14 -28 15 24 18 -37 17 34 20 -24 17 31 18 -18 18 31"}/>
-          <path className="mountain-snow" d={"M "+(c.capitalX-50)+" "+(c.capitalY-52)+" l 12 18 -9 -4 -7 8 Z M "+(c.capitalX+2)+" "+(c.capitalY-59)+" l 12 19 -10 -4 -7 7 Z"}/>
-          <path className="river-wide" d={"M "+(c.capitalX-38)+" "+(c.capitalY-78)+" C "+(c.capitalX-25)+" "+(c.capitalY-45)+" "+(c.capitalX-47)+" "+(c.capitalY-18)+" "+(c.capitalX-22)+" "+(c.capitalY+12)+" C "+(c.capitalX-3)+" "+(c.capitalY+35)+" "+(c.capitalX+4)+" "+(c.capitalY+57)+" "+(c.capitalX-14)+" "+(c.capitalY+88)}/>
-          <path className="river-thin" d={"M "+(c.capitalX+35)+" "+(c.capitalY-62)+" C "+(c.capitalX+17)+" "+(c.capitalY-30)+" "+(c.capitalX+46)+" "+(c.capitalY-2)+" "+(c.capitalX+25)+" "+(c.capitalY+30)}/>
-          <ellipse className="country-lake" cx={c.capitalX-42} cy={c.capitalY+55} rx="13" ry="6"/>
-          <g className="forest-dots">{Array.from({length:9},(_,i)=><circle key={i} cx={c.capitalX-35+(i%3)*17} cy={c.capitalY+28+Math.floor(i/3)*11} r="2.4"/>)}</g>
+
+      <rect width="500" height="350" fill="url(#oceanDeep)"/>
+      <rect width="500" height="350" fill="url(#oceanGlow)"/>
+      <g className="bathymetry" fill="none" stroke="#a9d4dc" strokeOpacity=".1" strokeWidth=".8">
+        <path d="M10 62C70 40 120 56 178 39S296 48 360 29 450 40 494 20"/>
+        <path d="M5 82C72 60 120 75 182 58S300 66 362 49 449 60 498 40"/>
+        <path d="M4 286C69 260 123 278 184 256S299 271 358 248 442 264 498 242"/>
+        <path d="M6 309C69 286 124 302 183 281S301 296 359 274 445 290 497 269"/>
+      </g>
+
+      <g filter="url(#landShadow)">
+        {countries.map(c=><path key={c.id} d={c.mapPath} fill={c.id==="darvast" ? "url(#terrainWarm)" : c.id==="estraviya" || c.id==="saverniya" ? "url(#terrainSouth)" : "url(#terrainBase)"} stroke="#efe9d2" strokeOpacity=".82" strokeWidth="1.4" onClick={()=>onSelect(c.id)}/>)}
+      </g>
+      <g clipPath="url(#landmassClip)" filter="url(#softRelief)">
+        <rect x="35" y="45" width="430" height="280" fill="url(#terrainGrain)"/>
+        <path d="M38 174C91 132 137 141 182 166S267 190 314 158 398 135 462 166L462 226C404 202 357 204 313 232S226 255 176 229 92 207 38 232Z" fill="#b2b77f" opacity=".28"/>
+        <path d="M42 220C94 190 140 201 178 224S248 258 299 230 387 205 459 232L459 322H42Z" fill="#2d604a" opacity=".52"/>
+        <path d="M280 78C327 61 391 71 447 109L455 184C411 165 367 171 323 191L286 166Z" fill="#b98750" opacity=".7"/>
+        <rect x="46" y="105" width="116" height="88" fill="url(#forestTexture)" opacity=".72"/>
+        <rect x="142" y="126" width="128" height="76" fill="url(#forestTexture)" opacity=".43"/>
+        <rect x="145" y="232" width="145" height="92" fill="url(#forestTexture)" opacity=".82"/>
+        <rect x="296" y="224" width="130" height="82" fill="url(#forestTexture)" opacity=".38"/>
+
+        <!-- broad mountain systems -->
+        <g fill="#263a35" stroke="#182b2b" strokeWidth=".7" strokeLinejoin="round">
+          <path d="M68 123l15-36 13 25 17-43 15 34 17-28 16 33 17-24 17 33 17-29 17 37 17-27 18 34 17-25 16 32 17-24 18 30 17-22 16 28" opacity=".96"/>
+          <path d="M157 112l15-31 13 23 16-39 16 34 15-27 17 34 15-22 17 31 16-25 16 31 17-23 16 31" opacity=".9"/>
+          <path d="M274 123l14-33 14 26 15-40 16 34 15-27 17 35 16-24 16 31 16-25 15 31 16-23 15 29" opacity=".9"/>
         </g>
-        <path d={c.mapPath} className="country-coastline" onClick={()=>onSelect(c.id)}/>
+        <g fill="none" stroke="#e7e7d4" strokeWidth="2.4" strokeLinejoin="round">
+          <path d="M68 123l15-36 13 25 17-43 15 34 17-28 16 33 17-24 17 33 17-29 17 37 17-27 18 34 17-25 16 32 17-24 18 30 17-22 16 28"/>
+          <path d="M157 112l15-31 13 23 16-39 16 34 15-27 17 34 15-22 17 31 16-25 16 31 17-23 16 31"/>
+          <path d="M274 123l14-33 14 26 15-40 16 34 15-27 17 35 16-24 16 31 16-25 15 31 16-23 15 29"/>
+        </g>
+        <g fill="#fffdf1">
+          <path d="M93 73l-6 15 6-4 6 4z"/><path d="M124 86l-6 15 6-4 6 4z"/>
+          <path d="M190 63l-6 16 6-4 6 4z"/><path d="M229 72l-6 16 6-4 6 4z"/>
+          <path d="M313 80l-6 16 6-4 6 4z"/><path d="M350 91l-6 14 6-4 6 4z"/><path d="M392 100l-6 13 6-4 6 4z"/>
+        </g>
+
+        <!-- elevation contours -->
+        <g fill="none" stroke="#e2e4c8" strokeOpacity=".22" strokeWidth=".7">
+          <path d="M52 139C91 112 126 116 159 136S218 161 251 143 309 126 342 143 402 158 447 132"/>
+          <path d="M50 160C88 135 124 139 156 158S216 183 250 164 309 147 341 164 401 179 447 154"/>
+          <path d="M56 183C94 158 126 163 159 181S217 204 251 186 310 169 343 186 402 201 441 179"/>
+          <path d="M68 207C102 188 131 191 164 209S218 227 250 213 307 197 340 214 390 226 428 210"/>
+        </g>
+
+        <!-- rivers: all originate in the northern mountains -->
+        <g fill="none" strokeLinecap="round">
+          <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#274f58" strokeWidth="4.8" opacity=".48"/>
+          <path d="M208 70C201 94 217 111 209 134S190 171 202 194 229 228 237 251 240 284 225 311" stroke="#a9dce0" strokeWidth="1.8"/>
+          <path d="M177 91C170 116 186 128 174 151S165 186 184 209 201 231 203 255" stroke="#b7e1e2" strokeWidth="1.1" opacity=".9"/>
+          <path d="M303 70C292 99 301 121 316 143S341 174 347 198 349 232 338 265" stroke="#a8dbe0" strokeWidth="1.8"/>
+          <path d="M343 111C357 129 374 143 374 159S365 190 350 203" stroke="#b9e3e4" strokeWidth="1.05"/>
+          <path d="M126 143C143 155 151 169 149 184S155 205 172 215" stroke="#b9e3e4" strokeWidth="1.05"/>
+          <path d="M265 103C256 127 266 146 281 163S299 190 300 210" stroke="#b4dfe1" strokeWidth="1.05"/>
+          <path d="M391 160C378 176 378 193 390 208" stroke="#b7e1e2" strokeWidth=".95"/>
+        </g>
+
+        <g filter="url(#landShadow)">
+          <ellipse cx="142" cy="231" rx="24" ry="9" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
+          <ellipse cx="376" cy="214" rx="18" ry="7" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
+          <ellipse cx="274" cy="278" rx="13" ry="5" fill="#4d9fb2" stroke="#c8e8e7" strokeWidth=".8"/>
+        </g>
+      </g>
+
+      <!-- exact political borders are the country paths themselves -->
+      <g fill="none" stroke="#f4eed8" strokeOpacity=".72" strokeWidth="1.15">
+        {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
+      </g>
+      <g fill="none" stroke="#fff7df" strokeOpacity=".28" strokeWidth="3.5">
+        {countries.map(c=><path key={c.id} d={c.mapPath}/>)}
+      </g>
+
+      {countries.map(c=><g key={c.id} className={"capital "+(selected===c.id?"capital-active":"")} onClick={()=>onSelect(c.id)}>
+        <text className="country-name-label" x={c.capitalX} y={c.capitalY+29} textAnchor="middle">{c.name.toUpperCase()}</text>
+        <circle cx={c.capitalX} cy={c.capitalY} r="4.2"/><circle cx={c.capitalX} cy={c.capitalY} r="1.7"/>
+        <text x={c.capitalX+8} y={c.capitalY-8}>{c.capital}</text>
       </g>)}
-      {countries.map(c=><g key={c.id} className={"capital "+(selected===c.id?"capital-active":"")} onClick={()=>onSelect(c.id)}><text className="country-name-label" x={c.capitalX} y={c.capitalY+30} textAnchor="middle">{c.name.toUpperCase()}</text><circle cx={c.capitalX} cy={c.capitalY} r="7"/><circle cx={c.capitalX} cy={c.capitalY} r="2.4"/><text x={c.capitalX+10} y={c.capitalY-9}>{c.capital}</text></g>)}
+
       {showCompanies && countries.find(c=>c.id===selected)?.companies.map((company,index)=>{
         const dx=index%2===0?14:-14, dy=index<2?-16:17;
-        return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}><line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/><circle cx={company.x} cy={company.y} r="6"/><circle cx={company.x} cy={company.y} r="2"/><g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g></g>;
+        return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}>
+          <line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/>
+          <circle cx={company.x} cy={company.y} r="5.2"/><circle cx={company.x} cy={company.y} r="1.8"/>
+          <g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g>
+        </g>;
       })}
-      <text className="sea-label" x="24" y="30">СЕВЕРНЫЙ ОКЕАН</text><text className="sea-label" x="382" y="330">ЮЖНОЕ МОРЕ</text>
-      <g className="compass"><circle cx="466" cy="30" r="17"/><text x="463" y="16">N</text><path d="M466 19V41M455 30H477"/></g>
-    </svg>
-    <div className="map-key"><span><b className="dot"/> столица</span><span><b className="line"/> торговый маршрут</span><span><b className="mount"/> горы · леса · реки</span>{showCompanies&&<span><b className="company-dot"/> компания</span>}</div>
-  </div>;
-}
 
-function CountryMap({ country, onCompany }: { country: Country; onCompany?: (company: CompanyPreview) => void }) {
-  const scale=2.15, tx=250-country.capitalX*scale, ty=175-country.capitalY*scale;
-  return <div className="map-static country-map atlas">
-    <div className="atlas-head"><span>ФИЗИЧЕСКАЯ КАРТА · {country.name.toUpperCase()}</span><span>СЕВЕР ↑</span></div>
-    <svg viewBox="0 0 500 350" className="atlas-svg country-atlas-svg" role="img" aria-label={"Рельефная карта страны "+country.name+" с компаниями"}>
-      <defs>
-        <linearGradient id={"countryOcean-"+country.id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b4964"/><stop offset="1" stopColor="#041b2b"/></linearGradient>
-        <linearGradient id={"countryLand-"+country.id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#a9c58b"/><stop offset=".52" stopColor="#7f9e69"/><stop offset="1" stopColor="#536d55"/></linearGradient>
-        <clipPath id={"selectedCountryClip-"+country.id}><path d={country.mapPath}/></clipPath>
-        <filter id={"selectedCountryShadow-"+country.id}><feDropShadow dx="0" dy="12" stdDeviation="8" floodColor="#000" floodOpacity=".5"/></filter>
-      </defs>
-      <rect width="500" height="350" fill={"url(#countryOcean-"+country.id+")"}/>
-      <path className="country-sea-contours" d="M20 80 C90 45 140 66 194 42 S310 57 365 38 S451 50 490 28 M10 278 C82 248 128 280 188 257 S309 276 365 249 S447 270 495 245"/>
-      <g transform={"translate("+tx+" "+ty+") scale("+scale+")"} filter={"url(#selectedCountryShadow-"+country.id+")"}>
-        <path d={country.mapPath} className="country-land-fill" style={{fill:"url(#countryLand-"+country.id+")"}}/>
-        <g clipPath={"url(#selectedCountryClip-"+country.id+")"} className="country-physical-detail">
-          <path className="biome-meadow" d="M70 215 C115 185 164 205 205 226 C250 248 294 230 340 215 C388 198 420 212 458 232 L458 350 L70 350Z"/>
-          <path className="forest-mass" d="M82 185 C130 160 170 173 204 196 C235 216 266 209 300 188 C339 165 378 169 423 190 L440 238 C391 219 356 218 318 237 C277 258 236 263 195 241 C154 220 121 222 88 240Z"/>
-          <path className="mountain-shadow" d="M65 155 C105 112 143 121 177 145 C210 168 242 164 274 139 C310 110 348 112 381 139 C408 161 430 155 452 133 L462 191 C426 209 390 200 357 181 C322 162 293 168 260 193 C224 218 192 208 160 188 C126 167 95 172 68 195Z"/>
-          <path className="mountain-range" d="M76 138 L91 109 106 130 124 94 143 129 161 102 179 137 198 112 218 144 237 120 257 148 M270 145 L288 111 305 134 322 95 340 133 359 106 377 139 395 118 416 149"/>
-          <path className="mountain-snow" d="M116 106 l8 -13 9 15 -8 -3z M315 107 l7 -13 10 15 -9 -3z M198 123 l8 -11 9 13 -8 -2z"/>
-          <path className="river-wide" d="M218 66 C213 98 228 119 216 145 C204 171 196 191 207 213 C217 232 234 242 241 264 C247 282 241 303 229 329"/>
-          <path className="river-thin" d="M302 75 C293 106 300 129 315 151 C330 172 344 182 351 204 C358 226 351 250 341 272"/>
-          <path className="river-thin" d="M154 106 C171 127 177 147 168 169 C160 189 166 208 181 226"/>
-          <ellipse className="country-lake" cx="143" cy="235" rx="22" ry="9"/><ellipse className="country-lake" cx="381" cy="215" rx="17" ry="7"/>
-          <path className="terrain-contour" d="M57 160 C100 137 131 141 163 160 C194 179 220 188 251 170 C282 151 312 153 343 170 C374 187 403 184 440 162 M58 183 C95 160 127 165 158 183 C191 203 220 210 252 192 C284 173 313 176 345 192 C377 209 404 205 438 185"/>
-          <g className="forest-dots">{Array.from({length:35},(_,i)=><circle key={i} cx={78+(i%7)*48} cy={205+Math.floor(i/7)*19+(i%2)*4} r={i%3===0?2.5:1.7}/>)}</g>
-        </g>
-        <path d={country.mapPath} className="country-coastline"/>
-        {country.companies.map((company,index)=>{
-          const dx=index%2===0?14:-14, dy=index<2?-15:18;
-          return <g key={company.ticker} className="company-marker country-company-marker map-company-callout" onClick={e=>{e.stopPropagation();onCompany?.(company)}}><line x1={company.x} y1={company.y} x2={company.x+dx} y2={company.y+dy} className="company-leader"/><circle cx={company.x} cy={company.y} r="6"/><circle cx={company.x} cy={company.y} r="2"/><g transform={"translate("+(company.x+dx)+","+(company.y+dy)+")"}><rect x="-3" y="-12" width={company.ticker.length*7+12} height="17" rx="6" className="company-label-bg"/><text x="3" y="0">{company.ticker}</text></g></g>;
-        })}
-        <g className="capital capital-active"><circle cx={country.capitalX} cy={country.capitalY} r="8"/><circle cx={country.capitalX} cy={country.capitalY} r="2.6"/><text x={country.capitalX+12} y={country.capitalY-10}>{country.capital}</text></g>
-      </g>
-      <g className="map-overlay-label"><text x="18" y="28">{country.region}</text><text x="18" y="48">РЕЛЬЕФ · ЛЕСА · ВОДА · ГОРОДА · КОМПАНИИ</text></g>
+      <text className="sea-label" x="24" y="30">СЕВЕРНЫЙ ОКЕАН</text>
+      <text className="sea-label" x="382" y="330">ЮЖНОЕ МОРЕ</text>
+      <g className="compass"><circle cx="466" cy="30" r="17"/><text x="463" y="16">N</text><path d="M466 19V41M455 30H477"/></g>
     </svg>
     <div className="map-key"><span><b className="dot"/> столица</span><span><b className="mount"/> горы · леса</span><span><b className="company-dot"/> компания · нажми</span></div>
   </div>;
 }
-
 function WorldPreview() {
   return <AtlasMap selected={countries[0].id} onSelect={()=>{}} />;
 }
