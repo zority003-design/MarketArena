@@ -10,73 +10,79 @@ export type Country = {
   population: string;
   color: string;
   mapPath: string;
+  description: string;
 };
 
 export const countries: Country[] = [
   {
-    id: "velmira",
-    name: "Вельмира",
-    capital: "Астэр",
-    currency: "вельмирский динар",
-    currencySymbol: "V₫",
-    exchange: "Астэрская биржа",
-    flag: "VM",
-    economy: "Технологии • Финансы • Машиностроение",
-    population: "86,4 млн",
-    color: "#65d8ff",
-    mapPath: "M84 135 C118 105 157 94 193 111 C218 123 229 150 216 174 C201 201 164 214 126 204 C95 196 68 166 84 135 Z"
+    id: "slavoriya",
+    name: "Славория",
+    capital: "Велиград",
+    currency: "сольд",
+    currencySymbol: "SLD",
+    exchange: "Велиградская биржа",
+    flag: "SL",
+    economy: "Промышленность • Энергетика • Финансы",
+    population: "48,7 млн",
+    color: "#4f8fbd",
+    mapPath: "M118 188 C145 158 188 143 229 151 C258 157 278 176 296 197 L285 238 C268 262 237 275 203 274 L157 259 C132 245 111 218 118 188 Z",
+    description: "Крупнейшая индустриальная экономика материка. Сильный внутренний рынок, развитая энергетика и центральное положение между восточными и западными торговыми путями."
   },
   {
-    id: "norvessa",
-    name: "Норвесса",
-    capital: "Рейнхольм",
-    currency: "норвесский сол",
-    currencySymbol: "NS",
-    exchange: "Рейнская биржа",
-    flag: "NV",
-    economy: "Энергетика • Логистика • Металлургия",
-    population: "61,8 млн",
-    color: "#9b8cff",
-    mapPath: "M232 103 C269 78 315 82 343 108 C364 127 367 157 349 178 C327 202 286 209 251 194 C221 181 207 137 232 103 Z"
+    id: "liraniya",
+    name: "Лирания",
+    capital: "Элион",
+    currency: "лирон",
+    currencySymbol: "LRN",
+    exchange: "Лиранская фондовая биржа",
+    flag: "LR",
+    economy: "Финансы • Судоходство • Страхование",
+    population: "31,2 млн",
+    color: "#7187a6",
+    mapPath: "M65 116 C90 91 125 78 161 86 L191 109 L183 143 L158 165 L119 168 L88 151 L65 137 Z",
+    description: "Западный финансовый центр с крупными портами и развитым страховым рынком. Лирания особенно важна для международного капитала."
   },
   {
-    id: "ardel",
-    name: "Ардель",
-    capital: "Меридион",
-    currency: "ардельский лир",
-    currencySymbol: "₳",
-    exchange: "Меридионская биржа",
-    flag: "AR",
-    economy: "Фармацевтика • Биотех • Химия",
-    population: "48,2 млн",
-    color: "#61e7bd",
-    mapPath: "M155 215 C184 196 225 198 251 220 C277 242 277 273 257 295 C235 318 195 321 164 306 C133 291 124 237 155 215 Z"
+    id: "darvast",
+    name: "Дарваст",
+    capital: "Кадар",
+    currency: "дарст",
+    currencySymbol: "DVT",
+    exchange: "Дарвастская биржа",
+    flag: "DV",
+    economy: "Нефть • Металлы • Тяжёлая промышленность",
+    population: "56,4 млн",
+    color: "#a87358",
+    mapPath: "M294 93 C333 66 379 67 416 86 L447 119 L438 169 L420 205 L383 218 L344 201 L312 172 L286 133 Z",
+    description: "Горная сырьевая держава. Экспорт нефти и металлов связывает её с промышленностью Славории и портами Лирании."
   },
   {
-    id: "solven",
-    name: "Сольвен",
-    capital: "Кассар",
-    currency: "сольвенский кроун",
-    currencySymbol: "SK",
-    exchange: "Кассарская биржа",
+    id: "estraviya",
+    name: "Эстравия",
+    capital: "Селена",
+    currency: "эстель",
+    currencySymbol: "EST",
+    exchange: "Эстравийская биржа",
+    flag: "ES",
+    economy: "Технологии • Биотех • Электроника",
+    population: "27,9 млн",
+    color: "#527d78",
+    mapPath: "M214 284 C245 268 280 267 310 281 L331 314 L319 350 L287 371 L248 367 L214 345 L198 315 Z",
+    description: "Молодая технологическая экономика южного побережья. Быстро растущие компании, университеты и экспорт электроники."
+  },
+  {
+    id: "saverniya",
+    name: "Саверния",
+    capital: "Ривен",
+    currency: "савер",
+    currencySymbol: "SVR",
+    exchange: "Ривенская биржа",
     flag: "SV",
-    economy: "Потребительский сектор • Туризм • Агро",
-    population: "37,6 млн",
-    color: "#ffc66d",
-    mapPath: "M45 224 C72 201 112 204 134 229 C154 252 148 285 125 302 C99 320 61 313 42 289 C24 266 22 242 45 224 Z"
-  },
-  {
-    id: "tavren",
-    name: "Таврен",
-    capital: "Варис",
-    currency: "тавренская марка",
-    currencySymbol: "TM",
-    exchange: "Варисская биржа",
-    flag: "TV",
-    economy: "Добыча • Автомобили • Оборона",
-    population: "72,1 млн",
-    color: "#ff7f9f",
-    mapPath: "M281 221 C315 195 356 199 380 226 C403 252 397 286 370 306 C342 327 301 319 278 294 C256 270 254 241 281 221 Z"
+    economy: "Агро • Логистика • Потребительский сектор",
+    population: "39,6 млн",
+    color: "#718f67",
+    mapPath: "M329 226 C359 210 397 213 426 231 L455 262 L449 307 L421 338 L382 346 L348 327 L325 292 Z",
+    description: "Зелёная торговая страна с плодородными равнинами, крупными речными портами и сильным агропромышленным сектором."
   }
 ];
 
@@ -85,5 +91,5 @@ export const worldStats = {
   publicCompanies: countries.length * 12,
   exchanges: countries.length,
   currencies: countries.length,
-  sectors: 14,
+  sectors: 15,
 };
