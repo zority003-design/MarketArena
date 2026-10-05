@@ -89,6 +89,30 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
         <rect x="142" y="126" width="128" height="76" fill="url(#forestTexture)" opacity=".43"/>
         <rect x="145" y="232" width="145" height="92" fill="url(#forestTexture)" opacity=".82"/>
         <rect x="296" y="224" width="130" height="82" fill="url(#forestTexture)" opacity=".38"/>
+        {/* organic forest belts */}
+        <g fill="url(#forestMass)" opacity=".72">
+          <path d="M66 151 C80 139 101 137 119 144 C134 150 146 162 142 176 C138 190 120 196 103 191 C88 187 73 177 66 165Z"/>
+          <path d="M83 201 C101 188 125 190 143 201 C160 211 169 226 161 239 C151 252 129 251 111 244 C94 237 78 219 83 201Z"/>
+          <path d="M166 252 C185 238 211 241 230 252 C248 263 254 278 244 291 C232 304 207 300 190 291 C174 282 160 265 166 252Z"/>
+          <path d="M286 235 C304 223 329 224 346 236 C360 246 366 261 357 273 C346 287 324 287 306 280 C289 273 277 248 286 235Z"/>
+          <path d="M361 235 C380 226 404 229 418 241 C429 251 427 264 416 272 C402 282 380 279 367 269 C355 259 350 243 361 235Z"/>
+        </g>
+        {/* agricultural plains and field texture */}
+        <g fill="none" stroke="#c4c889" strokeOpacity=".22" strokeWidth=".9">
+          <path d="M177 222 C198 214 218 216 238 225 C253 232 267 236 284 231"/>
+          <path d="M171 229 C194 220 216 223 235 232 C251 239 268 243 286 237"/>
+          <path d="M178 237 C198 229 216 231 235 240 C250 247 267 250 281 246"/>
+          <path d="M291 275 C309 265 329 267 345 275 C357 281 369 285 383 280"/>
+          <path d="M295 282 C312 273 330 275 345 282 C359 289 373 292 388 286"/>
+        </g>
+        {/* dry eastern basin: layered mesas and dune contours */}
+        <g fill="none" stroke="#e0c28c" strokeOpacity=".25" strokeWidth=".8">
+          <path d="M325 101 C347 91 371 92 392 101 S426 115 443 108"/>
+          <path d="M318 114 C342 103 368 105 390 114 S424 128 445 121"/>
+          <path d="M312 129 C337 118 365 120 389 129 S421 142 440 136"/>
+          <path d="M318 145 C341 135 365 137 386 145 S415 157 430 151"/>
+        </g>
+        <rect x="48" y="64" width="410" height="255" fill="#dce0bc" opacity=".08" filter="url(#softRelief)"/>
 
         {/* sculpted mountain systems: irregular landforms, not icon triangles */}
         <g opacity=".98" strokeLinejoin="round">
