@@ -291,6 +291,19 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{const configs:Record<ChartRange,{count:number;step:number}>={ALL:{count:60,step:30},"10Y":{count:60,step:60},"5Y":{count:60,step:30},"1Y":{count:60,step:6},"6M":{count:60,step:3},"1M":{count:60,step:1},"1W":{count:56,step:.125},"1D":{count:48,step:.0208333333}};const {count,step}=configs[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step;const open=priceFor(company,start);const close=priceFor(company,end);let high=Math.max(open,close),low=Math.min(open,close);for(let j=1;j<12;j++){const sample=start+(end-start)*(j/12);const value=priceFor(company,sample);high=Math.max(high,value);low=Math.min(low,value);}const wiggle=(Math.sin((end+company.ticker.length)*1.73)+1)*.0025;high=Math.round(high*(1+wiggle)/50)*50;low=Math.max(2500,Math.round(low*(1-wiggle)/50)*50);return {period:end,open,high,low,close};});};
   const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
   const totalWealth=cash+portfolioValue;
+  const careerLevel=Math.min(10,1+Math.floor(careerXP/3));
+  const careerTitle=careerLevel>=10?"Руководитель направления":careerLevel>=8?"Старший специалист":careerLevel>=6?"Профессионал":careerLevel>=4?"Опытный сотрудник":"Начинающий специалист";
+  const ownedPositions=Object.values(holdings).filter(v=>v>0).length;
+  const countryInfluence=Math.min(100,ownedPositions*12+Math.min(40,Math.floor(careerXP/2))+Math.min(30,Math.floor(totalWealth/1000000)*5));
+  const campaignGoals=[
+    {id:"first-job",title:"Первый доход",text:"Заверши первую оплачиваемую работу.",done:careerXP>0},
+    {id:"first-investment",title:"Первый актив",text:"Купи первую акцию.",done:ownedPositions>0},
+    {id:"ten-deals",title:"Рыночная практика",text:"Соверши 10 сделок.",done:transactions.length>=10},
+    {id:"million",title:"Первый миллион",text:"Достигни капитала 1 000 000 VLR.",done:totalWealth>=1000000},
+    {id:"influence",title:"Влияние",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
+    {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
+  ];
+  const completedGoals=campaignGoals.filter(g=>g.done).length;
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),cost=price*quantity;
@@ -307,7 +320,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
   const startJobGame=(id:string)=>setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="analyst"?9:id==="logistics"?6:4)),score:0,started:Date.now()});
-  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
+  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setCareerXP(v=>Math.min(30,v+1));setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
   const hitJobTarget=(index:number)=>{
     if(!jobGame)return;
     const size=jobGame.jobId==="analyst"?9:jobGame.jobId==="logistics"?6:4;
