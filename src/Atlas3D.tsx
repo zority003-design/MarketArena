@@ -326,6 +326,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
   const labelRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const capitalRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const companyRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const onSelectRef = useRef(onSelect);
+  const onCompanyRef = useRef(onCompany);
+  onSelectRef.current = onSelect;
+  onCompanyRef.current = onCompany;
 
   useEffect(() => {
     const host = hostRef.current;
@@ -596,7 +600,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           return hit;
         };
         const country = countries.find((c) => inside(countryPolygons[c.id]));
-        if (country) onSelect(country.id);
+        if (country) onSelectRef.current(country.id);
       }
     };
 
@@ -636,7 +640,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [countries, selected, onSelect, showCompanies]);
+  }, [countries, selected, showCompanies]);
 
   const selectedCountry = countries.find((c) => c.id === selected);
 
@@ -650,7 +654,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
               key={country.id}
               ref={(el) => { labelRefs.current[country.id] = el; }}
               className={`atlas-country-label ${selected === country.id ? "selected" : ""}`}
-              onClick={() => onSelect(country.id)}
+              onClick={() => onSelectRef.current(country.id)}
               type="button"
             >
               <span className={`flag flag-${country.id}`}><i /></span>
@@ -674,7 +678,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
               ref={(el) => { companyRefs.current[company.ticker] = el; }}
               className="atlas-company-marker"
               type="button"
-              onClick={() => onCompany?.(company)}
+              onClick={() => onCompanyRef.current?.(company)}
             >
               <b>{company.ticker}</b>
             </button>
