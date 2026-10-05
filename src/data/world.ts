@@ -51,7 +51,7 @@ export const countries: Country[] = [
   {
     id: "slavoriya",
     name: "Славория",
-    capital: "Велиград",
+    capital: "Элион",
     currency: commonCurrency.name,
     currencySymbol: commonCurrency.symbol,
     exchange: "Велиградская биржа",
@@ -73,7 +73,7 @@ export const countries: Country[] = [
   {
     id: "lirania",
     name: "Лирания",
-    capital: "Элион",
+    capital: "Велиград",
     currency: commonCurrency.name,
     currencySymbol: commonCurrency.symbol,
     exchange: "Лиранская фондовая биржа",
