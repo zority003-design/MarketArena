@@ -118,9 +118,9 @@ function terrainHeight(x: number, z: number) {
   const low = 0.18 + fbm(nx * 3.2, nz * 3.2) * 0.26;
 
   const central =
-    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 5.2) +
-    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 4.2) +
-    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 3.3);
+    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 2.4) +
+    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 1.9) +
+    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 1.5);
 
   const secondary =
     ridge(x, z, -6.5, 2.8, -0.12, 6.0, 1.4, 2.1) +
@@ -134,7 +134,7 @@ function terrainHeight(x: number, z: number) {
     Math.exp(-((x - 5.0) ** 2) / 2.0 - ((z - 1.8) ** 2) / 70) * 0.8;
 
   const dryEast = clamp((x - 5) / 14, 0, 1);
-  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 8.7);
+  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 5.2);
 }
 
 function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
@@ -142,7 +142,7 @@ function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
 }
 
 function heightColor(h: number, x: number, z: number) {
-  const t = clamp(h / 8.7, 0, 1);
+  const t = clamp(h / 5.2, 0, 1);
   let color = colorStops[colorStops.length - 1].c.clone();
   for (let i = 0; i < colorStops.length - 1; i += 1) {
     if (t >= colorStops[i].h && t <= colorStops[i + 1].h) {
@@ -157,7 +157,7 @@ function heightColor(h: number, x: number, z: number) {
   if (h < 2.1 && forest > 0.62) color.lerp(new THREE.Color("#294f39"), 0.28);
   if (h < 1.7 && z > 2.2) color.lerp(new THREE.Color("#6e714d"), 0.20);
   if (dry > 0.4 && h < 2.8) color.lerp(new THREE.Color("#9a845d"), dry * 0.30);
-  if (h > 6.8) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 6.8) / 1.9, 0, 1) * 0.84);
+  if (h > 4.2) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 4.2) / 1.0, 0, 1) * 0.52);
   return color;
 }
 
@@ -177,8 +177,7 @@ function isLand(u: number, v: number) {
 
 function makeTerrain(selectedId?: string) {
   const nx = 150, nz = 108;
-  const positions: number[] = [];
-  const colors: number[] = [];
+  const positions: number[] = [];  const colors: number[] = [];
   const indices: number[] = [];
 
   for (let z = 0; z <= nz; z += 1) {
@@ -357,8 +356,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     if (!host || !overlay) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#062536");
-    scene.fog = new THREE.Fog("#062536", 25, 48);
+    scene.background = new THREE.Color("#062536");    scene.fog = new THREE.Fog("#062536", 25, 48);
 
     const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 100);
     const selectedPoly = countryPolygons[selected];
@@ -537,8 +535,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const capital = capitalRefs.current[country.id];
         const lp = project(worldFromGeo(labelGeo[country.id]));
         const cp = project(worldFromGeo(capitalGeo[country.id]));
-        if (label) {
-          label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
+        if (label) {          label.style.transform = `translate3d(${lp.x}px,${lp.y}px,0) translate(-50%,-50%)`;
           label.style.opacity = lp.z > 1 ? "0" : selected === country.id ? "1" : "0";
         }
         if (capital) {
@@ -718,25 +715,3 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
               <i /><span>{country.capital}</span>
             </button>
           ))}
-          {showCompanies && selectedCountry?.companies.map((company) => (
-            <button
-              key={company.ticker}
-              ref={(el) => { companyRefs.current[company.ticker] = el; }}
-              className="atlas-company-marker"
-              type="button"
-              onClick={() => onCompanyRef.current?.(company)}
-            >
-              <b>{company.ticker}</b>
-            </button>
-          ))}
-        </div>
-        <div className="atlas-3d-watermark">WEBGL · TERRAIN MESH · REAL SHADOWS</div>
-      </div>
-      <div className="map-key">
-        <span><b className="dot" /> столица</span>
-        <span><b className="mount" /> физический рельеф</span>
-        <span><b className="company-dot" /> компания · нажми</span>
-      </div>
-    </div>
-  );
-}
