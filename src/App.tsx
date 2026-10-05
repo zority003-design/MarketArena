@@ -57,9 +57,14 @@ function AtlasMap({ selected, onSelect, showCompanies = false, onCompany }: { se
   return <Atlas3D countries={countries} selected={selected} onSelect={onSelect} showCompanies={showCompanies} onCompany={onCompany} />;
 }
 
-function WorldPreview() {
-  return <AtlasMap selected={countries[0].id} onSelect={()=>{}} />;
-}
+const sectorTone: Record<string,string> = {
+  "Финансы":"finance","Энергетика":"energy","Металлы":"metals","Машиностроение":"industrial",
+  "Судоходство":"shipping","Страхование":"insurance","Порты":"ports","Нефть":"oil",
+  "Логистика":"logistics","Биотех":"biotech","Технологии":"technology","Электроника":"electronics",
+  "Робототехника":"robotics","Агро":"agro","Ритейл":"retail","Недвижимость":"realestate",
+  "Промышленность":"industry","Химия":"chemicals"
+};
+function sectorClass(sector:string){return "sector-"+(sectorTone[sector]??"default");}
 function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   const [name,setName]=useState("");
   const [register,setRegister]=useState(true);
@@ -72,7 +77,14 @@ function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
       <button className="primary" disabled={!name.trim()} onClick={()=>onContinue(name.trim())}>{register?"Создать профиль":"Продолжить"} <b>→</b></button>
       <div className="auth-note">Профиль офлайн-режима хранится локально. Online будет добавлен отдельным этапом.</div>
     </div>
-    <div className="auth-art"><WorldPreview/></div>
+    <div className="auth-visual" aria-hidden="true">
+      <div className="auth-orbit orbit-a"/><div className="auth-orbit orbit-b"/>
+      <div className="auth-visual-grid"/>
+      <div className="auth-visual-core"><span>MA</span><b>MARKET<br/>ARENA</b><small>ECONOMIC LIFE SIMULATOR</small></div>
+      <div className="auth-float auth-float-a"><span>MARKET</span><b>+12.4%</b><small>LIVE INDEX</small></div>
+      <div className="auth-float auth-float-b"><span>CAPITAL</span><b>2.48M</b><small>VLR · DAY 27</small></div>
+      <div className="auth-float auth-float-c"><span>PORTFOLIO</span><b>7 POSITIONS</b><small>RISK · BALANCED</small></div>
+    </div>
   </div>;
 }
 
@@ -90,7 +102,7 @@ function CountryScreen({selected,setSelected,onNext}:{selected:string;setSelecte
     <div className="country-profile country-profile-rich"><div className="profile-title"><Flag country={country}/><div><span className="eyebrow">ПРОФИЛЬ РЫНКА · ДОСЬЕ</span><h2>{country.name}</h2><p>{lore.overview}</p></div></div>
       <div className="profile-stats"><div><span>СТОЛИЦА</span><b>{country.capital}</b></div><div><span>ЕДИНАЯ ВАЛЮТА</span><b>{country.currency} · {country.currencySymbol}</b></div><div><span>БИРЖА</span><b>{country.exchange}</b></div><div><span>НАСЕЛЕНИЕ</span><b>{country.population}</b></div></div>
       <div className="country-detail-grid"><div><span>ГЕОГРАФИЯ</span><p>{lore.geography}</p></div><div><span>ЭКОНОМИКА</span><p>{lore.economy}</p></div><div><span>СИЛЬНЫЕ СТОРОНЫ</span><p>{lore.strengths}</p></div><div><span>РИСКИ РЫНКА</span><p>{lore.risks}</p></div></div>
-      <div className="company-preview"><span className="eyebrow">КЛЮЧЕВЫЕ КОМПАНИИ</span><h3>Крупнейшие игроки рынка</h3><div className="company-strip">{country.companies.map(c=><div key={c.ticker}><b>{c.ticker}</b><strong>{c.name}</strong><small>{c.sector}</small></div>)}</div></div>
+      <div className="company-preview"><span className="eyebrow">КЛЮЧЕВЫЕ КОМПАНИИ</span><h3>Крупнейшие игроки рынка</h3><div className="company-strip">{[...country.companies].sort((a,b)=>companyProfile(b,country).marketCap.localeCompare(companyProfile(a,country).marketCap,"ru",{numeric:true})).slice(0,4).map(c=><div className={sectorClass(c.sector)} key={c.ticker}><b>{c.ticker}</b><strong>{c.name}</strong><small>{c.sector}</small></div>)}</div></div>
     </div><div className="setup-actions"><span className="setup-hint">Физическая карта показывает рельеф, водную систему, столицы и границы.</span><button className="primary small" onClick={onNext}>Выбрать {country.name}<b>→</b></button></div>
   </div></div>;
 }
@@ -203,24 +215,38 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
-  const startJobGame=(id:string)=>setJobGame({jobId:id,target:Math.floor(Math.random()*9),score:0,started:Date.now()});
+  const startJobGame=(id:string)=>setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="analyst"?9:id==="logistics"?6:4)),score:0,started:Date.now()});
   const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
-  const hitJobTarget=(index:number)=>{if(!jobGame)return;if(index===jobGame.target){if(jobGame.score>=2)finishJobGame();else setJobGame({...jobGame,score:jobGame.score+1,target:Math.floor(Math.random()*9),started:Date.now()});}else setJobGame({...jobGame,score:0,target:Math.floor(Math.random()*9),started:Date.now()});};
+  const hitJobTarget=(index:number)=>{
+    if(!jobGame)return;
+    const size=jobGame.jobId==="analyst"?9:jobGame.jobId==="logistics"?6:4;
+    const next=()=>Math.floor(Math.random()*size);
+    if(index===jobGame.target){
+      if(jobGame.score>=2) finishJobGame();
+      else setJobGame({...jobGame,score:jobGame.score+1,target:next(),started:Date.now()});
+    }else setJobGame({...jobGame,score:0,target:next(),started:Date.now()});
+  };
   const advance=()=>{setDay(v=>v+1);setNotice("Новый игровой день: котировки, новости и стоимость портфеля обновились.");};
   const startMiniGame=()=>setMiniGame({active:true,score:0,target:Math.floor(Math.random()*6),started:Date.now()});
   const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));setCash(v=>v+reward);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
   const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"]];
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
+  const openExchange=(company?:CompanyPreview)=>{
+    const next=company??exchangeCompany??country.companies[0]??null;
+    setSelectedCompany(null);
+    setExchangeCompany(next);
+    setTab("exchange");
+  };
 
   return <div className="game-shell">
-    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><b>MarketArena</b></button><nav>{tabs.map(([id,label])=><button key={id} className={tab===id?"active":""} onClick={()=>{if(id==="exchange"){setSelectedCompany(null);setExchangeCompany(exchangeCompany??country.companies[0]??null);setTab("exchange")}else setTab(id);}}>{label}</button>)}</nav><div className="game-right"><span className="offline-pill live-pill"><i/> LIVE</span><span>ДЕНЬ {day}</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
+    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><b>MarketArena</b></button><nav>{tabs.map(([id,label])=><button key={id} className={tab===id?"active":""} onClick={()=>id==="exchange"?openExchange():setTab(id)}>{label}</button>)}</nav><div className="game-right"><span className="offline-pill live-pill"><i/> LIVE</span><span>ДЕНЬ {day}</span><b>{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
     <div className="game-body">
-      <aside className="game-sidebar"><div className="player-card"><span className="avatar">{player.slice(0,1).toUpperCase()}</span><div><b>{player}</b><small>Частный инвестор</small></div></div><div className="country-mini"><Flag country={country}/><div><b>{country.name}</b><small>{country.capital} · {commonCurrency.symbol}</small></div></div><div className="side-title">ИГРА</div>{tabs.map(([id,label])=><button key={id} className={tab===id?"side-active":""} onClick={()=>{if(id==="exchange"){setSelectedCompany(null);setExchangeCompany(exchangeCompany??country.companies[0]??null);setTab("exchange")}else setTab(id);}}>{label}<span>›</span></button>)}<div className="side-bottom"><small>КЛАСС</small><b>{difficultyLevels.find(x=>x.id===difficulty)?.name}</b><button onClick={onRestart}>Новая игра</button><button className="logout-button" onClick={onLogout}>Выйти из аккаунта</button></div></aside>
+      <aside className="game-sidebar"><div className="player-card"><span className="avatar">{player.slice(0,1).toUpperCase()}</span><div><b>{player}</b><small>Частный инвестор</small></div></div><div className="country-mini"><Flag country={country}/><div><b>{country.name}</b><small>{country.capital} · {commonCurrency.symbol}</small></div></div><div className="side-title">ИГРА</div>{tabs.map(([id,label])=><button key={id} className={tab===id?"side-active":""} onClick={()=>id==="exchange"?openExchange():setTab(id)}>{label}<span>›</span></button>)}<div className="side-bottom"><small>КЛАСС</small><b>{difficultyLevels.find(x=>x.id===difficulty)?.name}</b><button onClick={onRestart}>Новая игра</button><button className="logout-button" onClick={onLogout}>Выйти из аккаунта</button></div></aside>
       <main className="game-main">
         {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>{country.name}: экономический центр</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
           <div className="hero-map-grid">
             <section className="market-map-card"><div className="card-head"><div><span>РЕЛЬЕФ · ЭКОНОМИКА · КОМПАНИИ</span><h2>Карта {country.name}</h2></div><b className="positive">{priceChange(country.companies[0])>=0?"+":""}{priceChange(country.companies[0]).toFixed(2)}%</b></div><AtlasMap selected={country.id} onSelect={()=>{}} showCompanies onCompany={setSelectedCompany}/></section>
-            <section className="capital-card"><span>ОБЩИЙ КАПИТАЛ</span><strong>{totalWealth.toLocaleString("ru-RU")} VLR</strong><small>Свободные деньги · {cash.toLocaleString("ru-RU")} VLR</small><div className="money-bar"><i style={{width:cashPct+"%"}}/></div><div className="capital-actions"><button onClick={()=>setTab("life")}>Заработать</button><button onClick={()=>{setSelectedCompany(null);setExchangeCompany(exchangeCompany??country.companies[0]??null);setTab("exchange")}}>Инвестировать</button></div></section>
+            <section className="capital-card"><span>ОБЩИЙ КАПИТАЛ</span><strong>{totalWealth.toLocaleString("ru-RU")} VLR</strong><small>Свободные деньги · {cash.toLocaleString("ru-RU")} VLR</small><div className="money-bar"><i style={{width:cashPct+"%"}}/></div><div className="capital-actions"><button onClick={()=>setTab("life")}>Заработать</button><button onClick={()=>openExchange()}>Инвестировать</button></div></section>
             <section className="jobs-card"><div className="card-head"><div><span>РАБОТА И ДОХОД</span><h2>Заработать на следующие сделки</h2></div><button onClick={()=>setTab("life")}>Все →</button></div>{jobs.map(j=><div className="job-row" key={j.id}><div><b>{j.title}</b><small>{j.time} · {j.text}</small></div><button disabled={jobCooldown===j.id} onClick={()=>startJobGame(j.id)}>+{j.pay.toLocaleString("ru-RU")} VLR</button></div>)}</section>
             <section className="companies-card"><div className="card-head"><div><span>ПУБЛИЧНЫЕ КОМПАНИИ</span><h2>Компании на карте {country.name}</h2></div><button onClick={()=>setTab("companies")}>Открыть все →</button></div><div className="ticker-grid">{country.companies.map(c=><button className="ticker-row" key={c.ticker} onClick={()=>{setSelectedCompany(null);setExchangeCompany(c);setTab("exchange");}}><b>{c.ticker}</b><span>{c.name}<small>{c.sector}</small></span><strong className={priceChange(c)>=0?"gain":"loss"}>{priceChange(c)>=0?"+":""}{priceChange(c).toFixed(2)}%</strong></button>)}</div></section>
           <section className="home-news-card"><div className="card-head"><div><span>ЛЕНТА РЫНКА · ДЕНЬ {day}</span><h2>Что происходит в экономике</h2></div><button onClick={()=>setTab("news")}>Все новости →</button></div><div className="home-news-list">{country.companies.slice(0,3).map(c=>{const e=marketEvent(c,day);return <button key={c.ticker} onClick={()=>setSelectedCompany(c)}><span className={e.impact>=0?"news-signal positive":"news-signal negative"}>{e.impact>=0?"▲":"▼"}</span><div><b>{c.name}</b><p>{e.headline}</p></div><strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(1)}%</strong></button>})}</div></section>
@@ -237,7 +263,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       </main>
     </div>
     {selectedCompany&&<div className="company-modal-backdrop" onClick={()=>setSelectedCompany(null)}><div className="company-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setSelectedCompany(null)}>×</button><div className="modal-company-head"><CEOAvatar company={selectedCompany}/><div><span className="ticker">{selectedCompany.ticker}</span><h2>{selectedCompany.name}</h2><p>{selectedCompany.sector} · публичная компания · {country.name}</p></div></div><div className="modal-grid"><div><span className="eyebrow">О КОМПАНИИ</span><p className="company-description">{companyProfile(selectedCompany,country).description}</p><div className="company-metrics">{[["КАПИТАЛИЗАЦИЯ",companyProfile(selectedCompany,country).marketCap],["ВЫРУЧКА",companyProfile(selectedCompany,country).revenue],["ЧИСТАЯ ПРИБЫЛЬ",companyProfile(selectedCompany,country).netProfit],["P / E",companyProfile(selectedCompany,country).pe],["P / B",companyProfile(selectedCompany,country).pb],["ДИВИДЕНД",companyProfile(selectedCompany,country).dividendYield]].map(([label,value])=><div key={label}><span>{label}</span><b>{value}</b></div>)}</div><div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div><CandleChart company={selectedCompany} points={history(selectedCompany,chartRange)} range={chartRange}/><CompanyChart company={selectedCompany} points={history(selectedCompany,chartRange)}/><div className="quote-box"><span>ТЕКУЩАЯ КОТИРОВКА</span><b>{priceFor(selectedCompany).toLocaleString("ru-RU")} VLR</b><small className={priceChange(selectedCompany)>=0?"gain":"loss"}>{priceChange(selectedCompany)>=0?"+":""}{priceChange(selectedCompany).toFixed(2)}% за день</small><small>Дивидендная доходность · {companyProfile(selectedCompany,country).dividendYield} годовых</small></div><div className="modal-buy"><span>В портфеле: <b>{holdings[selectedCompany.ticker]||0} шт.</b></span><div><button className="secondary-action" onClick={()=>sell(selectedCompany)}>Продать</button><button className="primary small" onClick={()=>buy(selectedCompany)}>Купить акцию</button></div></div></div><div className="ceo-profile"><span className="eyebrow">CEO · ПЕРСОНАЖ</span><h3>{selectedCompany.ceo}</h3><b>{selectedCompany.ceoAge} лет · {selectedCompany.ceoRole}</b><p>{selectedCompany.ceoBio}</p><p><strong>Стратегия:</strong> {companyProfile(selectedCompany,country).strategy}</p><p><strong>Цели на игровой год:</strong> {companyProfile(selectedCompany,country).goals}</p><div className="company-facts"><span>Основана</span><b>{companyProfile(selectedCompany,country).founded}</b><span>Штат</span><b>{companyProfile(selectedCompany,country).employees}</b><span>Штаб-квартира</span><b>{companyProfile(selectedCompany,country).headquarters}</b><span>Ресурсы</span><b>{companyProfile(selectedCompany,country).materials}</b></div><div className="ceo-tags"><span>Биография</span><span>Репутация</span><span>Стиль управления</span></div></div></div></div></div>}
-    {jobGame&&<div className="job-game-backdrop" onClick={()=>setJobGame(null)}><div className="job-game-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setJobGame(null)}>×</button>{(()=>{const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return null;return <><span className="eyebrow">МИНИ-ИГРА · РАБОТА</span><h2>{job.title}</h2><p>{job.text} Выполни три точных сигнала подряд, чтобы получить оплату.</p><div className="job-game-board">{Array.from({length:9},(_,i)=><button key={i} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}>{i===jobGame.target?"●":""}</button>)}</div><div className="job-game-footer"><span>Серия <b>{jobGame.score}/3</b></span><strong>Награда: {job.pay.toLocaleString("ru-RU")} VLR</strong></div></>})()}</div></div>}
+    {jobGame&&<div className="job-game-backdrop" onClick={()=>setJobGame(null)}><div className="job-game-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setJobGame(null)}>×</button>{(()=>{const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return null;return <><span className="eyebrow">МИНИ-ИГРА · РАБОТА</span><h2>{job.title}</h2><p>{job.text} {job.id==="analyst"?"Найди быстро меняющийся сигнал в аналитической матрице.":job.id==="logistics"?"Проведи маршрут по контрольным точкам в правильном порядке.":"Выбери нужный тип задания и удерживай серию точных решений."} Выполни три точных решения подряд, чтобы получить оплату.</p>{jobGame.jobId==="analyst"&&<div className="job-game-board analyst-board">{Array.from({length:9},(_,i)=><button key={i} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}>{i===jobGame.target?"●":""}</button>)}</div>}
+{jobGame.jobId==="logistics"&&<div className="job-game-board logistics-board">{Array.from({length:6},(_,i)=><button key={i} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}><span>{i+1}</span><small>{["A","B","C","D","E","F"][i]}</small></button>)}</div>}
+{jobGame.jobId==="freelance"&&<div className="job-game-board freelance-board">{["АНАЛИЗ","ТЕКСТ","ДИЗАЙН","КОД"].map((x,i)=><button key={x} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}><b>{x}</b><small>{["Данные","Документы","Визуал","Задача"][i]}</small></button>)}</div>}<div className="job-game-footer"><span>Серия <b>{jobGame.score}/3</b></span><strong>Награда: {job.pay.toLocaleString("ru-RU")} VLR</strong></div></>})()}</div></div>}
   </div>;
 }
 
