@@ -369,31 +369,34 @@ function makeModernBuilding(x:number,z:number,scale=1,type=0) {
 
 function makeHighway(curve: THREE.CatmullRomCurve3, width = 0.24) {
   const group = new THREE.Group();
-  const points = curve.getPoints(20);
-  points.forEach((p, index) => {
-    if(index >= points.length - 1) return;
-    const q = points[index + 1];
-    const dx=q.x-p.x, dz=q.z-p.z;
-    const length=Math.max(.04,Math.hypot(dx,dz));
-    const road=new THREE.Mesh(
-      new THREE.BoxGeometry(width,.035,length),
-      new THREE.MeshStandardMaterial({color:"#27353a",roughness:.92,metalness:.04})
-    );
-    road.position.set((p.x+q.x)/2,Math.max(p.y,q.y)+.045,(p.z+q.z)/2);
-    road.rotation.y=Math.atan2(dx,dz);
-    road.castShadow=true;
-    road.receiveShadow=true;
-    group.add(road);
-    if(index%3===1){
-      const mark=new THREE.Mesh(
-        new THREE.BoxGeometry(.018,.006,.11),
-        new THREE.MeshStandardMaterial({color:"#d9ded6",roughness:.7})
-      );
-      mark.position.set((p.x+q.x)/2,Math.max(p.y,q.y)+.066,(p.z+q.z)/2);
-      mark.rotation.y=Math.atan2(dx,dz);
-      group.add(mark);
-    }
+  const samples = curve.getPoints(32);
+  const vertices:number[]=[];
+  const uvs:number[]=[];
+  const indices:number[]=[];
+  samples.forEach((p,i)=>{
+    const prev=samples[Math.max(0,i-1)], next=samples[Math.min(samples.length-1,i+1)];
+    const dx=next.x-prev.x, dz=next.z-prev.z;
+    const len=Math.max(.001,Math.hypot(dx,dz));
+    const nx=-dz/len, nz=dx/len;
+    const leftX=p.x+nx*width*.5, leftZ=p.z+nz*width*.5;
+    const rightX=p.x-nx*width*.5, rightZ=p.z-nz*width*.5;
+    const leftY=terrainHeight(leftX,leftZ)+.035;
+    const rightY=terrainHeight(rightX,rightZ)+.035;
+    vertices.push(leftX,leftY,leftZ,rightX,rightY,rightZ);
+    uvs.push(0,i/(samples.length-1),1,i/(samples.length-1));
   });
+  for(let i=0;i<samples.length-1;i++){const a=i*2,b=a+1,c=a+2,d=a+3;indices.push(a,c,b,b,c,d);}
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute("position",new THREE.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute("uv",new THREE.Float32BufferAttribute(uvs,2));
+  geometry.setIndex(indices); geometry.computeVertexNormals();
+  const road=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:"#27353a",roughness:.92,metalness:.04,side:THREE.DoubleSide}));
+  road.receiveShadow=true; road.castShadow=true; group.add(road);
+  const lane=new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(samples.map(p=>{const q=p.clone();q.y=terrainHeight(q.x,q.z)+.052;return q;})),
+    new THREE.LineBasicMaterial({color:0xd9ded6,transparent:true,opacity:.82})
+  );
+  group.add(lane);
   return group;
 }
 
@@ -521,15 +524,23 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const selectedPoly = countryPolygons[selectedCountry.id];
       const companyGeos = selectedCountry.companies.map(company => safeCompanyGeo(selectedCountry.id, company));
       const roadCurves: THREE.CatmullRomCurve3[] = [];
-      if(companyGeos.length){
-        const firstCurve=inCountryRoad(selectedCountry.id,capital,companyGeos[0],.08); roadCurves.push(firstCurve); scene.add(makeHighway(firstCurve,.28));
+      const nodes:[GeoPoint,number][]=[capital,...companyGeos].map((geo,index)=>[geo,index]);
+      const connected:number[]=[0], remaining:number[]=nodes.slice(1).map((_,i)=>i+1);
+      while(remaining.length){
+        let bestR=0,bestC=connected[0],bestD=Infinity;
+        remaining.forEach(r=>{
+          connected.forEach(cc=>{
+            const dx=nodes[r][0][0]-nodes[cc][0][0], dz=nodes[r][0][1]-nodes[cc][0][1];
+            const d=dx*dx+dz*dz;
+            if(d<bestD){bestD=d;bestR=r;bestC=cc;}
+          });
+        });
+        const bend=(hash(bestR*4.3, selectedCountry.id.length)-.5)*.18;
+        const curve=inCountryRoad(selectedCountry.id,nodes[bestC][0],nodes[bestR][0],bend);
+        roadCurves.push(curve); scene.add(makeHighway(curve,.23));
+        connected.push(bestR); remaining.splice(remaining.indexOf(bestR),1);
       }
       companyGeos.forEach((geo,index)=>{
-        if(index>0){
-          const previous=companyGeos[index-1];
-          const bend=(hash(index*4.3, selectedCountry.id.length)-.5)*.42;
-          const curve=inCountryRoad(selectedCountry.id,previous,geo,bend); roadCurves.push(curve); scene.add(makeHighway(curve,.28));
-        }
         const p=worldFromGeo(geo);
         scene.add(makeTree(p.x+.28,p.z+.18,.55+(index%3)*.08));
         scene.add(makeTree(p.x-.22,p.z+.26,.45+(index%2)*.1));
@@ -538,7 +549,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         scene.add(makeModernBuilding(p.x+.02,p.z-.48,.62,index+2));
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
-      for(let i=0;i<78;i++){
+      for(let i=0;i<48;i++){
         const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
         const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
         const inside=pointInPolygon(u,v,selectedPoly);
@@ -551,7 +562,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           if(i%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
         }
       }
-      for (let i = 0; i < 120; i += 1) {
+      for (let i = 0; i < 170; i += 1) {
         const u = 18 + hash(i * 1.73, selectedCountry.id.length * 2.1) * 70;
         const v = 18 + hash(i * 2.37 + 7, selectedCountry.id.length * 3.4) * 70;
         if (pointInPolygon(u, v, selectedPoly)) {
