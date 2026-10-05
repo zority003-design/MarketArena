@@ -118,9 +118,9 @@ function terrainHeight(x: number, z: number) {
   const low = 0.18 + fbm(nx * 3.2, nz * 3.2) * 0.26;
 
   const central =
-    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 2.4) +
-    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 1.9) +
-    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 1.5);
+    ridge(x, z, -2.7, -1.6, 0.55, 10.5, 1.35, 5.2) +
+    ridge(x, z, 1.3, -1.0, 0.46, 9.0, 1.1, 1.85) +
+    ridge(x, z, 5.0, -0.2, 0.30, 7.5, 1.0, 1.45);
 
   const secondary =
     ridge(x, z, -6.5, 2.8, -0.12, 6.0, 1.4, 2.1) +
@@ -134,7 +134,7 @@ function terrainHeight(x: number, z: number) {
     Math.exp(-((x - 5.0) ** 2) / 2.0 - ((z - 1.8) ** 2) / 70) * 0.8;
 
   const dryEast = clamp((x - 5) / 14, 0, 1);
-  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 5.2);
+  return clamp(low + central + secondary + plateau + southernHills - riverValley * 0.38 + dryEast * 0.08, 0.08, 5.0);
 }
 
 function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
@@ -142,7 +142,7 @@ function worldFromGeo([u, v]: GeoPoint): THREE.Vector3 {
 }
 
 function heightColor(h: number, x: number, z: number) {
-  const t = clamp(h / 5.2, 0, 1);
+  const t = clamp(h / 5.0, 0, 1);
   let color = colorStops[colorStops.length - 1].c.clone();
   for (let i = 0; i < colorStops.length - 1; i += 1) {
     if (t >= colorStops[i].h && t <= colorStops[i + 1].h) {
@@ -157,7 +157,7 @@ function heightColor(h: number, x: number, z: number) {
   if (h < 2.1 && forest > 0.62) color.lerp(new THREE.Color("#294f39"), 0.28);
   if (h < 1.7 && z > 2.2) color.lerp(new THREE.Color("#6e714d"), 0.20);
   if (dry > 0.4 && h < 2.8) color.lerp(new THREE.Color("#9a845d"), dry * 0.30);
-  if (h > 4.2) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 4.2) / 1.0, 0, 1) * 0.52);
+  if (h > 4.0) color.lerp(new THREE.Color("#e7e4d8"), clamp((h - 4.0) / 1.0, 0, 1) * 0.46);
   return color;
 }
 
@@ -667,3 +667,76 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       renderer.render(scene, camera);
     };
     render();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      renderer.domElement.removeEventListener("pointerdown", pointerDown);
+      renderer.domElement.removeEventListener("pointermove", pointerMove);
+      renderer.domElement.removeEventListener("pointerup", pointerUp);
+      renderer.domElement.removeEventListener("wheel", wheel);
+      renderer.domElement.removeEventListener("click", click);
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (mesh.geometry) mesh.geometry.dispose();
+        const material = mesh.material;
+        if (Array.isArray(material)) material.forEach((m) => m.dispose());
+        else if (material) material.dispose();
+      });
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+  }, [countries, selected, showCompanies]);
+
+  const selectedCountry = countries.find((c) => c.id === selected);
+
+  return (
+    <div className="atlas atlas-3d">
+      <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>СЕВЕР ↑ · DRAG / ZOOM</span></div>
+      <div className="atlas-3d-viewport" ref={hostRef}>
+        <div className="atlas-3d-overlay" ref={overlayRef}>
+          {countries.map((country) => (
+            <button
+              key={country.id}
+              ref={(el) => { labelRefs.current[country.id] = el; }}
+              className={`atlas-country-label ${selected === country.id ? "selected" : ""}`}
+              onClick={() => onSelectRef.current(country.id)}
+              type="button"
+            >
+              <span className={`flag flag-${country.id}`}><i /></span>
+              <span>{country.name.toUpperCase()}</span>
+            </button>
+          ))}
+          {countries.map((country) => (
+            <button
+              key={country.id}
+              ref={(el) => { capitalRefs.current[country.id] = el; }}
+              className={`atlas-capital-marker ${selected === country.id ? "selected" : ""}`}
+              onClick={() => onSelect(country.id)}
+              type="button"
+            >
+              <i /><span>{country.capital}</span>
+            </button>
+          ))}
+          {showCompanies && selectedCountry?.companies.map((company) => (
+            <button
+              key={company.ticker}
+              ref={(el) => { companyRefs.current[company.ticker] = el; }}
+              className="atlas-company-marker"
+              type="button"
+              onClick={() => onCompanyRef.current?.(company)}
+            >
+              <b>{company.ticker}</b>
+            </button>
+          ))}
+        </div>
+        <div className="atlas-3d-watermark">WEBGL · TERRAIN MESH · REAL SHADOWS</div>
+      </div>
+      <div className="map-key">
+        <span><b className="dot" /> столица</span>
+        <span><b className="mount" /> физический рельеф</span>
+        <span><b className="company-dot" /> компания · нажми</span>
+      </div>
+    </div>
+  );
+}
