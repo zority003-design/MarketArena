@@ -2971,3 +2971,90 @@ body{background:radial-gradient(circle at 50% -20%,rgba(41,222,153,.055),transpa
 .candle-terminal{background:#080c11!important;border-color:rgba(41,222,153,.12)!important}.candle-terminal .grid-line{stroke:rgba(224,231,236,.09)!important}.candle.up line,.candle.up rect{fill:var(--ma-green)!important;stroke:var(--ma-green)!important}.candle.down line,.candle.down rect{fill:var(--ma-red)!important;stroke:var(--ma-red)!important}
 .setup-screen{background:radial-gradient(circle at 50% 0,rgba(41,222,153,.06),transparent 32%),#08090e!important}.setup-card.selected{border-color:rgba(41,222,153,.48)!important;box-shadow:0 0 0 1px rgba(41,222,153,.16),0 20px 55px rgba(0,0,0,.24)!important}.setup-card.selected .card-accent{background:var(--ma-green)!important}.difficulty-card.selected{border-color:rgba(41,222,153,.45)!important}.difficulty-card.selected strong{color:var(--ma-green)!important}
 .progress-fill,.meter-fill,.bar-fill{background:linear-gradient(90deg,#20c987,var(--ma-green-soft))!important}.tag-green,.status-green{color:var(--ma-green)!important;background:rgba(41,222,153,.09)!important;border-color:rgba(41,222,153,.18)!important}
+
+/* MarketArena 1.0.2 premium UX pass */
+html,body,*{scrollbar-width:none!important}
+html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{width:0!important;height:0!important}
+.game-topbar{height:92px!important;padding:0 22px!important;gap:18px!important;position:sticky!important;top:0!important;z-index:100!important;background:rgba(7,9,13,.97)!important;backdrop-filter:blur(18px)!important;border-bottom:1px solid rgba(41,222,153,.14)!important}
+.game-brand{width:54px!important;height:62px!important;flex:0 0 54px!important;justify-content:center!important;padding:0!important}
+.game-brand img{width:50px!important;height:50px!important;object-fit:contain!important}
+.game-command-deck{gap:6px!important;min-width:0!important;overflow-x:auto!important;overflow-y:visible!important;padding:7px 3px!important;justify-content:center!important}
+.game-command-deck button{min-width:76px!important;height:62px!important;padding:8px 8px!important;border-radius:12px!important;font-size:10px!important;gap:5px!important;transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease!important;transform-origin:center!important}
+.game-command-deck button:hover{transform:translateY(-2px)!important;box-shadow:0 10px 22px rgba(0,0,0,.24)!important}
+.nav-glyph{font-size:18px!important}
+.game-right{gap:7px!important}
+.game-right .topbar-day{font-size:15px!important}
+.game-right button{min-height:38px!important}
+.game-body{min-height:calc(100vh - 92px)!important}
+.game-main{padding-top:38px!important}
+
+.brand.large{align-items:center!important;gap:16px!important}
+.brand.large .brand-mark.image{width:74px!important;height:74px!important}
+.brand.large .brand-mark.image img{width:100%!important;height:100%!important;object-fit:contain!important}
+.brand.large b{font-size:24px!important;letter-spacing:-.035em!important}
+.brand.large small{font-size:10px!important;letter-spacing:.11em!important;color:#7c8b91!important}
+
+.auth-visual-core{width:260px!important;height:260px!important;background:radial-gradient(circle at 35% 28%,rgba(41,222,153,.12),rgba(10,16,20,.96) 58%,#05070b 100%)!important;border-color:rgba(41,222,153,.25)!important;box-shadow:0 0 0 22px rgba(41,222,153,.025),0 35px 100px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.08)!important}
+.auth-visual-core img{width:92px!important;height:92px!important;object-fit:contain!important;margin:0 auto 14px!important}
+.auth-visual-core b{font-size:21px!important}
+.auth-visual-core small{color:#6e8d81!important}
+
+.flag{width:54px!important;height:35px!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:7px!important;box-shadow:0 8px 20px rgba(0,0,0,.30),inset 0 1px rgba(255,255,255,.16)!important}
+.profile-title .flag{width:68px!important;height:44px!important}
+.country-option .flag{width:54px!important;height:35px!important}
+.country-option{border-radius:12px!important;padding:12px!important;background:rgba(10,16,21,.82)!important}
+.country-option.active{border-color:rgba(41,222,153,.48)!important;background:rgba(41,222,153,.08)!important;box-shadow:inset 0 0 0 1px rgba(41,222,153,.08)!important}
+
+.empire-roadmap{margin-bottom:16px;padding:24px;border:1px solid rgba(41,222,153,.16);border-radius:14px;background:linear-gradient(135deg,rgba(16,25,25,.96),rgba(8,13,17,.98));box-shadow:0 22px 60px rgba(0,0,0,.20)}
+.empire-roadmap-head{display:flex;justify-content:space-between;gap:25px;align-items:center}
+.empire-roadmap h2{margin:7px 0 7px;font:650 27px "Space Grotesk";letter-spacing:-.035em}
+.empire-roadmap p{margin:0;max-width:900px;color:#87979d;font-size:12px;line-height:1.7}
+.empire-score{min-width:96px;text-align:center;padding:14px 12px;border:1px solid rgba(41,222,153,.18);border-radius:12px;background:rgba(41,222,153,.05)}
+.empire-score b{display:block;font:700 29px "Space Grotesk";color:#29de99}.empire-score span{font-size:8px;color:#6f858c;letter-spacing:.13em}
+.empire-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+.empire-step{padding:15px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.018)}
+.empire-step>b{color:#29de99;font:700 10px "Space Grotesk"}.empire-step strong{display:block;margin:6px 0 4px;font-size:12px}.empire-step span{color:#718188;font-size:9px;line-height:1.5}
+.empire-how{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.empire-how span{padding:9px 11px;border-radius:8px;background:rgba(255,255,255,.025);color:#78898f;font-size:9px}.empire-how b{color:#c9d6d9}
+
+.jobs-card{grid-column:1/-1!important;order:-1!important}
+.hero-map-grid{display:grid;grid-template-columns:minmax(0,1.65fr) 390px;gap:12px}
+
+.candle-terminal{min-height:390px!important;background:linear-gradient(180deg,#080c10,#06090d)!important;border:1px solid rgba(41,222,153,.14)!important;border-radius:12px!important;overflow:hidden!important}
+.candle-terminal svg{height:340px!important}
+.candle-terminal .candle.up line,.candle-terminal .candle.up rect{stroke:#29de99!important;fill:#29de99!important}
+.candle-terminal .candle.down line,.candle-terminal .candle.down rect{stroke:#ef6877!important;fill:#ef6877!important}
+.candle-terminal .candle line{stroke-width:1.25!important}
+.candle-terminal .candle rect{rx:1.5!important}
+.candle-axis{font-size:9px!important;color:#718188!important}
+.chart-range-tabs{display:flex!important;flex-wrap:wrap!important;gap:6px!important;margin-top:10px!important}
+.chart-range-tabs button{min-width:78px!important;height:36px!important;border-radius:8px!important;font-size:10px!important;background:#0d141a!important;border:1px solid rgba(255,255,255,.07)!important;color:#7e9097!important}
+.chart-range-tabs button.active{background:rgba(41,222,153,.11)!important;border-color:rgba(41,222,153,.35)!important;color:#29de99!important}
+
+.job-game-modal{background:linear-gradient(145deg,#0d141a,#080c11)!important;border:1px solid rgba(41,222,153,.20)!important;border-radius:16px!important;box-shadow:0 35px 120px rgba(0,0,0,.65)!important}
+.job-game-board{min-height:260px!important;border-radius:12px!important;background:radial-gradient(circle at 50% 50%,rgba(41,222,153,.06),rgba(3,7,10,.96))!important;border:1px solid rgba(255,255,255,.07)!important;padding:18px!important}
+.streetcleaner-board{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;background:linear-gradient(145deg,#0b1714,#07100e)!important}
+.streetcleaner-board .trash{position:relative!important;min-height:58px!important;border:1px solid rgba(117,160,126,.14)!important;border-radius:10px!important;background:linear-gradient(145deg,#14241c,#0c1712)!important;color:#758b7c!important}
+.streetcleaner-board .trash:before{content:"";position:absolute;inset:7px;border-radius:7px;background:repeating-linear-gradient(135deg,transparent 0 8px,rgba(41,222,153,.035) 8px 10px);pointer-events:none}
+.streetcleaner-board .trash span{font-size:18px!important;display:block}.streetcleaner-board .trash small{font-size:7px!important;color:#65796c!important}
+.courier-board{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;background:linear-gradient(145deg,#0c1119,#080b10)!important}
+.courier-board .building{min-height:58px!important;border:1px solid rgba(115,140,160,.15)!important;border-radius:10px!important;background:linear-gradient(145deg,#18222b,#0c1319)!important;color:#95a9b3!important}
+.courier-board .building b{display:block;font:700 18px "Space Grotesk";color:#d9e5e8}.courier-board .building small{font-size:8px!important;color:#687c84!important}
+.job-target{border-color:rgba(41,222,153,.75)!important;background:rgba(41,222,153,.12)!important;color:#29de99!important;box-shadow:0 0 24px rgba(41,222,153,.16)!important}
+
+@media(max-width:1280px){
+ .game-topbar{padding:0 12px!important;gap:9px!important}
+ .game-brand{flex-basis:48px!important;width:48px!important}.game-brand img{width:44px!important;height:44px!important}
+ .game-command-deck{justify-content:flex-start!important}.game-command-deck button{min-width:70px!important}
+ .game-right{max-width:235px!important}
+}
+@media(max-width:900px){
+ .game-topbar{height:84px!important}.game-body{min-height:calc(100vh - 84px)!important}
+ .game-command-deck button{min-width:68px!important;height:58px!important}
+ .empire-steps{grid-template-columns:repeat(2,1fr)}
+ .empire-roadmap-head{align-items:flex-start}
+ .game-right .topbar-day{display:none}
+}
+@media(max-width:720px){
+ .game-topbar{height:76px!important}.game-brand{display:none!important}.game-command-deck button{min-width:64px!important;height:54px!important;font-size:8px!important}
+ .nav-glyph{font-size:16px!important}.empire-steps{grid-template-columns:1fr}.empire-how{display:grid}.empire-score{min-width:78px}
+}
