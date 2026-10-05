@@ -10,7 +10,7 @@ type GameSave = {
   player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
   day:number; transactions:Transaction[]; tab:GameTab; savedAt:string; careerXP?:number; achievements?:string[];
   loan?:{principal:number;balance:number;lastChargeDay:number;rate:number}|null;
-  ownedCompanies?:string[]; lastJobDay?:number;
+  ownedCompanies?:string[]; lastJobDay?:number; miniGameRewardDay?:number;
 };
 
 const PATCH_NOTES = [
@@ -221,6 +221,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [loan,setLoan]=useState<GameSave["loan"]>(()=>initialSave?.loan??null);
   const [ownedCompanies,setOwnedCompanies]=useState<string[]>(()=>initialSave?.ownedCompanies??[]);
   const [lastJobDay,setLastJobDay]=useState(()=>initialSave?.lastJobDay??0);
+  const [miniGameRewardDay,setMiniGameRewardDay]=useState(()=>initialSave?.miniGameRewardDay??0);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
   const [marketPulse,setMarketPulse]=useState(0);
   const [timeSpeed,setTimeSpeed]=useState<1|1.5|2>(1);
@@ -229,7 +230,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(60000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay]);
   useEffect(()=>{
     if(tab==="exchange" && !exchangeCompany && country.companies.length) setExchangeCompany(country.companies[0]);
   },[tab,country.id,country.companies,exchangeCompany]);
@@ -323,6 +324,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"first-job",title:"Первый доход",text:"Заверши первую оплачиваемую работу.",done:careerXP>0},
     {id:"first-investment",title:"Первый актив",text:"Купи первую акцию.",done:ownedPositions>0},
     {id:"ten-deals",title:"Рыночная практика",text:"Соверши 10 сделок.",done:transactions.length>=10},
+    {id:"first-loan",title:"Кредитный рычаг",text:"Возьми первый кредит и используй его осознанно.",done:achievements.includes("loan")},
+    {id:"first-takeover",title:"Первое поглощение",text:"Возьми под контроль первую публичную компанию.",done:ownedCompanies.length>0},
     {id:"million",title:"Первый миллион",text:"Достигни капитала 1 000 000 VLR.",done:totalWealth>=1000000},
     {id:"influence",title:"Влияние",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
     {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
@@ -338,6 +341,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     if(normalized<100000){setNotice("Для кредита нужен капитал минимум 100 000 VLR.");return;}
     setCash(v=>v+normalized);
     setLoan({principal:normalized,balance:normalized,lastChargeDay:day,rate:.025});
+    setAchievements(v=>v.includes("loan")?v:[...v,"loan"]);
     setNotice("Кредит получен: "+normalized.toLocaleString("ru-RU")+" VLR. Ставка 2,5% каждые 30 игровых дней.");
   };
   const repayLoan=(amount:number)=>{
@@ -355,6 +359,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     if(cash<cost){setNotice("Для поглощения нужно "+cost.toLocaleString("ru-RU")+" VLR. Можно сначала использовать кредит.");return;}
     setCash(v=>v-cost);
     setOwnedCompanies(v=>[...v,company.ticker]);
+    setAchievements(v=>v.includes("takeover")?v:[...v,"takeover"]);
     setNotice("Поглощение завершено: "+company.name+" теперь входит в твою группу.");
   };
   const buy=(company:CompanyPreview,quantity=1)=>{
@@ -404,7 +409,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     }
   },[day]);
   const startMiniGame=()=>setMiniGame({active:true,score:0,target:Math.floor(Math.random()*6),started:Date.now()});
-  const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));setCash(v=>v+reward);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
+  const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=miniGameRewardDay===day?0:3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));if(reward>0){setCash(v=>v+reward);setMiniGameRewardDay(day);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR. Бонус мини-игры на сегодня получен.");}else setNotice("Точная реакция. Денежный бонус за сегодня уже получен.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
   const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"],["profile","Профиль"]];
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
   const openExchange=(company?:CompanyPreview)=>{
@@ -415,7 +420,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
 
   return <div className="game-shell">
-    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><div><b>MarketArena</b><small>ECONOMIC STRATEGY</small></div></button><nav className="game-command-deck">{tabs.map(([id,label])=><button type="button" key={id} className={id==="exchange"?(tab===id?"exchange-nav active":"exchange-nav"):tab===id?"active":""} aria-label={id==="exchange"?"Открыть биржу":label} onClick={e=>{e.preventDefault();e.stopPropagation();if(id==="exchange") openExchange(); else setTab(id)}}><span className="nav-glyph"><NavIcon id={id}/></span><span className="nav-label">{label}</span></button>)}</nav><div className="game-right"><div className="topbar-time-controls" aria-label="Управление временем"><div className="topbar-time-status"><span>ИГРОВОЕ ВРЕМЯ</span><b>ДЕНЬ {day}</b><em>{timePaused?"ПАУЗА":"ИДЁТ"} · ×{timeSpeed}</em></div><button type="button" className={timePaused?"time-main paused":"time-main"} onClick={()=>setTimePaused(v=>!v)} aria-label={timePaused?"Продолжить время":"Поставить время на паузу"}>{timePaused?"▶":"Ⅱ"} <span>{timePaused?"Продолжить":"Пауза"}</span></button><div className="time-speed-group">{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>{setTimePaused(false);setTimeSpeed(x as 1|1.5|2)}} aria-label={"Скорость ×"+x}>×{x}</button>)}</div></div><b className="topbar-wealth">{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
+    <header className="game-topbar"><button className="game-brand" onClick={()=>setTab("overview")}><span>MA</span><div><b>MarketArena</b><small>ECONOMIC STRATEGY</small></div></button><nav className="game-command-deck">{tabs.map(([id,label])=><button type="button" key={id} className={id==="exchange"?(tab===id?"exchange-nav active":"exchange-nav"):tab===id?"active":""} aria-label={id==="exchange"?"Открыть биржу":label} onClick={e=>{e.preventDefault();e.stopPropagation();if(id==="exchange") openExchange(); else setTab(id)}}><span className="nav-glyph"><NavIcon id={id}/></span><span className="nav-label">{label}</span></button>)}</nav><div className="game-right"><div className="topbar-time-controls" aria-label="Управление временем"><div className="topbar-time-status"><span>ИГРОВОЕ ВРЕМЯ</span><b>ДЕНЬ {day}</b><em>{timePaused?"ПАУЗА":"ИДЁТ"} · 1 мин/день · ×{timeSpeed}</em></div><button type="button" className={timePaused?"time-main paused":"time-main"} onClick={()=>setTimePaused(v=>!v)} aria-label={timePaused?"Продолжить время":"Поставить время на паузу"}>{timePaused?"▶":"Ⅱ"} <span>{timePaused?"Продолжить":"Пауза"}</span></button><div className="time-speed-group">{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>{setTimePaused(false);setTimeSpeed(x as 1|1.5|2)}} aria-label={"Скорость ×"+x}>×{x}</button>)}</div></div><b className="topbar-wealth">{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
     <div className="game-body">
             <main className="game-main">
         {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>{country.name}: экономический центр</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
