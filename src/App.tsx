@@ -287,12 +287,50 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
   const priceFor=(company:CompanyPreview, atDay=day)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const base=4200+(seed%22)*720;const level=(t:number)=>{const whole=Math.max(1,Math.floor(t));let log=0,momentum=0;for(let d=1;d<=whole;d++){const rnd=Math.sin(seed*12.9898+d*78.233)*43758.5453;const noise=(rnd-Math.floor(rnd)-.5)*.028;const macro=Math.sin((d+seed)*.031)*.0065+Math.cos((d+seed*.37)*.013)*.004;const sector=Math.sin((d+seed*1.7)*.071)*.0045;const event=marketEvent(company,d).impact*.34;const crisis=macroCrisis(d);const crisisSector=crisis?(company.sector==="Финансы"&&crisis.name==="Банковский шок"?-.012:company.sector==="Энергетика"&&crisis.name==="Энергетический кризис"?+.006:company.sector==="Судоходство"&&crisis.name==="Торговая блокада"?-.009:company.sector==="Нефть"&&crisis.name==="Сырьевой обвал"?-.011:0):0;momentum=momentum*.72+noise*.28;log+=noise*.62+momentum*.38+macro+sector+event+(crisis?.impact??0)*.45+crisisSector;}return log;};const whole=Math.max(1,Math.floor(atDay)),frac=Math.max(0,atDay-whole),current=level(whole),next=level(whole+1),interpolated=current+(next-current)*frac;const intraday=Math.sin((atDay*17.31+seed)*2.1)*.0018+Math.cos((atDay*9.17+seed)*1.37)*.0012;return Math.max(1200,Math.round(base*Math.exp(interpolated+intraday)/25)*25);};
   const priceChange=(company:CompanyPreview)=>{
-    const oldDay=Math.max(1,day-1);
-    const old=priceFor(company,oldDay);
+    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+    const oldDay=day>1?day-1:0.5;
+    const old=day>1?priceFor(company,oldDay):priceFor(company,1)*(1-(Math.sin(seed*1.91)*0.006+Math.cos(seed*0.73)*0.003));
     return ((priceFor(company,day)-old)/old)*100;
   };
   const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,start)+(priceFor(company,end)-priceFor(company,start));});};
-  const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{\n    const configs:Record<ChartRange,{count:number;step:number;vol:number;label:string}>={\n      "1D":{count:78,step:0.01282,vol:0.0028,label:"5 мин"},\n      "1W":{count:56,step:0.125,vol:0.0045,label:"3 ч"},\n      "1M":{count:30,step:1,vol:0.008,label:"1 день"},\n      "6M":{count:60,step:3,vol:0.011,label:"3 дня"},\n      "1Y":{count:60,step:6,vol:0.014,label:"6 дней"},\n      "5Y":{count:60,step:30,vol:0.021,label:"1 месяц"},\n      "10Y":{count:60,step:60,vol:0.027,label:"2 месяца"},\n      "ALL":{count:80,step:91,vol:0.034,label:"3 месяца"}\n    };\n    const cfg=configs[range];\n    const seed=company.ticker.split("").reduce((n,ch,i)=>n+ch.charCodeAt(0)*(i+11),17);\n    const rand=(n:number)=>{const x=Math.sin(seed*12.9898+n*78.233)*43758.5453;return x-Math.floor(x);};\n    const anchor=priceFor(company,day);\n    const raw:number[]=[];\n    let level=anchor*(1+(rand(cfg.count+3)-.5)*cfg.vol*3);\n    for(let i=0;i<cfg.count;i++){\n      const shock=(rand(i*4+1)-.5)*cfg.vol*2.1;\n      const trend=Math.sin((i+seed)*0.19)*cfg.vol*0.16;\n      const regime=(i%19===0?(rand(i+71)-.5)*cfg.vol*5:0);\n      level=Math.max(1200,level*Math.exp(shock+trend+regime));\n      raw.push(level);\n    }\n    const scale=anchor/Math.max(1,raw[raw.length-1]);\n    return raw.map((base,i)=>{\n      const close=Math.max(1200,base*scale);\n      const prev=i===0?close*(1-(rand(900)-.5)*cfg.vol):raw[i-1]*scale;\n      const open=Math.max(1200,prev*(1+(rand(i*9+2)-.5)*cfg.vol*.45));\n      const body=Math.abs(close-open);\n      const wickUp=body*(0.45+rand(i*9+3)*1.8)+close*cfg.vol*(0.25+rand(i*9+4)*.55);\n      const wickDown=body*(0.45+rand(i*9+5)*1.8)+close*cfg.vol*(0.25+rand(i*9+6)*.55);\n      const high=Math.max(open,close)+wickUp;\n      const low=Math.max(500,Math.min(open,close)-wickDown);\n      return {period:i,open:Math.round(open/5)*5,high:Math.round(high/5)*5,low:Math.round(low/5)*5,close:Math.round(close/5)*5};\n    });\n  };\n  const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
+  const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{
+    const configs:Record<ChartRange,{count:number;step:number;vol:number;label:string}>={
+      "1D":{count:78,step:0.01282,vol:0.0028,label:"5 мин"},
+      "1W":{count:56,step:0.125,vol:0.0045,label:"3 ч"},
+      "1M":{count:30,step:1,vol:0.008,label:"1 день"},
+      "6M":{count:60,step:3,vol:0.011,label:"3 дня"},
+      "1Y":{count:60,step:6,vol:0.014,label:"6 дней"},
+      "5Y":{count:60,step:30,vol:0.021,label:"1 месяц"},
+      "10Y":{count:60,step:60,vol:0.027,label:"2 месяца"},
+      "ALL":{count:80,step:91,vol:0.034,label:"3 месяца"}
+    };
+    const cfg=configs[range];
+    const seed=company.ticker.split("").reduce((n,ch,i)=>n+ch.charCodeAt(0)*(i+11),17);
+    const rand=(n:number)=>{const x=Math.sin(seed*12.9898+n*78.233)*43758.5453;return x-Math.floor(x);};
+    const anchor=priceFor(company,day);
+    const raw:number[]=[];
+    let level=anchor*(1+(rand(cfg.count+3)-.5)*cfg.vol*3);
+    for(let i=0;i<cfg.count;i++){
+      const shock=(rand(i*4+1)-.5)*cfg.vol*2.1;
+      const trend=Math.sin((i+seed)*0.19)*cfg.vol*0.16;
+      const regime=(i%19===0?(rand(i+71)-.5)*cfg.vol*5:0);
+      level=Math.max(1200,level*Math.exp(shock+trend+regime));
+      raw.push(level);
+    }
+    const scale=anchor/Math.max(1,raw[raw.length-1]);
+    return raw.map((base,i)=>{
+      const close=Math.max(1200,base*scale);
+      const prev=i===0?close*(1-(rand(900)-.5)*cfg.vol):raw[i-1]*scale;
+      const open=Math.max(1200,prev*(1+(rand(i*9+2)-.5)*cfg.vol*.45));
+      const body=Math.abs(close-open);
+      const wickUp=body*(0.45+rand(i*9+3)*1.8)+close*cfg.vol*(0.25+rand(i*9+4)*.55);
+      const wickDown=body*(0.45+rand(i*9+5)*1.8)+close*cfg.vol*(0.25+rand(i*9+6)*.55);
+      const high=Math.max(open,close)+wickUp;
+      const low=Math.max(500,Math.min(open,close)-wickDown);
+      return {period:i,open:Math.round(open/5)*5,high:Math.round(high/5)*5,low:Math.round(low/5)*5,close:Math.round(close/5)*5};
+    });
+  };
+  const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
   const totalWealth=cash+portfolioValue;
   const careerLevel=Math.min(10,1+Math.floor(careerXP/3));
   const careerTitle=careerLevel>=10?"Руководитель направления":careerLevel>=8?"Старший специалист":careerLevel>=6?"Профессионал":careerLevel>=4?"Опытный сотрудник":"Начинающий специалист";
