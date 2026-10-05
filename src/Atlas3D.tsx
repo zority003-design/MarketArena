@@ -559,7 +559,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           scene.add(makeTree(p.x, p.z, 0.38 + hash(i, 4) * 0.34));
         }
       }
-      for(let i=0;i<Math.min(5,roadCurves.length);i++){ const car=makeCar(roadCurves[i],.9+(i%2)*.15); scene.add(car); }
+      for(let i=0;i<Math.min(12,roadCurves.length);i++){ const car=makeCar(roadCurves[i],.82+(i%3)*.12); scene.add(car); }
       const capitalPoint = worldFromGeo(capital);
       scene.add(makeModernBuilding(capitalPoint.x+.42,capitalPoint.z+.22,1.45,0));
       scene.add(makeModernBuilding(capitalPoint.x-.46,capitalPoint.z-.18,1.65,1));
