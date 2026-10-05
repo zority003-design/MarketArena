@@ -458,6 +458,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     const pointer = new THREE.Vector2();
     const raycaster = new THREE.Raycaster();
     const countryMeshes = selectedMeshes;
+    let hoveredCountry = "";
     let drag = false;
     let moved = false;
     let lastX = 0;
@@ -527,7 +528,34 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       renderer.domElement.setPointerCapture(event.pointerId);
     };
     const pointerMove = (event: PointerEvent) => {
-      if (!drag) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      if (!drag) {
+        const hits = raycaster.intersectObject(terrain, false);
+        let nextHover = "";
+        if (hits.length) {
+          const p = hits[0].point;
+          const u = p.x / 0.32 + 50;
+          const v = p.z / 0.24 + 50;
+          const hitCountry = countries.find((c) => pointInPolygon(u, v, countryPolygons[c.id]));
+          nextHover = hitCountry?.id ?? "";
+        }
+        if (nextHover !== hoveredCountry) {
+          hoveredCountry = nextHover;
+          countryMeshes.forEach((mesh) => {
+            const material = mesh.material as THREE.MeshStandardMaterial;
+            material.opacity = mesh.userData.countryId === selected ? 0.20 : mesh.userData.countryId === hoveredCountry ? 0.15 : 0.035;
+          });
+          countries.forEach((country) => {
+            const label = labelRefs.current[country.id];
+            label?.classList.toggle("hovered", country.id === hoveredCountry);
+          });
+        }
+        renderer.domElement.style.cursor = hoveredCountry ? "pointer" : "grab";
+        return;
+      }
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
