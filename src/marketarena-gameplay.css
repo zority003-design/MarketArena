@@ -75,3 +75,11 @@
 .company-development-mini button{width:100%;min-height:30px;border:1px solid rgba(211,168,75,.18);border-radius:5px;background:#11181c;color:#c9d1d2;font-size:9px;cursor:pointer}
 .company-development-mini button:hover:not(:disabled){border-color:rgba(211,168,75,.45);color:#ead9ae}
 .company-development-mini button:disabled{opacity:.45;cursor:default}
+
+
+.dividend-history{margin-top:12px;padding:15px 16px;border:1px solid rgba(93,207,174,.12);border-radius:9px;background:#0b1317}
+.dividend-history>div:first-child{margin-bottom:8px}
+.dividend-history h3{margin:4px 0 0;color:#dfe6e5;font-size:14px}
+.dividend-history-row{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid rgba(207,220,222,.06);font-size:10px}
+.dividend-history-row span{color:#68777b}.dividend-history-row b{color:#b8c3c4}.dividend-history-row strong{color:#63d3ae}
+@media(max-width:560px){.dividend-history-row{grid-template-columns:70px 1fr auto;font-size:9px}}
