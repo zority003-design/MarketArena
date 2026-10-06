@@ -5,6 +5,7 @@ import { Atlas3D } from "./Atlas3D";
 import { GAME_CONFIG, dailyLifestyleCost } from "./game/economy";
 import { JobMiniGame } from "./game/JobMiniGame";
 import { LifeAvatar } from "./game/LifeAvatar";
+import { companyMarketSignal, macroEventForDay, quarterlyFinancials, commoditySignal } from "./game/worldEngine";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates" | "profile";
@@ -297,58 +298,41 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
   const marketProfile=countryMarketProfile[country.id]??countryMarketProfile.slavoriya;
 
-  const commodityPulse=(sector:string,atDay:number)=>{
-    const map:Record<string,{name:string;wave:number}>={"Нефть":{name:"нефти",wave:.030},"Металлы":{name:"металлов",wave:.022},"Агро":{name:"зерна",wave:.018},"Энергетика":{name:"газа и электроэнергии",wave:.014},"Машиностроение":{name:"стали и оборудования",wave:.010},"Логистика":{name:"топлива",wave:.012},"Порты":{name:"фрахта",wave:.016},"Судоходство":{name:"фрахта",wave:.021}};
-    const c=map[sector]; if(!c) return {name:"ключевых компонентов",impact:Math.sin((atDay+sector.length)*.083)*.006};
-    return {name:c.name,impact:Math.sin((atDay+sector.length*11)*.071)*c.wave+Math.cos((atDay+sector.length)*.031)*c.wave*.45};
-  };
+  const commodityPulse=(sector:string,atDay:number)=>commoditySignal(sector,atDay);
   const marketEvent=(company:CompanyPreview, atDay:number)=>{
-    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
-    const events=[
-      {headline:"новый экспортный контракт улучшил прогноз выручки",impact:0.032},
-      {headline:"рост стоимости сырья усилил давление на маржу",impact:-0.027},
-      {headline:"компания объявила программу расширения мощностей",impact:0.021},
-      {headline:"слабый спрос заставил рынок пересмотреть прогнозы",impact:-0.024},
-      {headline:"регулятор одобрил важный отраслевой проект",impact:0.017},
-      {headline:"перебои в цепочке поставок увеличили издержки",impact:-0.019},
-      {headline:"инвесторы позитивно оценили результаты квартала",impact:0.028},
-      {headline:"рынок зафиксировал прибыль после сильного роста",impact:-0.014}
-    ];
-    const eventIndex=((Math.floor((atDay+seed)/3)%events.length)+events.length)%events.length;
-    const event=events[eventIndex];
-    const commodity=commodityPulse(company.sector,atDay);
-    const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
-    const countryBias=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
-    const linked:Record<string,string[]>={"Металлы":["Машиностроение","Логистика"],"Энергетика":["Металлы","Машиностроение","Логистика"],"Нефть":["Логистика","Химия","Ритейл"],"Агро":["Ритейл","Логистика"],"Порты":["Судоходство","Логистика","Страхование"],"Судоходство":["Порты","Страхование"],"Технологии":["Электроника","Робототехника"],"Электроника":["Робототехника","Машиностроение"],"Финансы":["Недвижимость","Машиностроение"]};
-    const upstream=linked[company.sector]??[];
-    const chainImpact=upstream.reduce((sum,sector,index)=>sum+Math.sin((atDay+seed+sector.length*13)*(0.051+index*0.004))*0.0035,0);
-    const cycle=Math.sin((atDay+seed*0.17)*0.045)*0.012;
-    return {headline:event.headline+"; цены "+commodity.name+" меняются, цепочка "+(upstream[0]??"спроса")+" реагирует",impact:event.impact+commodity.impact+sectorBias+countryBias+cycle+chainImpact};
+    return companyMarketSignal(company,atDay,marketProfile.bias,marketProfile.sectors[company.sector]??0);
   };
   const macroCrisis=(atDay:number)=>{
-    const crises=[
-      {name:"Банковский шок",short:"ликвидность сжимается, кредит дорожает",impact:-0.075},
-      {name:"Энергетический кризис",short:"топливо и энергия резко дорожают",impact:-0.09},
-      {name:"Торговая блокада",short:"международные перевозки и экспорт проседают",impact:-0.085},
-      {name:"Рецессия",short:"спрос и инвестиции замедляются",impact:-0.10},
-      {name:"Сырьевой обвал",short:"цены на сырьё падают быстрее ожиданий",impact:-0.095}
-    ];
-    const slot=Math.floor((atDay-35)/60);
-    if(slot<0)return null;
-    const start=35+slot*60;
-    if(atDay>start+11)return null;
-    const crisis=crises[slot%crises.length];
-    return {...crisis,start,end:start+11,remaining:start+11-atDay};
+    const event=macroEventForDay(atDay);
+    return event ? {...event,remaining:event.end-atDay} : null;
   };
   const quarterlyReport=(company:CompanyPreview,atDay:number)=>{
-    const event=marketEvent(company,atDay);
-    const commodity=commodityPulse(company.sector,atDay);
-    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
-    const revenue=(4.8+(seed%120)/10)*(1+event.impact*1.7);
-    const profit=Math.max(.05,(.42+(seed%38)/20)*(1+event.impact*4+commodity.impact*2));
-    return {event,commodity,revenue,profit,outlook:event.impact>=0?"прогноз повышен":"прогноз снижен"};
+    return quarterlyFinancials(company,atDay,marketProfile.bias,marketProfile.sectors[company.sector]??0);
   };
-  const priceFor=(company:CompanyPreview, atDay=day)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const base=1.2+(seed%8)*0.35;const level=(t:number)=>{const whole=Math.max(1,Math.floor(t));let log=0,momentum=0;for(let d=1;d<=whole;d++){const rnd=Math.sin(seed*12.9898+d*78.233)*43758.5453;const noise=(rnd-Math.floor(rnd)-.5)*.028;const macro=Math.sin((d+seed)*.031)*.0065+Math.cos((d+seed*.37)*.013)*.004;const sector=Math.sin((d+seed*1.7)*.071)*.0045;const event=marketEvent(company,d).impact*.34;const crisis=macroCrisis(d);const crisisSector=crisis?(company.sector==="Финансы"&&crisis.name==="Банковский шок"?-.012:company.sector==="Энергетика"&&crisis.name==="Энергетический кризис"?+.006:company.sector==="Судоходство"&&crisis.name==="Торговая блокада"?-.009:company.sector==="Нефть"&&crisis.name==="Сырьевой обвал"?-.011:0):0;momentum=momentum*.72+noise*.28;log+=noise*.62+momentum*.38+macro+sector+event+(crisis?.impact??0)*.45+crisisSector;}return log;};const whole=Math.max(1,Math.floor(atDay)),frac=Math.max(0,atDay-whole),current=level(whole),next=level(whole+1),interpolated=current+(next-current)*frac;const intraday=Math.sin((atDay*17.31+seed)*2.1)*.0018+Math.cos((atDay*9.17+seed)*1.37)*.0012;return Math.max(1,Math.round(base*Math.exp(interpolated+intraday)*100)/100);};
+  const priceFor=(company:CompanyPreview, atDay=day)=>{
+    const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+    const base=1.2+(seed%8)*0.35;
+    const level=(t:number)=>{
+      const whole=Math.max(1,Math.floor(t));
+      let log=0,momentum=0;
+      for(let d=1;d<=whole;d++){
+        const rnd=Math.sin(seed*12.9898+d*78.233)*43758.5453;
+        const noise=(rnd-Math.floor(rnd)-.5)*.028;
+        const macro=Math.sin((d+seed)*.031)*.0065+Math.cos((d+seed*.37)*.013)*.004;
+        const sector=Math.sin((d+seed*1.7)*.071)*.0045;
+        const event=marketEvent(company,d).impact*.34;
+        const crisis=macroCrisis(d);
+        const crisisSector=crisis?.sectors?.[company.sector]??0;
+        momentum=momentum*.72+noise*.28;
+        log+=noise*.62+momentum*.38+macro+sector+event+(crisis?.impact??0)*.45+crisisSector;
+      }
+      return log;
+    };
+    const whole=Math.max(1,Math.floor(atDay)),frac=Math.max(0,atDay-whole);
+    const current=level(whole),next=level(whole+1),interpolated=current+(next-current)*frac;
+    const intraday=Math.sin((atDay*17.31+seed)*2.1)*.0018+Math.cos((atDay*9.17+seed)*1.37)*.0012;
+    return Math.max(1,Math.round(base*Math.exp(interpolated+intraday)*100)/100);
+  };
   const priceChange=(company:CompanyPreview)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const oldDay=day>1?day-1:0.5;
