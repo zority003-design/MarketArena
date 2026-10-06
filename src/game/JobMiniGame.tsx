@@ -168,7 +168,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       setScore(v=>v+1);
       setMessage("Сдача выдана верно. Следующий покупатель.");
       setCashierSelected(0);
-      if(customerIndex>=customers.length-1){setTimeout(()=>finish(.13),120);return;}
+      if(customerIndex>=Math.min(customers.length,shiftTarget)-1){setTimeout(()=>finish(.13),120);return;}
       setCustomerIndex(v=>v+1);
     }else{
       setMistakes(v=>v+1);
