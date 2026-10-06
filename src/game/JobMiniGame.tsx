@@ -231,7 +231,6 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       <button className="job-start-button" onClick={()=>setStarted(true)}>НАЧАТЬ СМЕНУ</button>
     </div>}
     <div className={"job-game-modal premium-job-modal "+(!started?"job-game-hidden":"")} onClick={e=>e.stopPropagation()}>
-    <div className="job-game-modal premium-job-modal" onClick={e=>e.stopPropagation()}>
       <button className="modal-close" onClick={onCancel}>×</button>
       <div className="job-game-header">
         <div><span className="eyebrow">2D · РАБОЧАЯ СМЕНА · {labels[jobId]}</span><h2>{title}</h2><p>{message}</p></div>
