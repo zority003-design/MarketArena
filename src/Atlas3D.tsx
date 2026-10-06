@@ -8,6 +8,7 @@ type Atlas3DProps = {
   onSelect: (id: string) => void;
   showCompanies?: boolean;
   onCompany?: (company: CompanyPreview) => void;
+  home?: { housing: string; label: string };
 };
 
 type GeoPoint = [number, number];
@@ -750,7 +751,9 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         }
       }
       // Player residence: a readable private compound, not a hidden building.
-      const homePoint=worldFromGeo([capital[0]+1.15,capital[1]+1.05]);
+      const housingOffset:Record<string,[number,number]>={dormitory:[-4.2,-2.8],shared:[-3.0,-2.2],studio:[3.0,-2.1],apartment:[3.7,2.9],premium:[4.8,3.7]};
+      const homeOffset=housingOffset[home?.housing??"studio"]??housingOffset.studio;
+      const homePoint=worldFromGeo([capital[0]+homeOffset[0],capital[1]+homeOffset[1]]);
       const yard=new THREE.Mesh(new THREE.BoxGeometry(1.45,.045,1.05),new THREE.MeshStandardMaterial({color:"#6d805d",roughness:1}));
       yard.position.set(homePoint.x,surfaceHeight(homePoint.x,homePoint.z)+.025,homePoint.z);
       yard.receiveShadow=true; scene.add(yard);
@@ -1058,7 +1061,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [countries, selected, showCompanies]);
+  }, [countries, selected, showCompanies, home?.housing, home?.label]);
 
   const selectedCountry = countries.find((c) => c.id === selected);
 
