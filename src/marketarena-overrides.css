@@ -1,0 +1,336 @@
+/* MarketArena UX / performance pass — 2026-10-06
+   Loaded after the legacy stylesheet so this file is the single place for
+   the current interaction hierarchy. */
+
+:root{
+  --ma-cyan:#67dbe7;
+  --ma-cyan-soft:rgba(103,219,231,.16);
+  --ma-panel:rgba(8,20,28,.96);
+  --ma-line:rgba(126,190,200,.18);
+  --ma-text:#edf7f8;
+  --ma-muted:#8ca5ad;
+}
+
+/* Entry screen: remove the visual "cut" on the left and give the form a
+   clean, full-width content rail. */
+.auth-screen{
+  overflow-x:hidden!important;
+  grid-template-columns:minmax(0,1fr) minmax(420px,.92fr)!important;
+}
+.auth-panel{
+  width:100%!important;
+  max-width:none!important;
+  justify-self:stretch!important;
+  padding-left:clamp(22px,4.2vw,72px)!important;
+  padding-right:clamp(22px,5vw,92px)!important;
+}
+.auth-copy{
+  max-width:760px!important;
+  margin-left:0!important;
+}
+
+/* Game header: profile + logout belong together on the right. */
+.game-topbar>.game-brand{order:1!important}
+.game-topbar>.topbar-context{order:2!important}
+.game-topbar>.game-right{order:3!important}
+.game-topbar>.game-profile-button{
+  order:4!important;
+  flex:0 0 auto!important;
+  min-height:46px!important;
+  padding:0 15px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  border:1px solid rgba(103,219,231,.25)!important;
+  border-radius:11px!important;
+  background:linear-gradient(145deg,#102a33,#091820)!important;
+  color:#eaf9fa!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.18)!important;
+}
+.game-topbar>.game-profile-button span{
+  width:30px!important;height:30px!important;
+  display:grid!important;place-items:center!important;
+  border-radius:9px!important;
+  background:linear-gradient(145deg,#2b7f8b,#14353e)!important;
+  color:#efffff!important;
+  font:900 12px "Space Grotesk"!important;
+}
+.game-topbar>.game-profile-button b{
+  max-width:150px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:12px!important;
+}
+.game-topbar>.topbar-logout{
+  order:5!important;
+  flex:0 0 auto!important;
+  min-height:46px!important;
+  padding:0 16px!important;
+  border:1px solid rgba(236,104,104,.38)!important;
+  border-radius:11px!important;
+  background:rgba(110,31,38,.20)!important;
+  color:#ffc8c8!important;
+  font-weight:900!important;
+}
+.game-topbar>.topbar-logout:hover{
+  border-color:#ef7777!important;
+  background:rgba(138,40,47,.34)!important;
+  transform:translateY(-2px)!important;
+}
+.game-topbar>.game-profile-button:hover{
+  border-color:rgba(103,219,231,.55)!important;
+  background:linear-gradient(145deg,#14343e,#0b2029)!important;
+  transform:translateY(-2px)!important;
+}
+
+/* Make every dashboard surface feel like a usable game object. */
+.game-shell .command-rail-card,
+.game-shell .command-strip>button,
+.game-shell .capital-card,
+.game-shell .jobs-card,
+.game-shell .companies-card,
+.game-shell .home-news-card,
+.game-shell .campaign-card,
+.game-shell .risk-dashboard,
+.game-shell .finance-card,
+.game-shell .portfolio-summary>div,
+.game-shell .portfolio-insights>div,
+.game-shell .history-milestones>div,
+.game-shell .history-stat-grid>div,
+.game-shell .company-focus-card,
+.game-shell .life-job,
+.game-shell .news-item,
+.game-shell .event-card{
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease!important;
+}
+.game-shell .command-rail-card:hover,
+.game-shell .command-strip>button:hover,
+.game-shell .capital-card:hover,
+.game-shell .jobs-card:hover,
+.game-shell .companies-card:hover,
+.game-shell .home-news-card:hover,
+.game-shell .campaign-card:hover,
+.game-shell .finance-card:hover,
+.game-shell .portfolio-summary>div:hover,
+.game-shell .portfolio-insights>div:hover,
+.game-shell .history-milestones>div:hover,
+.game-shell .history-stat-grid>div:hover,
+.game-shell .company-focus-card:hover,
+.game-shell .life-job:hover,
+.game-shell .news-item:hover,
+.game-shell .event-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(103,219,231,.38)!important;
+  box-shadow:0 18px 38px rgba(0,0,0,.24)!important;
+}
+.game-shell .command-strip>button{
+  cursor:pointer!important;
+  text-align:left!important;
+}
+
+/* Never let long Russian names break a card or dashboard. */
+.game-shell .card-head>div,
+.game-shell .command-rail-card,
+.game-shell .command-strip>button,
+.game-shell .job-row>div,
+.game-shell .life-job>div,
+.game-shell .company-focus-card,
+.game-shell .news-item>div,
+.game-shell .event-card>div{
+  min-width:0!important;
+}
+.game-shell .card-head h2,
+.game-shell .command-rail-card b,
+.game-shell .command-strip b,
+.game-shell .job-row b,
+.game-shell .life-job b,
+.game-shell .company-focus-card h3,
+.game-shell .news-item b,
+.game-shell .event-card b{
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+.game-shell .card-head p,
+.game-shell .command-rail-card p,
+.game-shell .job-row small,
+.game-shell .life-job span,
+.game-shell .company-focus-card>p,
+.game-shell .news-item p,
+.game-shell .event-card p{
+  overflow-wrap:anywhere!important;
+}
+
+/* The map is a visual world, not a wall of company names.
+   Ticker is the default marker; full name appears only on hover. */
+.atlas-3d .atlas-company-marker{
+  min-width:0!important;
+  max-width:88px!important;
+  padding:5px 7px!important;
+  border-radius:8px!important;
+  background:rgba(4,15,21,.90)!important;
+  border-color:rgba(103,219,231,.30)!important;
+  box-shadow:0 7px 18px rgba(0,0,0,.30)!important;
+  backdrop-filter:blur(6px)!important;
+}
+.atlas-3d .atlas-company-marker b{
+  display:block!important;
+  font:900 10px "Space Grotesk"!important;
+  letter-spacing:.09em!important;
+  text-align:center!important;
+}
+.atlas-3d .atlas-company-marker span,
+.atlas-3d .atlas-company-marker small{
+  display:none!important;
+}
+.atlas-3d .atlas-company-marker:hover{
+  z-index:20!important;
+  max-width:220px!important;
+  transform:translate(-50%,-100%) scale(1.04)!important;
+  background:rgba(7,23,30,.97)!important;
+  border-color:rgba(103,219,231,.72)!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.40),0 0 24px rgba(103,219,231,.08)!important;
+}
+.atlas-3d .atlas-company-marker:hover span{
+  display:block!important;
+  margin-top:3px!important;
+  max-width:190px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  color:#e7f7f8!important;
+  font-size:9px!important;
+}
+.atlas-3d .atlas-company-marker:hover small{
+  display:block!important;
+  margin-top:2px!important;
+  color:#73dce5!important;
+  font-size:8px!important;
+}
+.atlas-3d .atlas-map-hud{
+  padding:7px 10px!important;
+  border-radius:8px!important;
+  background:rgba(3,12,17,.72)!important;
+  backdrop-filter:blur(6px)!important;
+}
+
+/* Owned businesses: make the map tell the story without adding labels. */
+.atlas-3d .atlas-company-marker.owned.stake{
+  border-color:rgba(94,218,177,.55)!important;
+  box-shadow:0 0 18px rgba(94,218,177,.10)!important;
+}
+.atlas-3d .atlas-company-marker.owned.control{
+  border-color:#e2c26d!important;
+  background:linear-gradient(145deg,rgba(59,48,23,.96),rgba(8,20,25,.96))!important;
+  box-shadow:0 0 22px rgba(226,194,109,.18)!important;
+}
+.atlas-3d .atlas-company-marker.owned b:before{
+  content:"◆ ";
+  color:#64d9b1;
+}
+.atlas-3d .atlas-company-marker.owned.control b:before{
+  color:#e2c26d;
+}
+
+/* Make the ownership ladder immediately understandable and readable. */
+.ownership-ladder{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+  margin-top:14px!important;
+}
+.ownership-ladder button{
+  min-height:60px!important;
+  padding:9px 10px!important;
+  border:1px solid rgba(116,175,186,.22)!important;
+  border-radius:9px!important;
+  background:linear-gradient(145deg,#10232b,#0a171e)!important;
+  color:#e1f0f2!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+}
+.ownership-ladder button:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(103,219,231,.55)!important;
+  background:#12303a!important;
+}
+.ownership-ladder button b{
+  display:block!important;
+  margin-top:4px!important;
+  color:#829ca5!important;
+  font-size:9px!important;
+  font-weight:700!important;
+}
+.ownership-ladder button.control{
+  color:#fff4cf!important;
+  border-color:rgba(226,194,109,.70)!important;
+  background:linear-gradient(145deg,#493b20,#241f15)!important;
+  box-shadow:0 0 20px rgba(226,194,109,.08)!important;
+}
+.ownership-ladder button.control b{color:#e2c26d!important}
+@media(max-width:700px){
+  .ownership-ladder{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* A recognizable character instead of a plain geometric initial. */
+.profile-avatar{
+  position:relative!important;
+  overflow:hidden!important;
+  color:transparent!important;
+  background:
+    radial-gradient(circle at 50% 30%,#d7a27d 0 14%,transparent 14.5%),
+    linear-gradient(180deg,#294e5d 0 58%,#162d38 58% 100%)!important;
+}
+.profile-avatar:before{
+  content:"";
+  position:absolute;
+  width:27px;height:30px;
+  left:50%;top:10px;
+  transform:translateX(-50%);
+  border-radius:48% 48% 45% 45%;
+  background:#c99572;
+  box-shadow:inset 0 3px #382b28;
+}
+.profile-avatar:after{
+  content:"";
+  position:absolute;
+  width:48px;height:30px;
+  left:50%;bottom:-5px;
+  transform:translateX(-50%);
+  border-radius:50% 50% 0 0;
+  background:linear-gradient(180deg,#4d7788,#294a58);
+}
+.sidebar-avatar{
+  position:relative!important;
+  overflow:hidden!important;
+  color:transparent!important;
+  background:linear-gradient(180deg,#2c5666,#142b35)!important;
+}
+.sidebar-avatar:before{
+  content:"";
+  position:absolute;
+  width:17px;height:19px;left:50%;top:7px;transform:translateX(-50%);
+  border-radius:50%;background:#c99572;box-shadow:inset 0 2px #382b28;
+}
+.sidebar-avatar:after{
+  content:"";
+  position:absolute;
+  width:31px;height:21px;left:50%;bottom:-3px;transform:translateX(-50%);
+  border-radius:50% 50% 0 0;background:#456b79;
+}
+
+/* Reduce map GPU pressure without changing the visual style. */
+.atlas-3d-canvas{image-rendering:auto!important}
+.atlas-3d .atlas-3d-viewport{contain:strict!important}
+.atlas-3d .atlas-3d-watermark{font-size:7px!important;opacity:.72!important}
+
+@media(max-width:1050px){
+  .game-topbar>.game-profile-button b{display:none!important}
+  .game-topbar>.game-profile-button{padding:0 10px!important}
+}
+@media(max-width:760px){
+  .game-topbar>.game-profile-button,
+  .game-topbar>.topbar-logout{min-height:40px!important}
+  .game-topbar>.game-profile-button{padding:0 9px!important}
+  .game-topbar>.topbar-logout{padding:0 10px!important}
+}
