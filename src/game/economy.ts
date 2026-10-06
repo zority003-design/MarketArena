@@ -18,10 +18,14 @@ export type StartingClass = {
 
 export const GAME_CONFIG = {
   seasonDays: 60,
+  // One season is deliberately short enough to form a complete offline session.
+  dayDurationMs: 300_000,
   workActionsPerDay: 2,
   maxOwnedCompaniesForEarlyGame: 3,
   startingSharesPerCompany: 1_000_000,
   marketOrderFeeRate: 0.0025,
+  dividendPaymentDay: 30,
+  dividendControlBonus: 0.25,
   takeoverPremium: 0.08,
   dailyInterestRate: 0.0012,
   inflationPerDay: 0.00035,
@@ -150,9 +154,10 @@ export function dailyLifestyleCost(
   food: keyof typeof GAME_CONFIG.food,
   transport: keyof typeof GAME_CONFIG.transport,
   appearance: keyof typeof GAME_CONFIG.appearance,
+  baseLiving = STARTING_CLASSES.middle.dailyBaseLiving,
 ) {
   return (
-    STARTING_CLASSES.middle.dailyBaseLiving +
+    baseLiving +
     GAME_CONFIG.housing[housing].dailyCost +
     GAME_CONFIG.food[food].dailyCost +
     GAME_CONFIG.transport[transport].dailyCost +
@@ -196,4 +201,19 @@ export function economicPowerScore(input: {
     normalizedCareer * w.careerLevel +
     input.territoryDevelopment * w.territoryDevelopment,
   );
+}
+
+
+export function dividendYield(ticker: string, sector = "") {
+  const seed = ticker.split("").reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  const sectorBonus: Record<string, number> = {
+    "Финансы": 0.006,
+    "Энергетика": 0.004,
+    "Порты": 0.003,
+    "Страхование": 0.004,
+    "Ритейл": 0.002,
+    "Технологии": -0.001,
+    "Биотех": -0.002,
+  };
+  return Math.max(0.01, Math.min(0.055, 0.018 + (seed % 18) / 1000 + (sectorBonus[sector] ?? 0)));
 }

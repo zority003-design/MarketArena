@@ -2,9 +2,11 @@ type Appearance = "basic"|"neat"|"professional"|"executive";
 type Props={appearance:Appearance;careerTitle:string;name:string;};
 
 const labels:Record<Appearance,string>={basic:"START",neat:"NEAT",professional:"PRO",executive:"EXEC"};
+const variantFor=(name:string)=>name.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0)%3;
 
 export function LifeAvatar({appearance,careerTitle,name}:Props){
-  return <div className={"life-avatar-stage appearance-"+appearance} aria-label={"Персонаж "+name}>
+  const variant=variantFor(name);
+  return <div className={`life-avatar-stage appearance-${appearance} avatar-variant-${variant}`} aria-label={"Персонаж "+name}>
     <div className="life-avatar-shadow"/>
     <div className="life-avatar">
       <div className="avatar-hair"><i/><i/><i/></div>

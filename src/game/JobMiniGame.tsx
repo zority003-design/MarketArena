@@ -14,6 +14,8 @@ const clamp = (v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
 
 export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
   const [startedAt] = useState(()=>Date.now());
+  const [remaining,setRemaining]=useState(90);
+  const [finished,setFinished]=useState(false);
   const [score,setScore]=useState(0);
   const [mistakes,setMistakes]=useState(0);
   const [round,setRound]=useState(0);
@@ -29,6 +31,15 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
   const targetIndex=target.y*6+target.x;
 
   useEffect(()=>{
+    const timer=window.setInterval(()=>{
+      const next=Math.max(0,90-Math.floor((Date.now()-startedAt)/1000));
+      setRemaining(next);
+      if(next<=0){window.clearInterval(timer);finish();}
+    },250);
+    return()=>window.clearInterval(timer);
+  },[startedAt,finished,score,mistakes]);
+
+  useEffect(()=>{
     const onKey=(e:KeyboardEvent)=>{
       if(jobId!=="courier" && jobId!=="streetcleaner") return;
       const map:Record<string,[number,number]>={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
@@ -40,7 +51,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
     return()=>window.removeEventListener("keydown",onKey);
   });
 
-  const finish=()=>{
+  const finish=()=>{if(finished)return; setFinished(true); setRemaining(0);
     const elapsed=(Date.now()-startedAt)/1000;
     const performance=clamp(.45 + score*.12 - mistakes*.07 + (elapsed<65?.08:elapsed<90?.03:0));
     onComplete(performance);
@@ -93,7 +104,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
       <button className="modal-close" onClick={onCancel}>×</button>
       <div className="job-game-header">
         <div><span className="eyebrow">2D · РАБОЧАЯ СМЕНА</span><h2>{title}</h2><p>{message}</p></div>
-        <div className="job-scoreboard"><span>РЕЗУЛЬТАТ <b>{score}</b></span><span>ОШИБКИ <b>{mistakes}</b></span><span>БАЗА <b>{basePay.toLocaleString("ru-RU")} VLR</b></span></div>
+        <div className="job-scoreboard"><span>РЕЗУЛЬТАТ <b>{score}</b></span><span>ОШИБКИ <b>{mistakes}</b></span><span>БАЗА <b>{basePay.toLocaleString("ru-RU")} VLR</b></span><span>ВРЕМЯ <b>{remaining}с</b></span></div>
       </div>
 
       {(jobId==="courier"||jobId==="streetcleaner")&&<div className={"job2d-world "+jobId}>
