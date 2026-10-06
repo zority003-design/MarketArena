@@ -714,12 +714,22 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           }
         }
       }
-      // Player residence: a distinct small home next to the capital district.
+      // Player residence: a readable private compound, not a hidden building.
       const homePoint=worldFromGeo([capital[0]+1.15,capital[1]+1.05]);
-      const home=makeModernBuilding(homePoint.x,homePoint.z,.62,4);
-      home.userData.playerHome=true;
+      const yard=new THREE.Mesh(new THREE.BoxGeometry(1.45,.045,1.05),new THREE.MeshStandardMaterial({color:"#6d805d",roughness:1}));
+      yard.position.set(homePoint.x,surfaceHeight(homePoint.x,homePoint.z)+.025,homePoint.z);
+      yard.receiveShadow=true; scene.add(yard);
+      const home=makeModernBuilding(homePoint.x,homePoint.z,.68,4);
+      home.userData.playerHome=true; home.traverse(o=>{o.userData.playerHome=true});
       scene.add(home);
-      scene.add(makeTree(homePoint.x+.38,homePoint.z+.18,.48));
+      const driveway=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.72),new THREE.MeshStandardMaterial({color:"#6a7070",roughness:.95}));
+      driveway.position.set(homePoint.x-.62,surfaceHeight(homePoint.x-.62,homePoint.z)+.04,homePoint.z+.05);
+      driveway.rotation.y=.12; scene.add(driveway);
+      scene.add(makeTree(homePoint.x+.50,homePoint.z+.22,.50));
+      scene.add(makeTree(homePoint.x-.48,homePoint.z-.26,.38));
+      const mailbox=new THREE.Mesh(new THREE.BoxGeometry(.08,.18,.06),new THREE.MeshStandardMaterial({color:"#3b5964",roughness:.8}));
+      mailbox.position.set(homePoint.x-.68,surfaceHeight(homePoint.x-.68,homePoint.z+.34)+.13,homePoint.z+.34);
+      scene.add(mailbox);
 
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
