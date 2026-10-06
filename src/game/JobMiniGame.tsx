@@ -110,7 +110,8 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
 
   const move=(dx:number,dy:number)=>{
     if(finished||!started)return;
-    setStamina(v=>Math.max(0,v-(difficulty===3?2.2:1.4)));
+    const staminaCost=(jobId==="courier"&&abilityLevel>=3)?(difficulty===3?1.7:1.05):(difficulty===3?2.2:1.4);
+    setStamina(v=>Math.max(0,v-staminaCost));
     const nx=Math.max(0,Math.min(5,player.x+dx)),ny=Math.max(0,Math.min(4,player.y+dy));
     setPlayer({x:nx,y:ny});
     if(jobId==="courier"&&nx===target.x&&ny===target.y){
