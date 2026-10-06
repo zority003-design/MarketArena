@@ -131,7 +131,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
 
       {jobId==="freelance"&&<div className="job2d-freelance">
         <div className="client-brief"><span>ЗАДАНИЕ КЛИЕНТА</span><h3>{task==="fix"?"Найди баг в коде":task==="deploy"?"Подготовь релиз":"Проведи проверку данных"}</h3><p>{task==="fix"?"Нужно исправить ошибку перед запуском.":task==="deploy"?"Клиент ждёт рабочую сборку без регрессий.":"Проверь данные перед отправкой отчёта."}</p></div>
-        <div className="freelance-options">{["CODE","DEPLOY","CHECK","DESIGN"].map(x=><button key={x} onClick={()=>freelance(x)} className={x===({fix:"CODE",deploy:"DEPLOY",audit:"CHECK"} as Record<string,string>)[task]?"recommended":""}><b>{x}</b><small>{x==="CODE"?"исправить":x==="DEPLOY"?"выпустить":x==="CHECK"?"проверить":"оформить"}</small></button>)}</div>
+        <div className="freelance-options">{["CODE","DEPLOY","CHECK","DESIGN"].map(x=><button key={x} onClick={()=>freelance(x)} className={x===({fix:"CODE",deploy:"DEPLOY",audit:"CHECK"} as Record<string,string>)[task]?"recommended":""}><b>{x==="CODE"?"КОД":x==="DEPLOY"?"РЕЛИЗ":x==="CHECK"?"ПРОВЕРКА":"ДИЗАЙН"}</b><small>{x==="CODE"?"исправить":x==="DEPLOY"?"выпустить":x==="CHECK"?"проверить":"оформить"}</small></button>)}</div>
         <small>Реши 4 задачи клиента. Правильный ответ ускоряет карьерный рост.</small>
       </div>}
       <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b></span><span>Успешность влияет на зарплату</span></div>
