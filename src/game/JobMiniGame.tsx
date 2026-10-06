@@ -20,7 +20,7 @@ type Props = {
   onCancel: () => void;
 };
 
-type Customer = { price:number; paid:number };
+type Customer = { price:number; paid:number; basket:string };
 type CaseCompany = MarketRow & { growth:number; profit:number; debt:number; pe:number };
 
 const clamp=(v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
