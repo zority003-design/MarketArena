@@ -439,6 +439,17 @@ function makeCar(curve: THREE.CatmullRomCurve3, scale = 1) {
   group.userData.roadT=Math.random();
   return group;
 }
+function sidewalkWalkCurve(curve: THREE.CatmullRomCurve3, offset = 0.12) {
+  const samples=curve.getPoints(18);
+  const points=samples.map((p,i)=>{
+    const prev=samples[Math.max(0,i-1)],next=samples[Math.min(samples.length-1,i+1)];
+    const dx=next.x-prev.x,dz=next.z-prev.z,len=Math.max(.001,Math.hypot(dx,dz));
+    const nx=-dz/len,nz=dx/len;
+    const x=p.x+nx*offset,z=p.z+nz*offset;
+    return new THREE.Vector3(x,surfaceHeight(x,z)+.045,z);
+  });
+  return new THREE.CatmullRomCurve3(points);
+}
 function makeSidewalk(curve: THREE.CatmullRomCurve3, width = 0.055) {
   const samples=curve.getPoints(24), vertices:number[]=[], indices:number[]=[];
   samples.forEach((p,i)=>{
@@ -853,7 +864,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         car.userData.roadT=(i*0.071)%1;
         scene.add(car);
       }
-      for(let i=0;i<Math.min(36,roadCurves.length);i++){const walker=makePerson(0,0,.7+(i%3)*.08);walker.userData.walkCurve=roadCurves[i];walker.userData.walkT=(i*.137)%1;scene.add(walker)}
+      for(let i=0;i<Math.min(36,roadCurves.length);i++){const walker=makePerson(0,0,.7+(i%3)*.08);walker.userData.walkCurve=sidewalkWalkCurve(roadCurves[i],i%2===0?.12:-.12);walker.userData.walkT=(i*.137)%1;scene.add(walker)}
       // Pedestrians and parking clusters stay close to built-up districts.
       citySites.slice(0,Math.min(cityProfile.people,citySites.length)).forEach((geo,i)=>{
         const p=worldFromGeo(geo);

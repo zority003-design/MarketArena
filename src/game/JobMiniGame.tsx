@@ -14,6 +14,8 @@ const clamp = (v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
 
 export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
   const [startedAt] = useState(()=>Date.now());
+  const [remaining,setRemaining]=useState(90);
+  const [finished,setFinished]=useState(false);
   const [score,setScore]=useState(0);
   const [mistakes,setMistakes]=useState(0);
   const [round,setRound]=useState(0);
@@ -29,6 +31,15 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
   const targetIndex=target.y*6+target.x;
 
   useEffect(()=>{
+    const timer=window.setInterval(()=>{
+      const next=Math.max(0,90-Math.floor((Date.now()-startedAt)/1000));
+      setRemaining(next);
+      if(next<=0){window.clearInterval(timer);finish();}
+    },250);
+    return()=>window.clearInterval(timer);
+  },[startedAt,finished,score,mistakes]);
+
+  useEffect(()=>{
     const onKey=(e:KeyboardEvent)=>{
       if(jobId!=="courier" && jobId!=="streetcleaner") return;
       const map:Record<string,[number,number]>={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
@@ -40,7 +51,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
     return()=>window.removeEventListener("keydown",onKey);
   });
 
-  const finish=()=>{
+  const finish=()=>{if(finished)return; setFinished(true); setRemaining(0);
     const elapsed=(Date.now()-startedAt)/1000;
     const performance=clamp(.45 + score*.12 - mistakes*.07 + (elapsed<65?.08:elapsed<90?.03:0));
     onComplete(performance);
@@ -93,7 +104,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
       <button className="modal-close" onClick={onCancel}>×</button>
       <div className="job-game-header">
         <div><span className="eyebrow">2D · РАБОЧАЯ СМЕНА</span><h2>{title}</h2><p>{message}</p></div>
-        <div className="job-scoreboard"><span>РЕЗУЛЬТАТ <b>{score}</b></span><span>ОШИБКИ <b>{mistakes}</b></span><span>БАЗА <b>{basePay.toLocaleString("ru-RU")} VLR</b></span></div>
+        <div className="job-scoreboard"><span>РЕЗУЛЬТАТ <b>{score}</b></span><span>ОШИБКИ <b>{mistakes}</b></span><span>БАЗА <b>{basePay.toLocaleString("ru-RU")} VLR</b></span><span>ВРЕМЯ <b>{remaining}с</b></span></div>
       </div>
 
       {(jobId==="courier"||jobId==="streetcleaner")&&<div className={"job2d-world "+jobId}>
@@ -114,13 +125,13 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
 
       {jobId==="analyst"&&<div className="job2d-analyst">
         <div className="job2d-chart">{chart.map((v,i)=><span key={i} style={{height:(v+18)+"%"}} className={i===signal?"signal":""} onClick={()=>analyst(i)}><i/></span>)}</div>
-        <div className="analyst-feed"><b>ТЕРМИНАЛ · LIVE</b><p>Найди столбец, где объём и цена подтверждают импульс.</p><div><span>VOLUME ↑</span><span>PRICE ↑</span><span>RISK {mistakes>1?"HIGH":"LOW"}</span></div></div>
+        <div className="analyst-feed"><b>ТЕРМИНАЛ · В ПРЯМОМ ЭФИРЕ</b><p>Найди столбец, где объём и цена подтверждают импульс.</p><div><span>ОБЪЁМ ↑</span><span>ЦЕНА ↑</span><span>РИСК {mistakes>1?"ВЫСОКИЙ":"НИЗКИЙ"}</span></div></div>
         <small>Выбери 4 подтверждённых сигнала. Ошибка ухудшает итоговую выплату.</small>
       </div>}
 
       {jobId==="freelance"&&<div className="job2d-freelance">
-        <div className="client-brief"><span>CLIENT BRIEF</span><h3>{task==="fix"?"Найди баг в коде":task==="deploy"?"Подготовь релиз":"Проведи проверку данных"}</h3><p>{task==="fix"?"Нужно исправить ошибку перед запуском.":task==="deploy"?"Клиент ждёт рабочую сборку без регрессий.":"Проверь данные перед отправкой отчёта."}</p></div>
-        <div className="freelance-options">{["CODE","DEPLOY","CHECK","DESIGN"].map(x=><button key={x} onClick={()=>freelance(x)} className={x===({fix:"CODE",deploy:"DEPLOY",audit:"CHECK"} as Record<string,string>)[task]?"recommended":""}><b>{x}</b><small>{x==="CODE"?"исправить":x==="DEPLOY"?"выпустить":x==="CHECK"?"проверить":"оформить"}</small></button>)}</div>
+        <div className="client-brief"><span>ЗАДАНИЕ КЛИЕНТА</span><h3>{task==="fix"?"Найди баг в коде":task==="deploy"?"Подготовь релиз":"Проведи проверку данных"}</h3><p>{task==="fix"?"Нужно исправить ошибку перед запуском.":task==="deploy"?"Клиент ждёт рабочую сборку без регрессий.":"Проверь данные перед отправкой отчёта."}</p></div>
+        <div className="freelance-options">{["CODE","DEPLOY","CHECK","DESIGN"].map(x=><button key={x} onClick={()=>freelance(x)} className={x===({fix:"CODE",deploy:"DEPLOY",audit:"CHECK"} as Record<string,string>)[task]?"recommended":""}><b>{x==="CODE"?"КОД":x==="DEPLOY"?"РЕЛИЗ":x==="CHECK"?"ПРОВЕРКА":"ДИЗАЙН"}</b><small>{x==="CODE"?"исправить":x==="DEPLOY"?"выпустить":x==="CHECK"?"проверить":"оформить"}</small></button>)}</div>
         <small>Реши 4 задачи клиента. Правильный ответ ускоряет карьерный рост.</small>
       </div>}
       <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b></span><span>Успешность влияет на зарплату</span></div>
