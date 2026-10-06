@@ -3419,3 +3419,355 @@ button,input,select{font:inherit}
 @media(max-width:1050px){.auth-screen{grid-template-columns:1fr!important}.auth-visual{display:none!important}.life-profile-grid{grid-template-columns:1fr!important}.exchange-safe-metrics{grid-template-columns:repeat(2,1fr)!important}.hero-map-grid{grid-template-columns:1fr!important}.market-map-card{min-height:560px!important}.market-map-card .atlas-3d-viewport{min-height:500px!important}}
 
 .ownership-ladder{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:10px 18px;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);background:rgba(0,0,0,.10)}.ownership-ladder span{display:flex;flex-direction:column;gap:3px;padding:8px 7px;border:1px solid rgba(255,255,255,.06);border-radius:7px;color:#84999f;font-size:10px}.ownership-ladder span b{font-size:7px;text-transform:uppercase;letter-spacing:.06em;color:#60767d;font-weight:600}.ownership-ladder .control{border-color:rgba(99,223,186,.28);background:rgba(99,223,186,.05);color:#7fe5c4}.ownership-ladder .control b{color:#63dfba}@media(max-width:900px){.ownership-ladder{grid-template-columns:repeat(3,1fr)}}
+
+
+/* =========================================================
+   MARKETARENA — PHASE 1 / CLEAN COMMAND CENTER
+   Serious strategy-game presentation. Keep game logic intact.
+   ========================================================= */
+:root{
+  --ma-bg:#070b0e;
+  --ma-panel:#0b1014;
+  --ma-panel-2:#0e1419;
+  --ma-line:rgba(207,220,222,.10);
+  --ma-line-strong:rgba(207,220,222,.18);
+  --ma-text:#e7ecec;
+  --ma-muted:#7f8b90;
+  --ma-accent:#d3a84b;
+  --ma-positive:#78b99c;
+  --ma-negative:#c76c67;
+}
+
+.game-shell{
+  background:
+    radial-gradient(circle at 58% 0%,rgba(255,255,255,.035),transparent 30%),
+    linear-gradient(180deg,#06090c 0%,#080d11 100%) !important;
+}
+
+.game-topbar{
+  height:62px !important;
+  min-height:62px !important;
+  background:rgba(7,10,13,.97) !important;
+  border-bottom:1px solid var(--ma-line-strong) !important;
+  box-shadow:0 8px 28px rgba(0,0,0,.35) !important;
+}
+
+.game-topbar .game-brand b,
+.game-topbar .topbar-wealth,
+.game-topbar .game-right b{
+  color:var(--ma-text) !important;
+}
+
+.game-sidebar{
+  top:62px !important;
+  height:calc(100vh - 62px) !important;
+  width:218px !important;
+  padding:12px 10px !important;
+  background:#090d11 !important;
+  border-right:1px solid var(--ma-line) !important;
+}
+
+.sidebar-player{
+  padding:12px 10px 16px !important;
+  margin-bottom:5px;
+  border-bottom:1px solid var(--ma-line) !important;
+}
+
+.sidebar-section{
+  margin-top:7px !important;
+}
+
+.sidebar-section > span,
+.sidebar-next > span,
+.sidebar-status > span{
+  color:#59646a !important;
+  font-size:8px !important;
+  letter-spacing:.18em !important;
+}
+
+.sidebar-section button{
+  min-height:38px !important;
+  padding:0 10px !important;
+  color:#8b969b !important;
+  border-radius:6px !important;
+  font-size:11px !important;
+}
+
+.sidebar-section button.active{
+  color:#f0f2f2 !important;
+  background:#151b20 !important;
+  box-shadow:inset 2px 0 0 var(--ma-accent) !important;
+}
+
+.sidebar-section button:hover{
+  background:#10161a !important;
+  color:#e6ebeb !important;
+}
+
+.nav-glyph{
+  opacity:.72;
+}
+
+.sidebar-next{
+  margin-top:auto !important;
+  padding:13px !important;
+  border:1px solid var(--ma-line) !important;
+  border-radius:8px !important;
+  background:#0d1318 !important;
+}
+
+.sidebar-next b{
+  display:block;
+  margin-top:7px;
+  color:#e4e8e8 !important;
+  font-size:11px !important;
+  line-height:1.35;
+}
+
+.sidebar-next small{
+  display:block;
+  margin-top:5px;
+  color:#717d82 !important;
+  font-size:9px !important;
+  line-height:1.45;
+}
+
+.sidebar-next button{
+  width:100%;
+  margin-top:10px;
+  min-height:32px;
+  border:1px solid rgba(211,168,75,.35);
+  border-radius:5px;
+  background:rgba(211,168,75,.08);
+  color:#d7bb78;
+  font-size:9px;
+}
+
+.sidebar-status{
+  padding:11px 8px 3px !important;
+}
+
+.sidebar-status b{
+  display:block;
+  margin-top:6px;
+  font-size:10px !important;
+}
+
+.sidebar-status small{
+  display:block;
+  margin-top:4px;
+  color:#59656a !important;
+  font-size:8px !important;
+}
+
+.game-main{
+  margin-left:218px !important;
+  max-width:none !important;
+  padding:24px 28px 42px !important;
+}
+
+.game-heading{
+  max-width:1500px;
+  margin:0 auto 14px !important;
+}
+
+.game-heading h1{
+  color:#f0f2f2 !important;
+  font-size:30px !important;
+  letter-spacing:-.035em !important;
+}
+
+.game-heading p{
+  color:#727e83 !important;
+}
+
+.day-button{
+  min-height:38px !important;
+  background:#0d1318 !important;
+  border:1px solid var(--ma-line-strong) !important;
+  color:#b7c0c2 !important;
+}
+
+.day-button:hover{
+  border-color:rgba(211,168,75,.45) !important;
+  box-shadow:none !important;
+}
+
+/* The overview becomes a game board, not an information dashboard. */
+.game-main:has(> .empire-roadmap) .empire-roadmap{
+  display:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .hero-map-grid{
+  max-width:1500px;
+  margin:0 auto;
+  grid-template-columns:minmax(0,1fr) 292px !important;
+  grid-template-rows:auto auto !important;
+  gap:12px !important;
+  align-items:stretch;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card{
+  grid-column:1;
+  grid-row:1 / span 2 !important;
+  min-height:690px !important;
+  padding:0 !important;
+  border-radius:10px !important;
+  border:1px solid var(--ma-line-strong) !important;
+  background:#090e12 !important;
+  box-shadow:0 22px 70px rgba(0,0,0,.28) !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .card-head{
+  min-height:58px;
+  padding:0 17px !important;
+  border-bottom:1px solid var(--ma-line) !important;
+  background:#0b1014 !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .card-head h2{
+  margin:4px 0 0 !important;
+  font-size:17px !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .positive{
+  font-size:12px !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .atlas{
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  min-height:630px;
+  height:calc(100% - 58px) !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .atlas-3d-viewport{
+  min-height:630px !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-card{
+  grid-column:2;
+  grid-row:1;
+  min-height:250px !important;
+  padding:22px !important;
+  border-radius:10px !important;
+  background:#0b1014 !important;
+  border:1px solid var(--ma-line-strong) !important;
+  box-shadow:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-card > span{
+  color:#6f7a7e !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-card > strong{
+  color:#f0f2f1 !important;
+  font-size:31px !important;
+  letter-spacing:-.04em;
+}
+
+.game-main:has(> .empire-roadmap) .capital-card small{
+  color:#737e83 !important;
+}
+
+.game-main:has(> .empire-roadmap) .money-bar{
+  background:#171d21 !important;
+}
+
+.game-main:has(> .empire-roadmap) .money-bar i{
+  background:var(--ma-accent) !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-actions{
+  grid-template-columns:1fr 1fr !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-actions button{
+  min-height:40px !important;
+  background:#11171b !important;
+  border-color:var(--ma-line-strong) !important;
+  color:#c6cecf !important;
+}
+
+.game-main:has(> .empire-roadmap) .capital-actions button:hover{
+  border-color:rgba(211,168,75,.4) !important;
+  transform:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .jobs-card{
+  display:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .campaign-card{
+  grid-column:2;
+  grid-row:2;
+  min-height:220px !important;
+  padding:19px !important;
+  border-radius:10px !important;
+  background:#0b1014 !important;
+  border:1px solid var(--ma-line-strong) !important;
+  box-shadow:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .campaign-card p{
+  color:#788388 !important;
+  font-size:10px !important;
+  line-height:1.55 !important;
+}
+
+.game-main:has(> .empire-roadmap) .campaign-stats{
+  border-color:var(--ma-line) !important;
+}
+
+.game-main:has(> .empire-roadmap) .campaign-open{
+  color:#d5b66e !important;
+}
+
+.game-main:has(> .empire-roadmap) .risk-dashboard,
+.game-main:has(> .empire-roadmap) .finance-card,
+.game-main:has(> .empire-roadmap) .companies-card,
+.game-main:has(> .empire-roadmap) .home-news-card{
+  display:none !important;
+}
+
+/* Map becomes the visual identity of the selected country. */
+.game-main:has(> .empire-roadmap) .market-map-card .atlas-head{
+  display:none !important;
+}
+
+.game-main:has(> .empire-roadmap) .market-map-card .map-key{
+  background:rgba(6,10,13,.88) !important;
+  border-top:1px solid var(--ma-line) !important;
+}
+
+.game-main:has(> .empire-roadmap) .atlas-home-marker{
+  background:rgba(8,11,13,.94) !important;
+  border-color:rgba(211,168,75,.55) !important;
+}
+
+/* Neutralize the “mobile game” look of decorative cards and hover lifts. */
+.game-main:has(> .empire-roadmap) section{
+  transition:none !important;
+}
+
+.game-main:has(> .empire-roadmap) section:hover{
+  transform:none !important;
+}
+
+@media(max-width:1050px){
+  .game-sidebar{width:190px !important}
+  .game-main{margin-left:190px !important;padding:18px !important}
+  .game-main:has(> .empire-roadmap) .hero-map-grid{grid-template-columns:1fr !important}
+  .game-main:has(> .empire-roadmap) .market-map-card{grid-column:1;grid-row:1 !important;min-height:560px !important}
+  .game-main:has(> .empire-roadmap) .capital-card{grid-column:1;grid-row:2}
+  .game-main:has(> .empire-roadmap) .campaign-card{grid-column:1;grid-row:3}
+}
+
+@media(max-width:760px){
+  .game-topbar{height:58px !important;min-height:58px !important}
+  .game-sidebar{top:58px !important;height:calc(100vh - 58px) !important;width:68px !important}
+  .game-main{margin-left:68px !important;padding:12px !important}
+  .game-main:has(> .empire-roadmap) .market-map-card{min-height:480px !important}
+  .game-main:has(> .empire-roadmap) .market-map-card .atlas-3d-viewport{min-height:420px !important}
+}
