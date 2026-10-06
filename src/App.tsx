@@ -399,13 +399,16 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setNotice(next<=1?"Кредит полностью погашен.":"Погашено "+pay.toLocaleString("ru-RU")+" VLR. Остаток: "+next.toLocaleString("ru-RU")+" VLR.");
   };
   const acquireCompany=(company:CompanyPreview)=>{
-    if(ownedCompanies.includes(company.ticker)){setNotice(company.name+" уже под твоим контролем.");return;}
+    const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control);
+    const owned=holdings[company.ticker]||0;
+    if(owned>=target){setOwnedCompanies(v=>v.includes(company.ticker)?v:[...v,company.ticker]);setNotice(company.name+" уже под твоим контролем.");return;}
     const cost=takeoverCost(company);
-    if(cash<cost){setNotice("Для поглощения нужно "+cost.toLocaleString("ru-RU")+" VLR. Можно сначала использовать кредит.");return;}
+    if(cash<cost){setNotice("Для контроля 51% нужно "+cost.toLocaleString("ru-RU")+" VLR. Можно сначала накопить капитал или использовать кредит.");return;}
     setCash(v=>v-cost);
-    setOwnedCompanies(v=>[...v,company.ticker]);
+    setHoldings(v=>({...v,[company.ticker]:target}));
+    setOwnedCompanies(v=>v.includes(company.ticker)?v:[...v,company.ticker]);
     setAchievements(v=>v.includes("takeover")?v:[...v,"takeover"]);
-    setNotice("Поглощение завершено: "+company.name+" теперь входит в твою группу.");
+    setNotice("Контроль 51% получен: "+company.name+" теперь входит в твою группу, остальные 49% остаются у рынка.");
   };
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),cost=price*quantity;
@@ -414,7 +417,21 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
     setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс списан: -"+cost.toLocaleString("ru-RU")+" VLR.");
   };
-  const buyStake=(company:CompanyPreview,targetPct:number)=>{\n    const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*(targetPct/100));\n    const owned=holdings[company.ticker]||0;\n    const quantity=Math.max(0,target-owned);\n    if(quantity<=0){setNotice(company.name+" уже имеет пакет "+targetPct+"%.");return;}\n    const price=priceFor(company);\n    const cost=Math.round(quantity*price*(1+GAME_CONFIG.marketOrderFeeRate)*100)/100;\n    if(cash<cost){setNotice("Для пакета "+targetPct+"% нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}\n    setCash(v=>v-cost);setHoldings(v=>({...v,[company.ticker]:owned+quantity}));\n    setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));\n    if(targetPct>=51)setOwnedCompanies(v=>v.includes(company.ticker)?v:[...v,company.ticker]);\n    setNotice("Пакет "+targetPct+"% сформирован в "+company.ticker+": +"+quantity.toLocaleString("ru-RU")+" акций.");\n  };\n  const sell=(company:CompanyPreview,quantity=1)=>{
+  const buyStake=(company:CompanyPreview,targetPct:number)=>{
+    const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*(targetPct/100));
+    const owned=holdings[company.ticker]||0;
+    const quantity=Math.max(0,target-owned);
+    if(quantity<=0){setNotice(company.name+" уже имеет пакет "+targetPct+"%.");return;}
+    const price=priceFor(company);
+    const cost=Math.round(quantity*price*(1+GAME_CONFIG.marketOrderFeeRate)*100)/100;
+    if(cash<cost){setNotice("Для пакета "+targetPct+"% нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
+    setCash(v=>v-cost);
+    setHoldings(v=>({...v,[company.ticker]:owned+quantity}));
+    setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
+    if(targetPct>=51)setOwnedCompanies(v=>v.includes(company.ticker)?v:[...v,company.ticker]);
+    setNotice("Пакет "+targetPct+"% сформирован в "+company.ticker+": +"+quantity.toLocaleString("ru-RU")+" акций.");
+  };
+  const sell=(company:CompanyPreview,quantity=1)=>{
     const owned=holdings[company.ticker]||0;
     if(owned<quantity){setNotice("У тебя нет "+quantity+" акций "+company.ticker+" для продажи.");return;}
     const price=priceFor(company),proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
