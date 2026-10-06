@@ -46,12 +46,30 @@ function residenceGeo(countryId:string,housing:string):GeoPoint{
 function safeCompanyGeo(countryId:string,company:CompanyPreview):GeoPoint{
   const poly=countryPolygons[countryId],c=capitalGeo[countryId];
   const seed=company.ticker.split("").reduce((n,ch,i)=>n+ch.charCodeAt(0)*(i+5),countryId.length*91);
-  for(let i=0;i<240;i++){const u=8+hash(seed+i*17.3,3+i*.7)*84,v=8+hash(seed*.7+i*31.1,8+i*1.2)*84;
-    if(pointInPolygon(u,v,poly)&&pointInPolygon(u+.7,v,poly)&&pointInPolygon(u-.7,v,poly)&&pointInPolygon(u,v+.7,poly)&&pointInPolygon(u,v-.7,poly)&&Math.hypot(u-c[0],v-c[1])>3)return [u,v];
+  const kind=districtKind(company.sector);
+  const anchors:Record<District["kind"],[number,number]>={
+    industrial:[-6,1],logistics:[6,2],business:[3,-4],tech:[-3,-4],
+    retail:[5,5],civic:[0,5],residential:[-5,5]
+  };
+  const base=anchors[kind]??[0,5];
+  const angle=(seed%360)*Math.PI/180;
+  const jitter:[number,number]=[Math.cos(angle)*1.8,Math.sin(angle)*1.5];
+  const candidates:GeoPoint[]=[
+    [c[0]+base[0]+jitter[0],c[1]+base[1]+jitter[1]],
+    [c[0]+base[0]*1.35,c[1]+base[1]*1.35],
+    [c[0]+base[0]*.7,c[1]+base[1]*.7],
+    [c[0]+Math.cos(angle)*10,c[1]+Math.sin(angle)*8]
+  ];
+  for(const p of candidates){
+    if(pointInPolygon(p[0],p[1],poly))return p;
+  }
+  for(let i=0;i<120;i++){
+    const u=c[0]+(hash(seed+i*17.3,3+i*.7)-.5)*26;
+    const v=c[1]+(hash(seed*.7+i*31.1,8+i*1.2)-.5)*22;
+    if(pointInPolygon(u,v,poly))return [u,v];
   }
   return c;
 }
-
 type District={id:string;name:string;kind:"residential"|"industrial"|"business"|"retail"|"logistics"|"tech"|"civic";center:GeoPoint;size:[number,number];accent:string};
 const districtKind=(sector:string):District["kind"]=>{
   if(["Нефть","Металлы","Энергетика","Промышленность","Машиностроение","Химия"].includes(sector))return "industrial";
@@ -88,7 +106,7 @@ function districtForCompany(country:Country,company:CompanyPreview,index:number)
 }
 
 function makeTerrain(selected:string){
-  const nx=130,nz=92,pos:number[]=[],colors:number[]=[],ind:number[]=[];
+  const nx=96,nz=68,pos:number[]=[],colors:number[]=[],ind:number[]=[];
   for(let z=0;z<=nz;z++)for(let x=0;x<=nx;x++){const u=x/nx*100,v=z/nz*100,p=worldFromGeo([u,v]),land=pointInPolygon(u,v,countryPolygons[selected]);const h=land?surfaceHeight(p.x,p.z):-0.42;pos.push(p.x,h,p.z);const c=land?new THREE.Color("#66715f").lerp(new THREE.Color("#8c8b79"),clamp((h+.1)/.5,0,1)*.45):new THREE.Color("#536a72");colors.push(c.r,c.g,c.b);}
   for(let z=0;z<nz;z++)for(let x=0;x<nx;x++){const a=z*(nx+1)+x,b=a+1,c=a+nx+1,d=c+1;ind.push(a,c,b,b,c,d);}
   const geo=new THREE.BufferGeometry();geo.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));geo.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));geo.setIndex(ind);geo.computeVertexNormals();const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98}));m.receiveShadow=true;return m;
@@ -105,14 +123,14 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     const scene=new THREE.Scene();scene.background=new THREE.Color("#081116");scene.fog=new THREE.Fog("#081116",30,58);
     const camera=new THREE.PerspectiveCamera(48,1,.1,100);const center=worldFromGeo(capitalGeo[selected]);const homeGeo=home?.housing?residenceGeo(selected,home.housing):capitalGeo[selected];const focus=worldFromGeo(homeGeo);const target=new THREE.Vector3(focus.x,.25,focus.z);
     camera.position.set(focus.x,14.5,focus.z+16);camera.lookAt(target);
-    const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;host.insertBefore(renderer.domElement,host.firstChild);renderer.domElement.className="atlas-3d-canvas";
-    scene.add(new THREE.HemisphereLight("#dce7e3","#172528",1.4));const sun=new THREE.DirectionalLight("#fff0d2",3);sun.position.set(-10,18,-8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
+    const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;host.insertBefore(renderer.domElement,host.firstChild);renderer.domElement.className="atlas-3d-canvas";
+    scene.add(new THREE.HemisphereLight("#dce7e3","#172528",1.4));const sun=new THREE.DirectionalLight("#fff0d2",3);sun.position.set(-10,18,-8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
     const terrain=makeTerrain(selected);scene.add(terrain);
 
     const countryShape=new THREE.Shape();countryPolygons[selected].forEach(([u,v],i)=>{const p=worldFromGeo([u,v]);if(i===0)countryShape.moveTo(p.x,p.z);else countryShape.lineTo(p.x,p.z);});countryShape.closePath();const countryMesh=new THREE.Mesh(new THREE.ShapeGeometry(countryShape),new THREE.MeshBasicMaterial({color:new THREE.Color(country.color),transparent:true,opacity:.09,depthWrite:false,side:THREE.DoubleSide}));countryMesh.rotation.x=-Math.PI/2;countryMesh.position.y=.09;scene.add(countryMesh);
 
-    const companyGeos=country.companies.map(c=>safeCompanyGeo(selected,c));
     const districts:District[]=country.companies.map((c,i)=>districtForCompany(country,c,i));
+    const companyGeos=country.companies.map((_,i)=>districts[i].center);
     const districtCenters:GeoPoint[]=[capitalGeo[selected],...districts.map(d=>d.center),residenceGeo(selected,home?.housing??"studio")];
 
     // The road hierarchy is generated from the economic graph: trunk routes first, local streets second.
@@ -128,11 +146,11 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
       // District buildings are purposeful: production, office, retail, or housing based on the sector.
       const company=country.companies[di];const kind=d.kind;
       const slots:GeoPoint[]=[
-        [d.center[0]-.75,d.center[1]-.55],[d.center[0]+.55,d.center[1]-.55],[d.center[0]-.65,d.center[1]+.48],[d.center[0]+.62,d.center[1]+.52]
+        [d.center[0]-.62,d.center[1]-.42],[d.center[0]+.58,d.center[1]+.38]
       ];
       slots.forEach((s,i)=>{const p=worldFromGeo(s);const owned=(holdings[company.ticker]??0)/SHARES>=.51;scene.add(makeBuilding(p.x,p.z,.72+(i%2)*.16,i%4,kind,owned));if(kind!=="industrial"&&i%2===0)scene.add(makeTree(p.x+.35,p.z+.3,.48));});
       // Small residential edge around every productive district gives workers a reason to be there.
-      if(kind!=="residential"){for(let i=0;i<3;i++){const p=worldFromGeo([d.center[0]-d.size[0]/2-.45+i*.55,d.center[1]+d.size[1]/2+.35]);scene.add(makeBuilding(p.x,p.z,.48,i%3,"residential",false));}}
+      if(kind!=="residential"){for(let i=0;i<1;i++){const p=worldFromGeo([d.center[0]-d.size[0]/2-.45+i*.55,d.center[1]+d.size[1]/2+.35]);scene.add(makeBuilding(p.x,p.z,.48,i%3,"residential",false));}}
     });
 
     // Capital district: exchange, government, central bank and public square.
@@ -141,7 +159,7 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
 
     // Residential fabric is compact and connected, not random filler.
     const residentialCenter=residenceGeo(selected,home?.housing??"studio");
-    for(let block=0;block<8;block++){const gx=residentialCenter[0]+(block%4-1.5)*1.25,gz=residentialCenter[1]+(Math.floor(block/4)-.5)*1.35;if(!pointInPolygon(gx,gz,countryPolygons[selected]))continue;const p=worldFromGeo([gx,gz]);scene.add(makeBuilding(p.x,p.z,.48+(block%3)*.08,block%3,"residential",false));}
+    for(let block=0;block<5;block++){const gx=residentialCenter[0]+(block%4-1.5)*1.25,gz=residentialCenter[1]+(Math.floor(block/4)-.5)*1.35;if(!pointInPolygon(gx,gz,countryPolygons[selected]))continue;const p=worldFromGeo([gx,gz]);scene.add(makeBuilding(p.x,p.z,.48+(block%3)*.08,block%3,"residential",false));}
     const homeP=worldFromGeo(residentialCenter);const homeBuilding=makeBuilding(homeP.x,homeP.z,home?.housing==="premium"?1.15:.72,home?.housing==="premium"?1:0,"residential",true);homeBuilding.userData.playerHome=true;scene.add(homeBuilding);
     const homeRoad=roadCurve(residentialCenter,capitalGeo[selected],.08);scene.add(roadMesh(homeRoad,.12));scene.add(roadMesh(homeRoad,.17,true));
 
@@ -152,9 +170,9 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     country.companies.forEach((company,i)=>{const p=worldFromGeo(companyGeos[i]),shares=holdings[company.ticker]??0,ownership=Math.min(100,Math.round(shares/SHARES*100));if(ownership>0){const ring=new THREE.Mesh(new THREE.RingGeometry(.28+(ownership/100)*.12,.31+(ownership/100)*.12,32),new THREE.MeshBasicMaterial({color:ownership>=51?0xd9b866:0x5ed0ae,transparent:true,opacity:.8,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(p.x,surfaceHeight(p.x,p.z)+.035,p.z);scene.add(ring);}});
 
     // People and vehicles move only on actual roads/sidewalks.
-    const routes=[...trunkCurves,...localCurves];routes.slice(0,Math.min(18,routes.length)).forEach((curve,i)=>{const car=makeCar(curve,.7+(i%3)*.12);car.userData.roadT=(i*.071)%1;scene.add(car);});
-    routes.slice(0,Math.min(22,routes.length)).forEach((curve,i)=>{const person=makePerson(curve,.7+(i%2)*.12);person.userData.walkT=(i*.11)%1;scene.add(person);});
-    for(let i=0;i<30;i++){
+    const routes=[...trunkCurves,...localCurves];routes.slice(0,Math.min(12,routes.length)).forEach((curve,i)=>{const car=makeCar(curve,.7+(i%3)*.12);car.userData.roadT=(i*.071)%1;scene.add(car);});
+    routes.slice(0,Math.min(14,routes.length)).forEach((curve,i)=>{const person=makePerson(curve,.7+(i%2)*.12);person.userData.walkT=(i*.11)%1;scene.add(person);});
+    for(let i=0;i<18;i++){
       const d=districts[i%districts.length];
       const treeGeo:GeoPoint=[d.center[0]+(hash(i,3)-.5)*d.size[0],d.center[1]+(hash(i,7)-.5)*d.size[1]];
       const p=worldFromGeo(treeGeo);
