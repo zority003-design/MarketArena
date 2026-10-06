@@ -83,41 +83,15 @@ function roadMesh(curve:THREE.CatmullRomCurve3,width=.12,sidewalk=false){const p
 function districtForCompany(country:Country,company:CompanyPreview,index:number):District{
   const c=capitalGeo[country.id],g=safeCompanyGeo(country.id,company),kind=districtKind(company.sector);
   const offsets:Record<string,[number,number]>={industrial:[-2.8,1.4],business:[1.7,-1.7],tech:[-1.5,-2.1],logistics:[2.8,2.1],retail:[2.3,.7],civic:[0,2.7],residential:[-2.2,.3]};
-  const o=offsets[kind]??[0,0];const center:GeoPoint=[clamp(g[0]+o[0]*.35,10,90),clamp(g[1]+o[1]*.35,10,90)];
+  const o=offsets[kind]??[0,0];const center:GeoPoint=[clamp((g[0]*.7+c[0]*.3)+o[0],10,90),clamp((g[1]*.7+c[1]*.3)+o[1],10,90)];
   return {id:"district-"+company.ticker,name:company.sector+" квартал",kind,center,size:[4.6+(index%3)*.7,3.2+(index%2)*.6],accent:company.ticker};
 }
 
 function makeTerrain(selected:string){
   const nx=130,nz=92,pos:number[]=[],colors:number[]=[],ind:number[]=[];
-  for(let z=0;z<=nz;z++)for(let x=0;x<=nx;x++){
-    const u=x/nx*100,v=z/nz*100,p=worldFromGeo([u,v]);
-    let landId:string|undefined;
-    for(const id of Object.keys(countryPolygons))if(pointInPolygon(u,v,countryPolygons[id])){landId=id;break;}
-    const land=!!landId,h=land?surfaceHeight(p.x,p.z):-0.42;
-    pos.push(p.x,h,p.z);
-    const active=landId===selected;
-    const base=active?new THREE.Color("#66715f"):new THREE.Color("#4d5554");
-    const alt=active?new THREE.Color("#8c8b79"):new THREE.Color("#666b67");
-    const c=land?base.lerp(alt,clamp((h+.1)/.5,0,1)*.38):new THREE.Color("#536a72");
-    colors.push(c.r,c.g,c.b);
-  }
+  for(let z=0;z<=nz;z++)for(let x=0;x<=nx;x++){const u=x/nx*100,v=z/nz*100,p=worldFromGeo([u,v]),land=pointInPolygon(u,v,countryPolygons[selected]);const h=land?surfaceHeight(p.x,p.z):-0.42;pos.push(p.x,h,p.z);const c=land?new THREE.Color("#66715f").lerp(new THREE.Color("#8c8b79"),clamp((h+.1)/.5,0,1)*.45):new THREE.Color("#536a72");colors.push(c.r,c.g,c.b);}
   for(let z=0;z<nz;z++)for(let x=0;x<nx;x++){const a=z*(nx+1)+x,b=a+1,c=a+nx+1,d=c+1;ind.push(a,c,b,b,c,d);}
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
-  geo.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));
-  geo.setIndex(ind);geo.computeVertexNormals();
-  const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98}));
-  m.receiveShadow=true;return m;
-}
-function makeWater(){
-  const geo=new THREE.PlaneGeometry(34,25,32,24);
-  const mat=new THREE.ShaderMaterial({
-    transparent:true,
-    uniforms:{uTime:{value:0}},
-    vertexShader:`varying vec2 vUv;uniform float uTime;void main(){vUv=uv;vec3 p=position;p.z+=sin(p.x*1.8+uTime*.55)*.035+cos(p.y*2.2-uTime*.4)*.025;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`,
-    fragmentShader:`varying vec2 vUv;uniform float uTime;void main(){float w=sin(vUv.x*34.0+uTime*.8)*.035+cos(vUv.y*27.0-uTime*.6)*.025;vec3 c=mix(vec3(.025,.13,.18),vec3(.07,.30,.36),vUv.y*.25+w);gl_FragColor=vec4(c,.96);}`
-  });
-  const mesh=new THREE.Mesh(geo,mat);mesh.rotation.x=-Math.PI/2;mesh.position.y=-.43;mesh.userData.waterShader=mat;return mesh;
+  const geo=new THREE.BufferGeometry();geo.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));geo.setAttribute("color",new THREE.Float32BufferAttribute(colors,3));geo.setIndex(ind);geo.computeVertexNormals();const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.98}));m.receiveShadow=true;return m;
 }
 
 export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompany,holdings={},home}:Atlas3DProps){
@@ -131,16 +105,11 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     const scene=new THREE.Scene();scene.background=new THREE.Color("#081116");scene.fog=new THREE.Fog("#081116",30,58);
     const camera=new THREE.PerspectiveCamera(48,1,.1,100);const center=worldFromGeo(capitalGeo[selected]);const homeGeo=home?.housing?residenceGeo(selected,home.housing):capitalGeo[selected];const focus=worldFromGeo(homeGeo);const target=new THREE.Vector3(focus.x,.25,focus.z);
     camera.position.set(focus.x,14.5,focus.z+16);camera.lookAt(target);
-    const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;host.insertBefore(renderer.domElement,host.firstChild);renderer.domElement.className="atlas-3d-canvas";
-    scene.add(new THREE.HemisphereLight("#dce7e3","#172528",1.4));const sun=new THREE.DirectionalLight("#fff0d2",3);sun.position.set(-10,18,-8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
-    const water=makeWater();scene.add(water);const terrain=makeTerrain(selected);scene.add(terrain);
+    const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;host.insertBefore(renderer.domElement,host.firstChild);renderer.domElement.className="atlas-3d-canvas";
+    scene.add(new THREE.HemisphereLight("#dce7e3","#172528",1.4));const sun=new THREE.DirectionalLight("#fff0d2",3);sun.position.set(-10,18,-8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
+    const terrain=makeTerrain(selected);scene.add(terrain);
 
-    Object.entries(countryPolygons).forEach(([id,poly])=>{
-      const shape=new THREE.Shape();poly.forEach(([u,v],i)=>{const p=worldFromGeo([u,v]);if(i===0)shape.moveTo(p.x,p.z);else shape.lineTo(p.x,p.z);});shape.closePath();
-      const c=countries.find(x=>x.id===id),active=id===selected;
-      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshBasicMaterial({color:new THREE.Color(active?(c?.color??"#6f8065"):"#7b807d"),transparent:true,opacity:active?.16:.045,depthWrite:false,side:THREE.DoubleSide}));
-      mesh.rotation.x=-Math.PI/2;mesh.position.y=.09;scene.add(mesh);
-    });
+    const countryShape=new THREE.Shape();countryPolygons[selected].forEach(([u,v],i)=>{const p=worldFromGeo([u,v]);if(i===0)countryShape.moveTo(p.x,p.z);else countryShape.lineTo(p.x,p.z);});countryShape.closePath();const countryMesh=new THREE.Mesh(new THREE.ShapeGeometry(countryShape),new THREE.MeshBasicMaterial({color:new THREE.Color(country.color),transparent:true,opacity:.09,depthWrite:false,side:THREE.DoubleSide}));countryMesh.rotation.x=-Math.PI/2;countryMesh.position.y=.09;scene.add(countryMesh);
 
     const companyGeos=country.companies.map(c=>safeCompanyGeo(selected,c));
     const districts:District[]=country.companies.map((c,i)=>districtForCompany(country,c,i));
@@ -148,20 +117,22 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
 
     // The road hierarchy is generated from the economic graph: trunk routes first, local streets second.
     const trunkCurves:THREE.CatmullRomCurve3[]=[];
-    for(let i=0;i<districts.length;i++){const a=districts[i].center,b= i<districts.length-1?districts[i+1].center:capitalGeo[selected];const curve=roadCurve(a,b,(i%2?-.06:.06));trunkCurves.push(curve);scene.add(roadMesh(curve,.30,true));scene.add(roadMesh(curve,.20));}
+    for(let i=0;i<districts.length;i++){const a=districts[i].center,b= i<districts.length-1?districts[i+1].center:capitalGeo[selected];const curve=roadCurve(a,b,(i%2?-.06:.06));trunkCurves.push(curve);scene.add(roadMesh(curve,.22));scene.add(roadMesh(curve,.27,true));}
     const localCurves:THREE.CatmullRomCurve3[]=[];
     districts.forEach((d,di)=>{
       const corners:[[number,number],[number,number],[number,number],[number,number]]=[
         [d.center[0]-d.size[0]/2,d.center[1]-d.size[1]/2],[d.center[0]+d.size[0]/2,d.center[1]-d.size[1]/2],
         [d.center[0]+d.size[0]/2,d.center[1]+d.size[1]/2],[d.center[0]-d.size[0]/2,d.center[1]+d.size[1]/2]
       ];
-      for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],curve=roadCurve(a,b,0);localCurves.push(curve);scene.add(roadMesh(curve,.17,true));scene.add(roadMesh(curve,.095));}
+      for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],curve=roadCurve(a,b,0);localCurves.push(curve);scene.add(roadMesh(curve,.095));scene.add(roadMesh(curve,.14,true));}
       // District buildings are purposeful: production, office, retail, or housing based on the sector.
       const company=country.companies[di];const kind=d.kind;
-      const p=worldFromGeo(d.center);const owned=(holdings[company.ticker]??0)/SHARES>=.51;
-      const companyBuilding=makeBuilding(p.x,p.z,1.0,di%4,kind,owned);companyBuilding.userData.companyTicker=company.ticker;companyBuilding.userData.company=company;scene.add(companyBuilding);
-      scene.add(makeTree(p.x+.45,p.z+.38,.5));
-      if(kind!=="residential")for(let i=0;i<2;i++){const hp=worldFromGeo([d.center[0]+(i?0.85:-.85),d.center[1]+.85]);scene.add(makeBuilding(hp.x,hp.z,.42,i%3,"residential",false));}
+      const slots:GeoPoint[]=[
+        [d.center[0]-.75,d.center[1]-.55],[d.center[0]+.55,d.center[1]-.55],[d.center[0]-.65,d.center[1]+.48],[d.center[0]+.62,d.center[1]+.52]
+      ];
+      slots.forEach((s,i)=>{const p=worldFromGeo(s);const owned=(holdings[company.ticker]??0)/SHARES>=.51;scene.add(makeBuilding(p.x,p.z,.72+(i%2)*.16,i%4,kind,owned));if(kind!=="industrial"&&i%2===0)scene.add(makeTree(p.x+.35,p.z+.3,.48));});
+      // Small residential edge around every productive district gives workers a reason to be there.
+      if(kind!=="residential"){for(let i=0;i<3;i++){const p=worldFromGeo([d.center[0]-d.size[0]/2-.45+i*.55,d.center[1]+d.size[1]/2+.35]);scene.add(makeBuilding(p.x,p.z,.48,i%3,"residential",false));}}
     });
 
     // Capital district: exchange, government, central bank and public square.
@@ -170,10 +141,12 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
 
     // Residential fabric is compact and connected, not random filler.
     const residentialCenter=residenceGeo(selected,home?.housing??"studio");
-    for(let block=0;block<5;block++){const gx=residentialCenter[0]+(block%4-1.5)*1.25,gz=residentialCenter[1]+(Math.floor(block/4)-.5)*1.35;if(!pointInPolygon(gx,gz,countryPolygons[selected]))continue;const p=worldFromGeo([gx,gz]);scene.add(makeBuilding(p.x,p.z,.48+(block%3)*.08,block%3,"residential",false));}
+    for(let block=0;block<8;block++){const gx=residentialCenter[0]+(block%4-1.5)*1.25,gz=residentialCenter[1]+(Math.floor(block/4)-.5)*1.35;if(!pointInPolygon(gx,gz,countryPolygons[selected]))continue;const p=worldFromGeo([gx,gz]);scene.add(makeBuilding(p.x,p.z,.48+(block%3)*.08,block%3,"residential",false));}
     const homeP=worldFromGeo(residentialCenter);const homeBuilding=makeBuilding(homeP.x,homeP.z,home?.housing==="premium"?1.15:.72,home?.housing==="premium"?1:0,"residential",true);homeBuilding.userData.playerHome=true;scene.add(homeBuilding);
-    const homeRoad=roadCurve(residentialCenter,capitalGeo[selected],.08);scene.add(roadMesh(homeRoad,.20,true));scene.add(roadMesh(homeRoad,.12));
+    const homeRoad=roadCurve(residentialCenter,capitalGeo[selected],.08);scene.add(roadMesh(homeRoad,.12));scene.add(roadMesh(homeRoad,.17,true));
 
+    // Company HQ marker/building is physically tied to the exact company location.
+    country.companies.forEach((company,i)=>{const p=worldFromGeo(companyGeos[i]);const kind=districtKind(company.sector);const owned=(holdings[company.ticker]??0)/SHARES>=.51;const hq=makeBuilding(p.x,p.z,1.02,i%3,kind,owned);hq.userData.companyTicker=company.ticker;hq.userData.company=company;scene.add(hq);if(kind==="industrial")for(let k=0;k<3;k++)scene.add(makeBuilding(p.x+(k-1)*.38,p.z+.52,.38,k%2,"industrial",owned));});
 
     // Controlled companies get a visible economic ring; stakes get a smaller footprint.
     country.companies.forEach((company,i)=>{const p=worldFromGeo(companyGeos[i]),shares=holdings[company.ticker]??0,ownership=Math.min(100,Math.round(shares/SHARES*100));if(ownership>0){const ring=new THREE.Mesh(new THREE.RingGeometry(.28+(ownership/100)*.12,.31+(ownership/100)*.12,32),new THREE.MeshBasicMaterial({color:ownership>=51?0xd9b866:0x5ed0ae,transparent:true,opacity:.8,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(p.x,surfaceHeight(p.x,p.z)+.035,p.z);scene.add(ring);}});
@@ -191,7 +164,7 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     const pointer=new THREE.Vector2(),raycaster=new THREE.Raycaster();let drag=false,moved=false,lastX=0,lastY=0,zoom=1.62,panX=0,panZ=0;
     const updateCamera=()=>{const dist=22/zoom;camera.position.set(focus.x+panX,dist*.66,focus.z+dist*.78+panZ);target.set(focus.x+panX*.55,.12,focus.z+panZ*.42);camera.lookAt(target);};
     const project=(p:THREE.Vector3)=>{const rect=host.getBoundingClientRect(),q=p.clone();q.y=surfaceHeight(q.x,q.z)+.65;q.project(camera);return{x:(q.x*.5+.5)*rect.width,y:(-q.y*.5+.5)*rect.height,z:q.z};};
-    const updateOverlay=()=>{const hm=homeRef.current;if(hm){const q=project(homeP);hm.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-100%)`;hm.style.opacity=q.z>1?"0":"1";}if(showCompanies)country.companies.forEach((c,i)=>{const el=companyRefs.current[c.ticker];if(!el)return;const q=project(worldFromGeo(companyGeos[i]));el.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-50%)`;el.style.opacity=q.z>1?"0":"1";});countries.forEach(c=>{const el=labelRefs.current[c.id];if(!el)return;const q=project(worldFromGeo(labelGeo[c.id]));el.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-50%)`;el.style.opacity=q.z<1?(c.id===selected?"1":".68"):"0";});};
+    const updateOverlay=()=>{const hm=homeRef.current;if(hm){const q=project(homeP);hm.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-100%)`;hm.style.opacity=q.z>1?"0":"1";}if(showCompanies)country.companies.forEach((c,i)=>{const el=companyRefs.current[c.ticker];if(!el)return;const q=project(worldFromGeo(companyGeos[i]));el.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-50%)`;el.style.opacity=q.z>1?"0":"1";});countries.forEach(c=>{const el=labelRefs.current[c.id];if(!el)return;const q=project(worldFromGeo(labelGeo[c.id]));el.style.transform=`translate3d(${q.x}px,${q.y}px,0) translate(-50%,-50%)`;el.style.opacity=c.id===selected&&q.z<1?"1":c.id===selected?".45":"0";});};
     const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();updateOverlay();};
     const down=(e:PointerEvent)=>{drag=true;moved=false;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId);};
     const move=(e:PointerEvent)=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>3)moved=true;panX=clamp(panX-dx*.018/zoom,-5,5);panZ=clamp(panZ+dy*.015/zoom,-4,4);lastX=e.clientX;lastY=e.clientY;updateCamera();updateOverlay();};
@@ -199,7 +172,7 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     const wheel=(e:WheelEvent)=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*.0012),.95,3.25);updateCamera();updateOverlay();};
     const click=(e:MouseEvent)=>{if(moved)return;const r=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(scene.children,true);const hit=hits.find(h=>h.object.userData.companyTicker) as THREE.Intersection|undefined;if(hit){const ticker=hit.object.userData.companyTicker as string;const company=country.companies.find(c=>c.ticker===ticker);if(company)onCompanyRef.current?.(company);return;}const ground=raycaster.intersectObject(terrain,false)[0];if(ground){const u=ground.point.x/.32+50,v=ground.point.z/.24+50;const c=countries.find(x=>pointInPolygon(u,v,countryPolygons[x.id]));if(c)onSelectRef.current(c.id);}};
     renderer.domElement.addEventListener("pointerdown",down);renderer.domElement.addEventListener("pointermove",move);renderer.domElement.addEventListener("pointerup",up);renderer.domElement.addEventListener("wheel",wheel,{passive:false});renderer.domElement.addEventListener("click",click);const observer=new ResizeObserver(resize);observer.observe(host);resize();updateCamera();
-    let raf=0;const render=()=>{raf=requestAnimationFrame(render);const wm=water.userData.waterShader as THREE.ShaderMaterial|undefined;if(wm)wm.uniforms.uTime.value=performance.now()/1000;scene.traverse(o=>{const rc=o.userData.roadCurve as THREE.CatmullRomCurve3|undefined,wc=o.userData.walkCurve as THREE.CatmullRomCurve3|undefined;if(rc){o.userData.roadT=(o.userData.roadT+.001)%1;const p=rc.getPointAt(o.userData.roadT),a=rc.getPointAt((o.userData.roadT+.01)%1);o.position.set(p.x,surfaceHeight(p.x,p.z)+.09,p.z);o.lookAt(a.x,surfaceHeight(a.x,a.z)+.09,a.z);}if(wc){o.userData.walkT=(o.userData.walkT+.0008)%1;const p=wc.getPointAt(o.userData.walkT),a=wc.getPointAt((o.userData.walkT+.015)%1);o.position.set(p.x,surfaceHeight(p.x,p.z)+.04,p.z);o.lookAt(a.x,surfaceHeight(a.x,a.z)+.04,a.z);}});updateOverlay();renderer.render(scene,camera);};render();
+    let raf=0;const render=()=>{raf=requestAnimationFrame(render);scene.traverse(o=>{const rc=o.userData.roadCurve as THREE.CatmullRomCurve3|undefined,wc=o.userData.walkCurve as THREE.CatmullRomCurve3|undefined;if(rc){o.userData.roadT=(o.userData.roadT+.001)%1;const p=rc.getPointAt(o.userData.roadT),a=rc.getPointAt((o.userData.roadT+.01)%1);o.position.set(p.x,surfaceHeight(p.x,p.z)+.09,p.z);o.lookAt(a.x,surfaceHeight(a.x,a.z)+.09,a.z);}if(wc){o.userData.walkT=(o.userData.walkT+.0008)%1;const p=wc.getPointAt(o.userData.walkT),a=wc.getPointAt((o.userData.walkT+.015)%1);o.position.set(p.x,surfaceHeight(p.x,p.z)+.04,p.z);o.lookAt(a.x,surfaceHeight(a.x,a.z)+.04,a.z);}});updateOverlay();renderer.render(scene,camera);};render();
     return()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.domElement.removeEventListener("pointerdown",down);renderer.domElement.removeEventListener("pointermove",move);renderer.domElement.removeEventListener("pointerup",up);renderer.domElement.removeEventListener("wheel",wheel);renderer.domElement.removeEventListener("click",click);scene.traverse(o=>{const m=o as THREE.Mesh;if(m.geometry)m.geometry.dispose();const mat=m.material;if(Array.isArray(mat))mat.forEach(x=>x.dispose());else if(mat)mat.dispose();});renderer.dispose();renderer.domElement.remove();};
   },[countries,selected,showCompanies,holdings,home?.housing,home?.label]);
 
