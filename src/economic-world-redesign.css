@@ -137,3 +137,35 @@
 .life-avatar-stage .life-avatar-caption{z-index:4}
 @media(max-width:900px){.quick-dossier-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.company-quick-dossier,.company-intel{grid-template-columns:1fr}}
 @media(max-width:680px){.exchange-safe-companies>button{flex-basis:185px}.exchange-safe-focus{padding:14px}.quick-dossier-facts{grid-template-columns:1fr}.life-avatar-stage{min-height:430px}}
+
+
+/* v1.1 — long campaign, economy education, news filters and life quality */
+.economy-explainer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.economy-explainer-card{padding:20px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.02));transition:transform .2s ease,border-color .2s ease}
+.economy-explainer-card:hover{transform:translateY(-3px);border-color:rgba(91,225,177,.3)}
+.economy-explainer-card span{display:block;font-size:10px;letter-spacing:.12em;opacity:.58}
+.economy-explainer-card b{display:block;font-size:27px;margin:7px 0}
+.economy-explainer-card p{margin:0;line-height:1.55;color:rgba(230,240,237,.68);font-size:13px}
+.economy-chain-board{margin-top:14px;padding:22px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,rgba(67,205,164,.09),rgba(255,255,255,.025))}
+.economy-chain-board h2{margin:5px 0 7px;font-size:22px}
+.economy-chain-board p{margin:0;color:rgba(230,240,237,.68);line-height:1.5}
+.economy-chain-steps{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.economy-chain-steps span{padding:10px 13px;border-radius:12px;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.07);font-weight:750;font-size:12px}
+.economy-chain-steps i{opacity:.45;font-style:normal}
+.economy-live-table{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.economy-live-table>div{padding:16px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+.economy-live-table span,.economy-live-table small{display:block;font-size:10px;letter-spacing:.08em;opacity:.55}
+.economy-live-table b{display:block;font-size:20px;margin:6px 0}
+.news-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.news-filter-bar button{padding:9px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:rgba(239,247,244,.72);cursor:pointer;transition:.18s ease}
+.news-filter-bar button:hover,.news-filter-bar button.active{border-color:rgba(91,225,177,.4);background:rgba(74,205,162,.12);color:#ecfff7;transform:translateY(-1px)}
+.life-quality-card{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:center;margin:16px 0;padding:22px;border-radius:22px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(135deg,rgba(72,202,164,.10),rgba(255,255,255,.025));box-shadow:0 18px 45px rgba(0,0,0,.12)}
+.life-quality-card h2{margin:5px 0 7px;font-size:25px}
+.life-quality-card p{margin:0;color:rgba(230,240,237,.68);line-height:1.5}
+.life-quality-meter{height:13px;border-radius:999px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07)}
+.life-quality-meter i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#d5a34a,#59d9ad);box-shadow:0 0 18px rgba(88,217,173,.22)}
+.life-quality-factors{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.life-quality-factors span{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.13);font-size:11px;color:rgba(235,245,242,.62)}
+.life-quality-factors b{color:#eefaf5}
+@media(max-width:900px){.economy-explainer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.life-quality-card{grid-template-columns:1fr}.life-quality-factors{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.economy-explainer-grid,.economy-live-table{grid-template-columns:1fr}.life-quality-factors{grid-template-columns:1fr}.economy-chain-steps{justify-content:flex-start}}
