@@ -208,7 +208,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const saveKey=`marketarena.save.v4.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`;
   const initialSave=useMemo<GameSave|null>(()=>{try{const raw=window.localStorage.getItem(saveKey);return raw?JSON.parse(raw) as GameSave:null;}catch{return null;}},[saveKey]);
   const [tab,setTab]=useState<GameTab>(()=>initialSave?.tab??"overview");
-  const [cash,setCash]=useState(()=>initialSave?.cash??(difficulty==="easy"?5000000:difficulty==="hard"?50000:500000));
+  const [cash,setCash]=useState(()=>initialSave?.cash??(difficulty==="easy"?500000:difficulty==="hard"?25000:100000));
   const [holdings,setHoldings]=useState<Record<string,number>>(()=>initialSave?.holdings??{});
   const [day,setDay]=useState(()=>initialSave?.day??1);
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
@@ -239,6 +239,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(tab!=="exchange"){setSelectedCompany(null);setExchangeCompany(null)}},[tab]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
+  useEffect(()=>{if(day<=1)return; const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.72); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
@@ -457,11 +458,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   },[jobGame]);
   const advance=()=>{
     if(day>=365){setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Открой профиль, чтобы оценить результат кампании.");return;}
-    const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.72);
-    setCash(v=>Math.max(0,v-lifestyleCost));
-    setEnergy(nextEnergy);
     setDay(v=>Math.min(365,v+1));
-    setNotice(`Новый день. Расходы −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);
+    setNotice("Новый игровой день: рынок, карьера и личная экономика обновляются.");
   };
   useEffect(()=>{
     if(day<=1)return;
