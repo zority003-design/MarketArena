@@ -83,7 +83,7 @@ function roadMesh(curve:THREE.CatmullRomCurve3,width=.12,sidewalk=false){const p
 function districtForCompany(country:Country,company:CompanyPreview,index:number):District{
   const c=capitalGeo[country.id],g=safeCompanyGeo(country.id,company),kind=districtKind(company.sector);
   const offsets:Record<string,[number,number]>={industrial:[-2.8,1.4],business:[1.7,-1.7],tech:[-1.5,-2.1],logistics:[2.8,2.1],retail:[2.3,.7],civic:[0,2.7],residential:[-2.2,.3]};
-  const o=offsets[kind]??[0,0];const center:GeoPoint=[clamp((g[0]*.7+c[0]*.3)+o[0],10,90),clamp((g[1]*.7+c[1]*.3)+o[1],10,90)];
+  const o=offsets[kind]??[0,0];const center:GeoPoint=[clamp(g[0]+o[0]*.35,10,90),clamp(g[1]+o[1]*.35,10,90)];
   return {id:"district-"+company.ticker,name:company.sector+" квартал",kind,center,size:[4.6+(index%3)*.7,3.2+(index%2)*.6],accent:company.ticker};
 }
 
@@ -148,19 +148,16 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
 
     // The road hierarchy is generated from the economic graph: trunk routes first, local streets second.
     const trunkCurves:THREE.CatmullRomCurve3[]=[];
-    for(let i=0;i<districts.length;i++){const a=districts[i].center,b= i<districts.length-1?districts[i+1].center:capitalGeo[selected];const curve=roadCurve(a,b,(i%2?-.06:.06));trunkCurves.push(curve);scene.add(roadMesh(curve,.22));scene.add(roadMesh(curve,.27,true));}
+    for(let i=0;i<districts.length;i++){const a=districts[i].center,b= i<districts.length-1?districts[i+1].center:capitalGeo[selected];const curve=roadCurve(a,b,(i%2?-.06:.06));trunkCurves.push(curve);scene.add(roadMesh(curve,.30,true));scene.add(roadMesh(curve,.20));}
     const localCurves:THREE.CatmullRomCurve3[]=[];
     districts.forEach((d,di)=>{
       const corners:[[number,number],[number,number],[number,number],[number,number]]=[
         [d.center[0]-d.size[0]/2,d.center[1]-d.size[1]/2],[d.center[0]+d.size[0]/2,d.center[1]-d.size[1]/2],
         [d.center[0]+d.size[0]/2,d.center[1]+d.size[1]/2],[d.center[0]-d.size[0]/2,d.center[1]+d.size[1]/2]
       ];
-      for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],curve=roadCurve(a,b,0);localCurves.push(curve);scene.add(roadMesh(curve,.095));scene.add(roadMesh(curve,.14,true));}
+      for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],curve=roadCurve(a,b,0);localCurves.push(curve);scene.add(roadMesh(curve,.17,true));scene.add(roadMesh(curve,.095));}
       // District buildings are purposeful: production, office, retail, or housing based on the sector.
       const company=country.companies[di];const kind=d.kind;
-      const slots:GeoPoint[]=[
-        [d.center[0]-.75,d.center[1]-.55],[d.center[0]+.55,d.center[1]-.55],[d.center[0]-.65,d.center[1]+.48],[d.center[0]+.62,d.center[1]+.52]
-      ];
       const p=worldFromGeo(d.center);const owned=(holdings[company.ticker]??0)/SHARES>=.51;
       scene.add(makeBuilding(p.x,p.z,1.0,di%4,kind,owned));
       scene.add(makeTree(p.x+.45,p.z+.38,.5));
@@ -175,10 +172,8 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     const residentialCenter=residenceGeo(selected,home?.housing??"studio");
     for(let block=0;block<5;block++){const gx=residentialCenter[0]+(block%4-1.5)*1.25,gz=residentialCenter[1]+(Math.floor(block/4)-.5)*1.35;if(!pointInPolygon(gx,gz,countryPolygons[selected]))continue;const p=worldFromGeo([gx,gz]);scene.add(makeBuilding(p.x,p.z,.48+(block%3)*.08,block%3,"residential",false));}
     const homeP=worldFromGeo(residentialCenter);const homeBuilding=makeBuilding(homeP.x,homeP.z,home?.housing==="premium"?1.15:.72,home?.housing==="premium"?1:0,"residential",true);homeBuilding.userData.playerHome=true;scene.add(homeBuilding);
-    const homeRoad=roadCurve(residentialCenter,capitalGeo[selected],.08);scene.add(roadMesh(homeRoad,.12));scene.add(roadMesh(homeRoad,.17,true));
+    const homeRoad=roadCurve(residentialCenter,capitalGeo[selected],.08);scene.add(roadMesh(homeRoad,.20,true));scene.add(roadMesh(homeRoad,.12));
 
-    // Company HQ marker/building is physically tied to the exact company location.
-    country.companies.forEach((company,i)=>{const p=worldFromGeo(companyGeos[i]);const kind=districtKind(company.sector);const owned=(holdings[company.ticker]??0)/SHARES>=.51;const hq=makeBuilding(p.x,p.z,1.02,i%3,kind,owned);hq.userData.companyTicker=company.ticker;hq.userData.company=company;scene.add(hq);});
 
     // Controlled companies get a visible economic ring; stakes get a smaller footprint.
     country.companies.forEach((company,i)=>{const p=worldFromGeo(companyGeos[i]),shares=holdings[company.ticker]??0,ownership=Math.min(100,Math.round(shares/SHARES*100));if(ownership>0){const ring=new THREE.Mesh(new THREE.RingGeometry(.28+(ownership/100)*.12,.31+(ownership/100)*.12,32),new THREE.MeshBasicMaterial({color:ownership>=51?0xd9b866:0x5ed0ae,transparent:true,opacity:.8,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(p.x,surfaceHeight(p.x,p.z)+.035,p.z);scene.add(ring);}});
