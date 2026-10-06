@@ -494,9 +494,10 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const sell=(company:CompanyPreview,quantity=1)=>{
     const owned=holdings[company.ticker]||0;
     if(owned<quantity){setNotice("У тебя нет "+quantity+" акций "+company.ticker+" для продажи.");return;}
-    const price=priceFor(company),proceeds=price*quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:owned-quantity}));
+    const price=priceFor(company),proceeds=price*quantity*(1-GAME_CONFIG.marketOrderFeeRate);const nextOwned=owned-quantity;setCash(v=>v+proceeds);setHoldings(v=>({...v,[company.ticker]:nextOwned}));
+    if(nextOwned < Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control)){setOwnedCompanies(v=>v.filter(t=>t!==company.ticker));}
     setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
-    setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
+    setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. После комиссии 0,25% зачислено: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
   const startJobGame=(id:string)=>{
     if(energy<jobEnergyCost(id)){setNotice("Недостаточно энергии для этой смены. Улучши питание, жильё или транспорт.");return;}
