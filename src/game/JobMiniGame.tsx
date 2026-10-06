@@ -125,12 +125,12 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
 
       {jobId==="analyst"&&<div className="job2d-analyst">
         <div className="job2d-chart">{chart.map((v,i)=><span key={i} style={{height:(v+18)+"%"}} className={i===signal?"signal":""} onClick={()=>analyst(i)}><i/></span>)}</div>
-        <div className="analyst-feed"><b>ТЕРМИНАЛ · LIVE</b><p>Найди столбец, где объём и цена подтверждают импульс.</p><div><span>VOLUME ↑</span><span>PRICE ↑</span><span>RISK {mistakes>1?"HIGH":"LOW"}</span></div></div>
+        <div className="analyst-feed"><b>ТЕРМИНАЛ · В ПРЯМОМ ЭФИРЕ</b><p>Найди столбец, где объём и цена подтверждают импульс.</p><div><span>ОБЪЁМ ↑</span><span>ЦЕНА ↑</span><span>РИСК {mistakes>1?"ВЫСОКИЙ":"НИЗКИЙ"}</span></div></div>
         <small>Выбери 4 подтверждённых сигнала. Ошибка ухудшает итоговую выплату.</small>
       </div>}
 
       {jobId==="freelance"&&<div className="job2d-freelance">
-        <div className="client-brief"><span>CLIENT BRIEF</span><h3>{task==="fix"?"Найди баг в коде":task==="deploy"?"Подготовь релиз":"Проведи проверку данных"}</h3><p>{task==="fix"?"Нужно исправить ошибку перед запуском.":task==="deploy"?"Клиент ждёт рабочую сборку без регрессий.":"Проверь данные перед отправкой отчёта."}</p></div>
+        <div className="client-brief"><span>ЗАДАНИЕ КЛИЕНТА</span><h3>{task==="fix"?"Найди баг в коде":task==="deploy"?"Подготовь релиз":"Проведи проверку данных"}</h3><p>{task==="fix"?"Нужно исправить ошибку перед запуском.":task==="deploy"?"Клиент ждёт рабочую сборку без регрессий.":"Проверь данные перед отправкой отчёта."}</p></div>
         <div className="freelance-options">{["CODE","DEPLOY","CHECK","DESIGN"].map(x=><button key={x} onClick={()=>freelance(x)} className={x===({fix:"CODE",deploy:"DEPLOY",audit:"CHECK"} as Record<string,string>)[task]?"recommended":""}><b>{x}</b><small>{x==="CODE"?"исправить":x==="DEPLOY"?"выпустить":x==="CHECK"?"проверить":"оформить"}</small></button>)}</div>
         <small>Реши 4 задачи клиента. Правильный ответ ускоряет карьерный рост.</small>
       </div>}
