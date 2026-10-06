@@ -247,7 +247,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [campaignFinished,setCampaignFinished]=useState(()=>((initialSave?.day??1)>=GAME_CONFIG.seasonDays));
   useEffect(()=>{if(tab!=="exchange"){setSelectedCompany(null);setExchangeCompany(null)}},[tab]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
-  useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(GAME_CONFIG.dayDurationMs/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
+  useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(GAME_CONFIG.dayDurationMs/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(GAME_CONFIG.seasonDays,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=GAME_CONFIG.seasonDays){setDay(GAME_CONFIG.seasonDays);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
@@ -387,7 +387,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"first-takeover",title:"7 · Получи влияние",text:"Сформируй контрольный пакет 51% первой публичной компании.",done:ownedCompanies.length>0},
     {id:"million",title:"8 · Первый миллион",text:"Достигни капитала 1 000 000 VLR.",done:totalWealth>=1000000},
     {id:"influence",title:"9 · Экономическая сила",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
-    {id:"year",title:"10 · Полный цикл",text:"Проживи полный экономический год и оцени результат.",done:day>=365}
+    {id:"year",title:"10 · Полный цикл",text:"Пройди полный сезон и оцени результат.",done:day>=GAME_CONFIG.seasonDays}
   ];
   const controlledValue=ownedCompanies.reduce((sum,ticker)=>{const c=country.companies.find(x=>x.ticker===ticker);return sum+(c?priceFor(c)*GAME_CONFIG.startingSharesPerCompany*.51:0)},0);
   const influenceTier=countryInfluence>=75?"Стратегический игрок":countryInfluence>=51?"Влиятельный инвестор":countryInfluence>=33?"Значимый акционер":countryInfluence>=10?"Устойчивый инвестор":"Новый игрок";
