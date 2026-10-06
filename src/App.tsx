@@ -393,6 +393,38 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const takeoverCost=(company:CompanyPreview)=>{const owned=holdings[company.ticker]||0;const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control);const missing=Math.max(0,target-owned);return Math.round(missing*priceFor(company)*(1+GAME_CONFIG.takeoverPremium)/100)*100;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
   const currentCrisis=macroCrisis(day);
+  const storyChapter = day <= 1
+    ? {title:"Прибытие",text:"Ты начинаешь в своём районе. Первое решение — закрепиться, найти работу и понять стоимость жизни."}
+    : day <= 4
+      ? {title:"Первый денежный поток",text:"Работа превращает время и энергию в капитал. Твоя задача — перестать жить от расхода до расхода."}
+      : day <= 7
+        ? {title:"Финансовая подушка",text:"Собери резерв на несколько дней расходов. Рынок никуда не убежит — ликвидность важнее первой сделки."}
+        : day <= 12
+          ? {title:"Первый актив",text:"Теперь можно открыть карту предприятий, выбрать сектор и занять первую позицию."}
+          : day <= 17
+            ? {title:"Профессиональный рост",text:"Карьера снижает зависимость от случайных рыночных движений: хороший доход даёт больше свободы для инвестиций."}
+            : day <= 24
+              ? {title:"Первые доли влияния",text:"Небольшая доля — наблюдение. 10% — стратегический пакет. 25% — блокирующее влияние. 51% — контроль."}
+              : day <= 30
+                ? {title:"Проверка системы",text:"Экономика начинает отвечать цепными реакциями. Энергия, сырьё, логистика и спрос двигают компании вместе."}
+                : {title:"Экономическая игра",text:"После первого месяца твоя задача — строить устойчивую группу, а не просто увеличивать число сделок."};
+  const sectorLinks:Record<string,string[]> = {
+    "Нефть":["Энергетика","Химия","Логистика","Ритейл"],
+    "Энергетика":["Металлы","Машиностроение","Логистика","Ритейл"],
+    "Металлы":["Машиностроение","Строительство","Логистика"],
+    "Агро":["Ритейл","Логистика","Порты"],
+    "Порты":["Судоходство","Логистика","Страхование"],
+    "Судоходство":["Порты","Страхование","Ритейл"],
+    "Технологии":["Электроника","Робототехника","Финансы"],
+    "Электроника":["Робототехника","Машиностроение","Технологии"],
+    "Финансы":["Недвижимость","Машиностроение","Ритейл"],
+    "Логистика":["Ритейл","Порты","Машиностроение"],
+    "Робототехника":["Машиностроение","Электроника","Технологии"],
+    "Ритейл":["Агро","Логистика","Финансы"],
+    "Недвижимость":["Финансы","Машиностроение","Энергетика"],
+    "Химия":["Нефть","Агро","Электроника"]
+  };
+  const companyChain=(sector:string)=>sectorLinks[sector]??["Спрос","Капитал","Труд"];
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
   const takeLoan=(amount:number)=>{
     if(loan?.balance){setNotice("Сначала погаси текущий кредит.");return;}
@@ -496,8 +528,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   },[jobGame]);
   const advance=()=>{
     if(day>=365){setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Открой профиль, чтобы оценить результат кампании.");return;}
-    setWorkActions(0); setDay(v=>Math.min(365,v+1));
-    setNotice("Новый игровой день: рынок, карьера и личная экономика обновляются.");
+    const nextDay=Math.min(365,day+1);
+    setWorkActions(0); setDay(nextDay);
+    setNotice(`День ${nextDay}: ${storyChapter.title}. ${storyChapter.text}`);
   };
   useEffect(()=>{
     if(day<=1)return;
@@ -582,7 +615,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
                   <div><span className="eyebrow">НОВОСТИ КОМПАНИИ</span><h3>Последние события</h3>{[0,1,2].map(i=>{const e=marketEvent(focus,Math.max(1,day-i*3));return <article className="company-news-item" key={i}><b>ДЕНЬ {Math.max(1,day-i*3)}</b><p>{e.headline}.</p><strong className={e.impact>=0?"gain":"loss"}>{e.impact>=0?"+":""}{(e.impact*100).toFixed(2)}% к настроению</strong></article>})}</div>
                 </div>
                 <div className="exchange-safe-metrics"><div><span>КАПИТАЛИЗАЦИЯ</span><b>{profile.marketCap}</b></div><div><span>ВЫРУЧКА</span><b>{profile.revenue}</b></div><div><span>P / E</span><b>{profile.pe}</b></div><div><span>P / B</span><b>{profile.pb}</b></div></div>
-                <div className="exchange-safe-report"><div><span>ПОСЛЕДНИЙ ОТЧЁТ · Q{Math.floor((day-1)/90)+1}</span><b>{report.outlook.toUpperCase()}</b></div><h3>{focus.name}: финансовый отчёт</h3><p>{report.event.headline}. Для сектора «{focus.sector}» ключевой фактор — цены {report.commodity.name}. Выручка и прибыль реагируют на новость, страновой цикл и сырьевой фактор.</p><div><strong>Выручка {report.revenue.toFixed(1)} млрд VLR</strong><strong>Чистая прибыль {report.profit.toFixed(2)} млрд VLR</strong><strong>Сырьевой фактор {(report.commodity.impact*100).toFixed(2)}%</strong><strong>Новость {(report.event.impact*100).toFixed(2)}%</strong></div></div>
+                <div className="exchange-safe-report"><div><span>ПОСЛЕДНИЙ ОТЧЁТ · Q{Math.floor((day-1)/90)+1}</span><b>{report.outlook.toUpperCase()}</b></div><h3>{focus.name}: финансовый отчёт</h3><p>{report.event.headline}. Для сектора «{focus.sector}» ключевой фактор — цены {report.commodity.name}. Выручка и прибыль реагируют на новость, страновой цикл и сырьевой фактор.</p><div><strong>Выручка {report.revenue.toFixed(1)} млрд VLR</strong><strong>Чистая прибыль {report.profit.toFixed(2)} млрд VLR</strong><strong>Сырьевой фактор {(report.commodity.impact*100).toFixed(2)}%</strong><strong>Новость {(report.event.impact*100).toFixed(2)}%</strong></div></div><div className="economic-chain-card"><div><span className="eyebrow">ЭКОНОМИЧЕСКАЯ ЦЕПОЧКА</span><h3>Если меняется «{focus.sector}»</h3><p>Эта компания не существует отдельно: изменения спроса, сырья и логистики передаются связанным отраслям.</p></div><div className="chain-flow"><b className="chain-current">{focus.sector}</b>{companyChain(focus.sector).map((sector,i)=><span key={sector}><i>→</i>{sector}</span>)}</div></div>
               </div>;
             })()}
           </div>
