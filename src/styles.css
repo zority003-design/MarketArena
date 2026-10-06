@@ -4169,3 +4169,18 @@ button,input,select{font:inherit}
   .map-head-stats{display:none}
   .command-news .home-news-list{grid-template-columns:1fr}
 }
+
+
+/* PHASE 2 — GAME RHYTHM + ECONOMIC CHAINS */
+.story-mini{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.story-mini small{font-size:7px!important;letter-spacing:.15em;text-transform:uppercase;color:#8b9ca1!important}
+.story-mini strong{display:block!important;color:#e6d19b;font-size:12px!important;margin-top:4px}
+.story-mini em{display:block;font-style:normal;color:#7d9097;font-size:9px;line-height:1.45;margin-top:3px}
+.economic-chain-card{margin-top:14px;padding:15px 16px;border:1px solid rgba(116,144,153,.13);border-radius:10px;background:linear-gradient(90deg,rgba(13,26,32,.96),rgba(17,24,28,.82));display:flex;align-items:center;justify-content:space-between;gap:18px}
+.economic-chain-card h3{margin:4px 0 4px;font-size:15px}
+.economic-chain-card p{margin:0;max-width:520px;color:#7f9299;font-size:10px;line-height:1.45}
+.chain-flow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:560px}
+.chain-flow b,.chain-flow span{font-size:9px;padding:7px 9px;border-radius:5px;border:1px solid rgba(116,144,153,.14);background:#0b171d;color:#a9b8bc;white-space:nowrap}
+.chain-flow .chain-current{color:#e7d3a0;border-color:rgba(215,181,104,.38);background:#2a2418}
+.chain-flow i{font-style:normal;color:#657980;margin-right:4px}
+@media(max-width:800px){.economic-chain-card{display:block}.chain-flow{justify-content:flex-start;margin-top:12px}}
