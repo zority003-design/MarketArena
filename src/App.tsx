@@ -21,10 +21,10 @@ const PATCH_NOTES = [
 ] as const;
 
 const jobs = [
-  { id: "streetcleaner", title: "Дворник", pay: 4200, time: "3 часа", text: "Пройди двор и собери мусор с отмеченных точек." },
-  { id: "courier", title: "Курьер", pay: 5500, time: "3 часа", text: "Доставь посылку по правильным адресам города." },
-  { id: "analyst", title: "Помощник аналитика", pay: 8000, time: "2 часа", text: "Найди рыночный сигнал среди показателей компании." },
-  { id: "freelance", title: "Фриланс-специалист", pay: 11000, time: "4 часа", text: "Выбери правильный тип задания клиента." }
+  { id: "streetcleaner", title: "Дворник", pay: 900, time: "3 часа", text: "Пройди двор и собери мусор с отмеченных точек." },
+  { id: "courier", title: "Курьер", pay: 1400, time: "3 часа", text: "Доставь посылку по правильным адресам города." },
+  { id: "analyst", title: "Помощник аналитика", pay: 2100, time: "2 часа", text: "Найди рыночный сигнал среди показателей компании." },
+  { id: "freelance", title: "Фриланс-специалист", pay: 2800, time: "4 часа", text: "Выбери правильный тип задания клиента." }
 ];
 
 function companyProfile(company: CompanyPreview, country: Country) {
@@ -48,7 +48,7 @@ function Flag({ country }: { country: Country }) {
     <svg viewBox="0 0 96 64" role="img" aria-hidden="true">
       {id==="slavoriya"&&<><rect width="96" height="64" fill="#174f9d"/><rect y="21.33" width="96" height="21.33" fill="#f1f3ee"/><rect y="42.66" width="96" height="21.34" fill="#c84b4b"/></>}
       {id==="lirania"&&<><rect width="96" height="64" fill="#176b7a"/><rect x="32" width="32" height="64" fill="#f0eee4"/><rect x="40" width="16" height="64" fill="#d6ad55"/></>}
-      {id==="darvast"&&<><rect width="96" height="64" fill="#1d4264"/><rect y="21.33" width="96" height="21.33" fill="#e5e1d5"/><rect y="42.66" width="96" height="21.34" fill="#c94f43"/></>}
+      {id==="darvast"&&<><rect width="96" height="64" fill="#173d31"/><rect x="32" width="32" height="64" fill="#e0c064"/><rect x="64" width="32" height="64" fill="#8d303b"/></> }
       {id==="estraviya"&&<><rect width="96" height="64" fill="#173d69"/><rect y="21.33" width="96" height="21.33" fill="#e9eee9"/><rect y="42.66" width="96" height="21.34" fill="#4aa6a4"/></>}
       {id==="saverniya"&&<><rect width="96" height="64" fill="#2f684d"/><rect y="21.33" width="96" height="21.33" fill="#e9d7a1"/><rect y="42.66" width="96" height="21.34" fill="#d47743"/></>}
     </svg>
