@@ -222,6 +222,36 @@ function heightColor(h: number, x: number, z: number) {
   return color;
 }
 
+function residenceGeo(countryId:string, housing:string): GeoPoint {
+  const capital=capitalGeo[countryId];
+  const profiles:Record<string,[number,number]>={
+    dormitory:[-4.8,-3.2],
+    shared:[-2.7,-2.4],
+    studio:[1.4,-1.0],
+    apartment:[3.4,1.9],
+    premium:[5.1,3.5]
+  };
+  const [du,dv]=profiles[housing]??profiles.studio;
+  const candidates:[[number,number],[number,number],[number,number],[number,number]]=[
+    [capital[0]+du,capital[1]+dv],
+    [capital[0]+du*.55,capital[1]+dv*.55],
+    [capital[0]-du*.45,capital[1]-dv*.45],
+    capital
+  ];
+  for(const [u,v] of candidates){
+    if(pointInPolygon(u,v,countryPolygons[countryId])) return [u,v];
+  }
+  return capital;
+}
+
+function residenceStyle(housing:string){
+  if(housing==="dormitory") return {scale:0.74,type:3,lot:1.35};
+  if(housing==="shared") return {scale:0.78,type:2,lot:1.25};
+  if(housing==="studio") return {scale:0.82,type:1,lot:1.15};
+  if(housing==="apartment") return {scale:1.05,type:0,lot:1.35};
+  return {scale:1.28,type:4,lot:1.70};
+}
+
 function pointInPolygon(u: number, v: number, poly: GeoPoint[]) {
   let inside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -554,9 +584,12 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
     const selectedPoly = countryPolygons[selected];
     const centerGeo = selectedPoly.reduce((acc, p) => [acc[0] + p[0] / selectedPoly.length, acc[1] + p[1] / selectedPoly.length] as GeoPoint, [0, 0]);
-    const centerWorld = worldFromGeo(centerGeo);
+    const homeGeo = home?.housing ? residenceGeo(selected, home.housing) : centerGeo;
+    const focusGeo = home?.housing ? homeGeo : centerGeo;
+    const centerWorld = worldFromGeo(focusGeo);
     const target = new THREE.Vector3(centerWorld.x, 0.5, centerWorld.z);
-    camera.position.set(centerWorld.x, 20.5, centerWorld.z + 20.5);
+    const homeZoom = home?.housing==="premium" ? 1.56 : home?.housing==="apartment" ? 1.52 : home?.housing==="studio" ? 1.47 : 1.42;
+    camera.position.set(centerWorld.x, 20.5 / homeZoom, centerWorld.z + 20.5 / homeZoom);
     camera.lookAt(target);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -751,15 +784,24 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         }
       }
       // Player residence: a readable private compound, not a hidden building.
-      const housingOffset:Record<string,[number,number]>={dormitory:[-4.2,-2.8],shared:[-3.0,-2.2],studio:[3.0,-2.1],apartment:[3.7,2.9],premium:[4.8,3.7]};
-      const homeOffset=housingOffset[home?.housing??"studio"]??housingOffset.studio;
-      const homePoint=worldFromGeo([capital[0]+homeOffset[0],capital[1]+homeOffset[1]]);
-      const yard=new THREE.Mesh(new THREE.BoxGeometry(1.45,.045,1.05),new THREE.MeshStandardMaterial({color:"#6d805d",roughness:1}));
+      const homePoint=worldFromGeo(residenceGeo(selectedCountry.id,home?.housing??"studio"));
+      const residence=residenceStyle(home?.housing??"studio");
+      const yard=new THREE.Mesh(new THREE.BoxGeometry(residence.lot, .045, residence.lot*.76),new THREE.MeshStandardMaterial({color:"#66795a",roughness:1}));
       yard.position.set(homePoint.x,surfaceHeight(homePoint.x,homePoint.z)+.025,homePoint.z);
       yard.receiveShadow=true; scene.add(yard);
-      const homeBuilding=makeModernBuilding(homePoint.x,homePoint.z,.68,4);
-      homeBuilding.userData.playerHome=true; homeBuilding.traverse(o=>{o.userData.playerHome=true});
+      const homeBuilding=makeModernBuilding(homePoint.x,homePoint.z,residence.scale,residence.type);
+      homeBuilding.userData.playerHome=true;
+      homeBuilding.userData.housing=home?.housing??"studio";
+      homeBuilding.traverse(o=>{o.userData.playerHome=true;o.userData.housing=home?.housing??"studio"});
       scene.add(homeBuilding);
+      // A dedicated residence marker and a short local street make the player's neighbourhood readable.
+      const localStreet=inCountryRoad(selectedCountry.id,residenceGeo(selectedCountry.id,home?.housing??"studio"),capital,.08);
+      scene.add(makeHighway(localStreet,.12));
+      scene.add(makeSidewalk(localStreet,.028));
+      if(home?.housing==="dormitory"||home?.housing==="shared"){
+        scene.add(makeModernBuilding(homePoint.x+.52,homePoint.z+.22,.52,2));
+        scene.add(makeModernBuilding(homePoint.x-.48,homePoint.z-.18,.48,2));
+      }
       const driveway=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.72),new THREE.MeshStandardMaterial({color:"#6a7070",roughness:.95}));
       driveway.position.set(homePoint.x-.62,surfaceHeight(homePoint.x-.62,homePoint.z)+.04,homePoint.z+.05);
       driveway.rotation.y=.12; scene.add(driveway);
@@ -853,7 +895,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     let moved = false;
     let lastX = 0;
     let lastY = 0;
-    let zoom = 1.38;
+    let zoom = home?.housing ? homeZoom : 1.38;
     let panX = 0;
     let panZ = 0;
 
@@ -875,10 +917,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
 
       const homeMarker = homeRef.current;
       if (homeMarker) {
-        const selectedCapital = capitalGeo[selected];
-        const housingOffset:Record<string,[number,number]>={dormitory:[-4.2,-2.8],shared:[-3.0,-2.2],studio:[3.0,-2.1],apartment:[3.7,2.9],premium:[4.8,3.7]};
-        const off=housingOffset[home?.housing??"studio"]??housingOffset.studio;
-        const hp = project(worldFromGeo([selectedCapital[0]+off[0],selectedCapital[1]+off[1]]));
+        const hp = project(worldFromGeo(residenceGeo(selected,home?.housing??"studio")));
         homeMarker.style.transform = `translate3d(${hp.x}px,${hp.y}px,0) translate(-50%,-100%)`;
         homeMarker.style.opacity = hp.z > 1 ? "0" : "1";
       }
