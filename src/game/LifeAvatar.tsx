@@ -37,28 +37,78 @@ function LifeIcon({type}:{type:"housing"|"food"|"transport"|"appearance"}) {
 }
 
 function AvatarFigure({appearance}:{appearance:Appearance}) {
-  const hair=appearance==="executive"?"#18252d":appearance==="professional"?"#27333b":appearance==="neat"?"#34424a":"#46545b";
-  const jacket=appearance==="executive"?"#243b43":appearance==="professional"?"#29434a":appearance==="neat"?"#3c5157":"#51636a";
-  const accent=appearance==="executive"?"#d6b86a":appearance==="professional"?"#79d6bd":"#9ee7d1";
-  return <svg className="life-avatar-figure" viewBox="0 0 260 330" aria-hidden="true">
-    <defs><linearGradient id="avatarSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#f1c7a8"/><stop offset="1" stopColor="#d99f80"/></linearGradient><linearGradient id="avatarJacket" x1="0" x2="1"><stop offset="0" stopColor={jacket}/><stop offset="1" stopColor="#182b33"/></linearGradient></defs>
-    <ellipse cx="130" cy="309" rx="76" ry="11" fill="rgba(0,0,0,.28)"/>
-    <path d="M61 304c4-60 22-88 69-88s65 28 69 88z" fill="url(#avatarJacket)"/>
-    <path d="m94 221 36 42 36-42 17 83H77z" fill={accent} opacity=".28"/>
-    <path d="M106 205h48v40l-24 24-24-24z" fill="url(#avatarSkin)"/>
-    <path d="M83 120c0-48 94-55 96 8v55c-4 42-31 58-49 58-20 0-44-18-47-58z" fill="url(#avatarSkin)"/>
-    <path d="M82 135c-10-47 14-78 53-78 40 0 58 26 47 76l-15-25c-22 8-47 9-71 0z" fill={hair}/>
-    <path d="M95 143q10-7 20 0M145 143q10-7 20 0" fill="none" stroke="#633f35" strokeWidth="3" strokeLinecap="round"/>
-    <circle cx="109" cy="149" r="3" fill="#243238"/><circle cx="151" cy="149" r="3" fill="#243238"/>
-    <path d="M130 151v22l-7 4h12M113 190q17 11 34 0" fill="none" stroke="#a96f62" strokeWidth="3" strokeLinecap="round"/>
-    <path d="m92 222 38 43 38-43 15 82H77z" fill="url(#avatarJacket)"/>
-    <path d="m106 215 24 50 24-50-24 17z" fill="#dcebe6"/>
-    <path d="m124 232 6 34 6-34-6-7z" fill={accent}/>
-    <path d="M81 237 56 278M179 237l25 41" stroke={jacket} strokeWidth="18" strokeLinecap="round"/>
-    <circle cx="55" cy="279" r="10" fill="url(#avatarSkin)"/><circle cx="205" cy="279" r="10" fill="url(#avatarSkin)"/>
+  const skin="#e7b18f";
+  const skinLight="#f1c5a6";
+  const hair=appearance==="executive"?"#1b242b":appearance==="professional"?"#202a31":appearance==="neat"?"#29343b":"#35434a";
+  const shirt=appearance==="executive"?"#f2eee4":appearance==="professional"?"#eef2ef":appearance==="neat"?"#e7ece8":"#c9d4d0";
+  const jacket=appearance==="executive"?"#172a34":appearance==="professional"?"#243b45":"#40545b";
+  const accent=appearance==="executive"?"#d5b86b":appearance==="professional"?"#72d4ba":"#91dec8";
+
+  return <svg className="life-avatar-figure" viewBox="0 0 300 430" aria-hidden="true">
+    <defs>
+      <linearGradient id="avatarSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor={skinLight}/><stop offset="1" stopColor={skin}/></linearGradient>
+      <linearGradient id="avatarJacket" x1="0" x2="1"><stop offset="0" stopColor={jacket}/><stop offset="1" stopColor="#16262f"/></linearGradient>
+    </defs>
+
+    <ellipse cx="150" cy="414" rx="72" ry="9" fill="rgba(0,0,0,.25)"/>
+
+    {/* legs */}
+    <path d="M116 329v70h31v-70zM153 329v70h31v-70z" fill="#1d3038"/>
+    <path d="M108 398h43v15h-49q0-10 6-15zM149 398h43q6 5 6 15h-49z" fill="#111d24"/>
+
+    {/* torso / outfit */}
+    <path d="M91 224q59-31 118 0l29 108H62z" fill="url(#avatarJacket)"/>
+    <path d="M105 225q45 27 90 0l20 107H85z" fill={shirt}/>
+
+    {appearance==="basic" && <path d="M104 226q46 27 92 0l20 106H84z" fill="#52666c"/>}
+
+    {appearance==="neat" && <>
+      <path d="M112 224 150 264 188 224l-9 108h-58z" fill="#e7ece8"/>
+      <path d="M150 263v68" stroke="#91dec8" strokeWidth="3"/>
+      <path d="M112 224 93 244M188 224l19 20" stroke="#526a70" strokeWidth="6" strokeLinecap="round"/>
+    </>}
+
+    {appearance==="professional" && <>
+      <path d="M105 224 150 271 195 224l20 108H85z" fill="url(#avatarJacket)"/>
+      <path d="M116 224 150 264 184 224l-13 108h-34z" fill="#edf1ee"/>
+      <path d="M150 261v71" stroke="#4a646b" strokeWidth="2"/>
+      <path d="m145 251 5 9 5-9-5-7z" fill={accent}/>
+      <path d="M101 229 84 267M199 229l17 38" stroke="#314850" strokeWidth="12" strokeLinecap="round"/>
+    </>}
+
+    {appearance==="executive" && <>
+      <path d="M101 224 150 274 199 224l25 108H76z" fill="url(#avatarJacket)"/>
+      <path d="M112 224 150 264 188 224l-13 108h-50z" fill={shirt}/>
+      <path d="M150 261v71" stroke="#d0d8d3" strokeWidth="2"/>
+      <path d="m145 250 5 11 5-11-5-8z" fill={accent}/>
+      <path d="M99 229 79 267M201 229l20 38" stroke="#172a34" strokeWidth="14" strokeLinecap="round"/>
+      <path d="M101 328h98" stroke={accent} strokeWidth="2" opacity=".45"/>
+    </>}
+
+    {/* neck */}
+    <path d="M126 195h48v42q-24 22-48 0z" fill="url(#avatarSkin)"/>
+
+    {/* ears + face */}
+    <ellipse cx="100" cy="137" rx="9" ry="15" fill={skin}/>
+    <ellipse cx="200" cy="137" rx="9" ry="15" fill={skin}/>
+    <path d="M104 105q6-52 46-58 40 6 46 58v47q-5 57-46 67-41-10-46-67z" fill="url(#avatarSkin)"/>
+
+    {/* hair — no beard */}
+    <path d="M103 123q-8-55 25-72 36-27 68 2 14 13 5 69l-14-30q-39 12-75-2z" fill={hair}/>
+    <path d="M108 91q18-31 48-35 30 4 42 31" fill="none" stroke={hair} strokeWidth="9" strokeLinecap="round"/>
+
+    {/* face */}
+    <path d="M116 128q12-8 24 0M160 128q12-8 24 0" fill="none" stroke="#5d4238" strokeWidth="3" strokeLinecap="round"/>
+    <circle cx="130" cy="135" r="3.2" fill="#243238"/><circle cx="170" cy="135" r="3.2" fill="#243238"/>
+    <path d="M150 139v23l-7 4h14" fill="none" stroke="#ae7565" strokeWidth="2.6" strokeLinecap="round"/>
+    <path d="M135 180q15 8 30 0" fill="none" stroke="#a8665d" strokeWidth="3" strokeLinecap="round"/>
+
+    {/* arms / hands */}
+    <path d="M91 236 61 311M209 236l30 75" stroke={jacket} strokeWidth="20" strokeLinecap="round"/>
+    <circle cx="59" cy="315" r="11" fill="url(#avatarSkin)"/>
+    <circle cx="241" cy="315" r="11" fill="url(#avatarSkin)"/>
   </svg>;
 }
-
 export function LifeAvatar({appearance,careerTitle,name,housing="studio",food="balanced",transport="public"}:Props){
   const items=[
     {type:"housing" as const,label:"Жильё",value:housingLabels[housing]??housing.toUpperCase()},
