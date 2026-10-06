@@ -1,0 +1,62 @@
+/* MarketArena economic world redesign — non-destructive overrides */
+.exchange-safe{display:grid;grid-template-columns:minmax(300px,.42fr) minmax(520px,1fr);gap:18px;align-items:start}
+.exchange-safe-top,.exchange-safe-marketline{grid-column:1/-1}
+.exchange-safe-top{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding:22px 24px;min-width:0}
+.exchange-safe-top>div:first-child{min-width:0;flex:1}
+.exchange-safe-top h2{font-size:clamp(22px,2vw,32px);line-height:1.08;margin:6px 0 8px;max-width:100%}
+.exchange-safe-top p{margin:0;max-width:760px}
+.exchange-safe-clock{flex:0 0 auto;min-width:220px;text-align:right}
+.exchange-safe-clock>div{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-top:10px}
+.exchange-safe-clock button{white-space:nowrap}
+.exchange-safe-marketline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px}
+.exchange-safe-marketline span{flex:0 1 auto;min-width:max-content}
+.exchange-safe-marketline button{margin-left:auto}
+.exchange-safe-companies{grid-column:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;position:sticky;top:18px;max-height:calc(100vh - 190px);overflow:auto;padding-right:4px}
+.exchange-safe-companies>button{text-align:left;min-width:0;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"ticker name price" "sector sector change";gap:5px 9px;padding:13px;border-radius:16px}
+.exchange-safe-companies>button b{grid-area:ticker}.exchange-safe-companies>button span{grid-area:name;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.exchange-safe-companies>button small{grid-area:sector;opacity:.65}.exchange-safe-companies>button strong{grid-area:price;white-space:nowrap}.exchange-safe-companies>button em{grid-area:change;text-align:right;font-style:normal;font-weight:800}
+.exchange-safe-focus{grid-column:2;grid-row:3 / span 4;min-width:0;position:sticky;top:18px;max-height:calc(100vh - 190px);overflow:auto;padding:20px;border-radius:22px}
+.exchange-safe-focushead{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.exchange-safe-focushead>div:last-child{text-align:right;white-space:nowrap}
+.exchange-safe-focushead>div:last-child b{display:block;font-size:25px}
+.exchange-safe-focushead>div:last-child strong{font-size:18px}
+.exchange-safe-chart{margin-top:16px}
+.exchange-safe-chart .chart-range-tabs{margin-top:10px}
+.exchange-safe-actions{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.exchange-safe-actions>div{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.ownership-ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.ownership-ladder button{min-height:64px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:9px 11px;color:var(--text-primary,#eef4f2);background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);border-radius:12px}
+.ownership-ladder button b{font-size:12px;color:rgba(235,243,240,.72)}
+.ownership-ladder button.control{background:linear-gradient(135deg,rgba(57,225,151,.18),rgba(49,176,255,.10));border-color:rgba(77,231,168,.55)}
+.exchange-safe-report{margin-top:16px}
+.financial-report-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.financial-report-grid strong{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:13px;background:rgba(255,255,255,.045);font-size:11px}
+.financial-report-grid strong>b{font-size:16px}
+.financial-report-grid small{opacity:.6;font-weight:500}
+.quarter-history{margin-top:14px;display:grid;gap:6px}
+.quarter-history>span{font-size:10px;letter-spacing:.12em;opacity:.55}
+.quarter-history>div{display:grid;grid-template-columns:44px 1fr 1fr 70px;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.035);font-size:12px}
+.quarter-history em{text-align:right;font-style:normal;font-weight:800}
+.exchange-recovery{grid-column:2;padding:30px;border-radius:22px}
+.company-modal-backdrop{align-items:stretch;justify-content:flex-end;padding:0;background:rgba(3,8,13,.58);backdrop-filter:blur(8px)}
+.company-modal{width:min(760px,92vw);height:100vh;max-height:none;overflow:auto;border-radius:24px 0 0 24px;margin:0;padding:26px;box-shadow:-24px 0 70px rgba(0,0,0,.35);animation:companyDrawerIn .25s ease-out}
+@keyframes companyDrawerIn{from{transform:translateX(30px);opacity:.6}to{transform:translateX(0);opacity:1}}
+.modal-close{position:sticky;top:0;z-index:4;margin-left:auto;display:block}
+.life-avatar-stage{min-height:390px;position:relative;overflow:hidden}
+.life-home-scene,.life-food-scene,.life-transport-scene{transition:transform .35s ease,filter .35s ease}
+.life-home-scene{transform:scale(1)}
+.housing-dormitory .life-home-scene{transform:scale(.82) translateY(12px);filter:saturate(.7)}
+.housing-shared .life-home-scene{transform:scale(.9)}
+.housing-studio .life-home-scene{transform:scale(1.02)}
+.housing-apartment .life-home-scene{transform:scale(1.12) translateY(-4px)}
+.housing-premium .life-home-scene{transform:scale(1.24) translateY(-12px);filter:saturate(1.15)}
+.food-basic .life-food-scene{transform:scale(.82) translateY(8px);filter:saturate(.65)}
+.food-balanced .life-food-scene{transform:scale(1)}
+.food-premium .life-food-scene{transform:scale(1.2) translateY(-6px);filter:saturate(1.2)}
+.transport-walk .life-transport-scene{transform:scale(.82);opacity:.7}
+.transport-public .life-transport-scene{transform:scale(1)}
+.transport-scooter .life-transport-scene{transform:scale(1.08)}
+.transport-car .life-transport-scene{transform:scale(1.18)}
+.transport-executive .life-transport-scene{transform:scale(1.32);filter:saturate(1.2)}
+.life-avatar-stage:after{content:"";position:absolute;inset:auto 5% 0;height:34%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.16));border-radius:30% 30% 0 0}
+@media(max-width:1050px){.exchange-safe{grid-template-columns:1fr}.exchange-safe-companies,.exchange-safe-focus,.exchange-safe-recovery{grid-column:1;grid-row:auto;position:static;max-height:none}.exchange-safe-companies{grid-template-columns:repeat(2,minmax(0,1fr))}.financial-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.exchange-safe-top{flex-direction:column}.exchange-safe-clock{text-align:left;min-width:0}.exchange-safe-clock>div{justify-content:flex-start}.exchange-safe-companies{grid-template-columns:1fr}.ownership-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.financial-report-grid{grid-template-columns:1fr}.company-modal{width:100vw;border-radius:0}.exchange-safe-marketline button{margin-left:0;width:100%}}
