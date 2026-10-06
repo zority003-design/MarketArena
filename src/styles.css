@@ -1063,7 +1063,7 @@ button{cursor:pointer}
   pointer-events:none;
   z-index:5;
 }
-.atlas-3d-overlay button{pointer-events:auto}
+.atlas-3d-overlay button{pointer-events:auto;position:absolute;left:0;top:0;margin:0;transform-origin:center center;will-change:transform;}
 .atlas-3d-watermark{
   position:absolute;
   left:14px;
@@ -3394,7 +3394,7 @@ button,input,select{font:inherit}
 
 /* Map identity + player residence */
 .atlas-home-marker{position:absolute;left:0;top:0;z-index:20;pointer-events:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,218,118,.48);background:rgba(11,22,25,.86);border-radius:8px;box-shadow:0 7px 18px rgba(0,0,0,.34),0 0 18px rgba(244,199,87,.12);backdrop-filter:blur(6px);white-space:nowrap}.atlas-home-marker i{width:9px;height:9px;border-radius:50%;background:#f0c95e;box-shadow:0 0 0 3px rgba(240,201,94,.13),0 0 12px rgba(240,201,94,.7)}.atlas-home-marker span{font:800 8px "Space Grotesk",sans-serif;letter-spacing:.12em;color:#f8e9b3}
-.atlas-3d-watermark{opacity:.35!important}.atlas-capital-marker{transition:none!important}.atlas-capital-marker:hover{transform:translate3d(var(--x),var(--y),0) translate(-50%,-50%)!important}
+.atlas-3d-watermark{opacity:.35!important}.atlas-capital-marker{transition:none!important}.atlas-capital-marker:hover{scale:1.05;filter:brightness(1.08)}
 /* Dashboard cards stay inside their geometry; no hover lift that breaks borders. */
 .game-main .ticker-row:hover,.game-main .news-item:hover,.game-main .event-card:hover,.game-main .life-job:hover,.game-main .company-focus-card:hover,.game-main .exchange-safe-companies button:hover{transform:none!important}
 /* Company imagery: less cartoon-like, more editorial terminal */
@@ -3409,7 +3409,7 @@ button,input,select{font:inherit}
 @media(max-width:900px){.life-control-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.life-control-grid{grid-template-columns:1fr}}
 
 /* PHASE 1-4 Command Center redesign */
-.auth-screen{grid-template-columns:minmax(420px,.86fr) minmax(520px,1.14fr)!important;gap:0!important;background:radial-gradient(circle at 72% 18%,rgba(55,137,130,.16),transparent 30%),linear-gradient(135deg,#061018,#0a1b25 58%,#061018)!important}.auth-panel{padding:54px 58px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;border-right:1px solid rgba(255,255,255,.07)!important}.auth-visual{min-height:100vh!important;background:radial-gradient(circle at 50% 46%,rgba(69,170,157,.16),transparent 28%),linear-gradient(145deg,#081a23,#0a2830 55%,#061018)!important}.auth-float{border-color:rgba(126,220,201,.17)!important;background:rgba(7,19,26,.72)!important;box-shadow:0 20px 55px rgba(0,0,0,.22)!important}.auth-copy h1{font-size:clamp(42px,4vw,68px)!important;letter-spacing:-.06em!important}.auth-copy p{max-width:560px!important;font-size:14px!important;line-height:1.65!important}.auth-panel>.primary{min-height:58px!important;font-size:15px!important;margin-top:10px!important}.field input{height:54px!important;font-size:15px!important}
+.auth-screen{grid-template-columns:minmax(420px,.86fr) minmax(520px,1.14fr)!important;gap:0!important;background:radial-gradient(circle at 72% 18%,rgba(55,137,130,.16),transparent 30%),linear-gradient(135deg,#061018,#0a1b25 58%,#061018)!important}.auth-panel{width:100%!important;max-width:none!important;padding:54px 58px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;justify-self:stretch!important;border-right:1px solid rgba(255,255,255,.07)!important}.auth-visual{min-height:100vh!important;background:radial-gradient(circle at 50% 46%,rgba(69,170,157,.16),transparent 28%),linear-gradient(145deg,#081a23,#0a2830 55%,#061018)!important}.auth-float{border-color:rgba(126,220,201,.17)!important;background:rgba(7,19,26,.72)!important;box-shadow:0 20px 55px rgba(0,0,0,.22)!important}.auth-copy h1{font-size:clamp(42px,4vw,68px)!important;letter-spacing:-.06em!important}.auth-copy p{max-width:560px!important;font-size:14px!important;line-height:1.65!important}.auth-panel>.primary{min-height:58px!important;font-size:15px!important;margin-top:10px!important}.field input{height:54px!important;font-size:15px!important}
 .setup-screen{padding:40px!important}.setup-inner{max-width:1260px!important}.difficulty-list .difficulty{padding:18px 20px!important;min-height:94px!important}.difficulty-list .difficulty strong{font-size:22px!important}.difficulty-list .difficulty span{font-size:11px!important;color:#9cb0b4!important}.difficulty-list .difficulty small{font-size:10px!important;color:#71888e!important}.setup-actions{margin-top:24px!important}.setup-hint{font-size:11px!important;line-height:1.5!important}
 .game-main{padding-top:20px!important}.game-heading{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:20px!important}.game-heading h1{font-size:34px!important}.game-heading p{max-width:800px!important}.day-button{min-height:44px!important;padding:0 18px!important;font-weight:800!important}.empire-roadmap{padding:22px!important}.empire-roadmap-head h2{font-size:25px!important}.empire-score{min-width:110px!important;min-height:110px!important}.empire-score b{font-size:34px!important}.hero-map-grid{grid-template-columns:minmax(0,1.9fr) minmax(280px,.75fr)!important}.market-map-card{min-height:680px!important}.market-map-card .atlas-3d-viewport{min-height:620px!important}.capital-card{padding:20px!important}.capital-card:after{content:"ЛИЧНАЯ ЭКОНОМИКА";display:block;margin-top:14px;font-size:8px;letter-spacing:.15em;color:#658188}.capital-card strong{font-size:32px!important}.jobs-card{padding-bottom:8px!important}.job-row{min-height:64px!important}.campaign-card{padding:18px!important}.campaign-card h2{font-size:21px!important}.risk-dashboard{min-height:110px!important}.companies-card,.home-news-card{padding-bottom:10px!important}
 .life-profile-grid{grid-template-columns:minmax(320px,.72fr) minmax(0,1.28fr)!important}.life-stats-card{padding:22px!important}.life-option-grid{gap:8px!important}.life-option{padding:14px!important;background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.07)!important;border-radius:11px!important}.life-option b{font-size:13px!important}.life-control-grid label{min-height:88px!important}.life-control-grid select{height:36px!important}.life-control-grid select option:disabled{color:#60747a!important}.life-control-grid small{display:block;margin-top:6px;color:#60777e;font-size:8px;line-height:1.35}.life-job{border:1px solid rgba(255,255,255,.07)!important;background:linear-gradient(90deg,rgba(255,255,255,.025),rgba(255,255,255,.01))!important;border-radius:11px!important;margin:7px 0!important;padding:12px 14px!important}.life-job button{min-width:110px!important}.life-job button:disabled{opacity:.42!important;cursor:not-allowed!important}
@@ -4146,7 +4146,7 @@ button,input,select{font:inherit}
 .premium-company-marker.owned{border-color:rgba(93,207,174,.48)!important;background:rgba(8,33,31,.94)!important;box-shadow:0 0 0 1px rgba(93,207,174,.10),0 8px 22px rgba(0,0,0,.28)!important}
 .premium-company-marker.strategic{border-color:rgba(95,183,168,.68)!important}
 .premium-company-marker.control{border-color:#d7b568!important;background:rgba(50,38,18,.96)!important;box-shadow:0 0 0 2px rgba(215,181,104,.16),0 0 24px rgba(215,181,104,.18)!important}
-.premium-company-marker:hover{transform:translate(-50%,-50%) scale(1.12)!important;z-index:20}
+.premium-company-marker:hover{scale:1.12;z-index:20;filter:brightness(1.08)}
 .atlas-home-marker{filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
 .atlas-home-marker span{background:rgba(7,18,24,.9)!important;border-color:rgba(215,181,104,.45)!important;color:#ead7a8!important}
 .atlas-3d-watermark{font-size:7px!important;letter-spacing:.12em!important}
@@ -4184,3 +4184,13 @@ button,input,select{font:inherit}
 .chain-flow .chain-current{color:#e7d3a0;border-color:rgba(215,181,104,.38);background:#2a2418}
 .chain-flow i{font-style:normal;color:#657980;margin-right:4px}
 @media(max-width:800px){.economic-chain-card{display:block}.chain-flow{justify-content:flex-start;margin-top:12px}}
+
+
+/* P0 stability fixes — layout containment and map marker transforms */
+.game-body,.game-main,.game-topbar,.game-right,.command-map-layout,.hero-map-grid,.market-map-card,.command-map-main{min-width:0;}
+.game-main{width:auto!important;overflow-x:clip;}
+.game-topbar{min-width:0;overflow:hidden;}
+.game-right{min-width:0;}
+.command-map-layout>*{min-width:0;}
+@media(max-width:1050px){.game-main{width:auto!important;max-width:none!important;}}
+@media(max-width:760px){.game-main{width:100%!important;}}
