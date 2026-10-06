@@ -15,6 +15,7 @@ const clamp = (v:number,min=0,max=1)=>Math.max(min,Math.min(max,v));
 export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
   const [startedAt] = useState(()=>Date.now());
   const [remaining,setRemaining]=useState(90);
+  const [finished,setFinished]=useState(false);
   const [score,setScore]=useState(0);
   const [mistakes,setMistakes]=useState(0);
   const [round,setRound]=useState(0);
@@ -36,7 +37,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
       if(next<=0){window.clearInterval(timer);finish();}
     },250);
     return()=>window.clearInterval(timer);
-  },[startedAt]);
+  },[startedAt,finished,score,mistakes]);
 
   useEffect(()=>{
     const onKey=(e:KeyboardEvent)=>{
@@ -50,7 +51,7 @@ export function JobMiniGame({jobId,title,basePay,onComplete,onCancel}:Props){
     return()=>window.removeEventListener("keydown",onKey);
   });
 
-  const finish=()=>{if(remaining<=0 || Date.now()-startedAt>=90000){setRemaining(0);}
+  const finish=()=>{if(finished)return; setFinished(true); setRemaining(0);
     const elapsed=(Date.now()-startedAt)/1000;
     const performance=clamp(.45 + score*.12 - mistakes*.07 + (elapsed<65?.08:elapsed<90?.03:0));
     onComplete(performance);
