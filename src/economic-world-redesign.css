@@ -99,3 +99,8 @@
 .exchange-safe-metrics>div small{display:block;margin-top:5px;opacity:.55;font-size:10px}
 @media(max-width:900px){.economy-live-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.economy-live-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.macro-event-banner.compact{grid-template-columns:1fr}.macro-event-banner.compact>strong{text-align:left}}
+
+.ownership-ladder button span{font-size:12px;font-weight:750;color:rgba(240,247,244,.92)}
+.ownership-ladder button small{font-size:10px;color:rgba(220,235,230,.52);line-height:1.2}
+.ownership-ladder button.control span{color:#d9fff0}
+.ownership-ladder button.control small{color:rgba(205,255,231,.68)}
