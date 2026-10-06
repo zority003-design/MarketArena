@@ -758,8 +758,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       yard.position.set(homePoint.x,surfaceHeight(homePoint.x,homePoint.z)+.025,homePoint.z);
       yard.receiveShadow=true; scene.add(yard);
       const homeBuilding=makeModernBuilding(homePoint.x,homePoint.z,.68,4);
-      home.userData.playerHome=true; home.traverse(o=>{o.userData.playerHome=true});
-      scene.add(home);
+      homeBuilding.userData.playerHome=true; homeBuilding.traverse(o=>{o.userData.playerHome=true});
+      scene.add(homeBuilding);
       const driveway=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.72),new THREE.MeshStandardMaterial({color:"#6a7070",roughness:.95}));
       driveway.position.set(homePoint.x-.62,surfaceHeight(homePoint.x-.62,homePoint.z)+.04,homePoint.z+.05);
       driveway.rotation.y=.12; scene.add(driveway);
