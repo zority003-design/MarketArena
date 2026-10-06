@@ -927,14 +927,14 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           obj.userData.roadT=(obj.userData.roadT+0.0009)%1;
           const p=curve.getPointAt(obj.userData.roadT);
           const ahead=curve.getPointAt((obj.userData.roadT+0.01)%1);
-          obj.position.set(p.x,terrainHeight(p.x,p.z)+.11,p.z);
-          obj.lookAt(ahead.x,terrainHeight(ahead.x,ahead.z)+.11,ahead.z);
+          obj.position.set(p.x,surfaceHeight(p.x,p.z)+.11,p.z);
+          obj.lookAt(ahead.x,surfaceHeight(ahead.x,ahead.z)+.11,ahead.z);
         }else if(walkCurve){
           obj.userData.walkT=(obj.userData.walkT+0.00032)%1;
           const p=walkCurve.getPointAt(obj.userData.walkT);
           const ahead=walkCurve.getPointAt((obj.userData.walkT+0.015)%1);
-          obj.position.set(p.x,terrainHeight(p.x,p.z)+.045,p.z);
-          obj.lookAt(ahead.x,terrainHeight(ahead.x,ahead.z)+.045,ahead.z);
+          obj.position.set(p.x,surfaceHeight(p.x,p.z)+.045,p.z);
+          obj.lookAt(ahead.x,surfaceHeight(ahead.x,ahead.z)+.045,ahead.z);
         }
       });
       updateOverlay();
