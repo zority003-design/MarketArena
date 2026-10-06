@@ -1,4 +1,4 @@
-export type JobId = "courier" | "cashier" | "janitor" | "taxi";
+export type JobId = "streetcleaner" | "courier" | "analyst" | "freelance";
 
 export type JobDefinition = {
   id: JobId;
@@ -11,42 +11,10 @@ export type JobDefinition = {
 };
 
 export const JOBS: JobDefinition[] = [
-  {
-    id: "courier",
-    name: "Курьер",
-    description: "2D маршрут: доставь заказ по улицам быстрее конкурентов.",
-    basePay: 900,
-    energyCost: 18,
-    xp: 28,
-    difficulty: 2,
-  },
-  {
-    id: "cashier",
-    name: "Кассир",
-    description: "2D поток покупателей: обслужи очередь без ошибок.",
-    basePay: 750,
-    energyCost: 14,
-    xp: 24,
-    difficulty: 1,
-  },
-  {
-    id: "janitor",
-    name: "Уборщик",
-    description: "2D уборка: очисти зоны и не пропусти срочные задания.",
-    basePay: 650,
-    energyCost: 16,
-    xp: 22,
-    difficulty: 1,
-  },
-  {
-    id: "taxi",
-    name: "Такси",
-    description: "2D городская езда: забери пассажира и довези его по маршруту.",
-    basePay: 1_100,
-    energyCost: 22,
-    xp: 32,
-    difficulty: 3,
-  },
+  { id: "streetcleaner", name: "Дворник", description: "Очисти отмеченные зоны города без лишних движений.", basePay: 900, energyCost: 16, xp: 22, difficulty: 1 },
+  { id: "courier", name: "Курьер", description: "Построй короткий маршрут и доставь три заказа.", basePay: 1400, energyCost: 18, xp: 28, difficulty: 2 },
+  { id: "analyst", name: "Помощник аналитика", description: "Найди подтверждённые рыночные сигналы среди данных.", basePay: 2100, energyCost: 12, xp: 34, difficulty: 2 },
+  { id: "freelance", name: "Фриланс-специалист", description: "Реши задачи клиента и избегай дорогих ошибок.", basePay: 2800, energyCost: 20, xp: 40, difficulty: 3 },
 ];
 
 export function jobReward(job: JobDefinition, performance: number, careerMultiplier = 1) {
