@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { commonCurrency, countries, difficultyLevels, type CompanyPreview, type Country } from "./data/world";
 import { Atlas3D } from "./Atlas3D";
 import { GAME_CONFIG, dailyLifestyleCost } from "./game/economy";
+import { JobMiniGame } from "./game/JobMiniGame";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates" | "profile";
@@ -223,7 +224,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   
   const [selectedNews,setSelectedNews]=useState<string|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
-  const [jobGame,setJobGame]=useState<{jobId:string;target:number;score:number;started:number;playerX:number;playerY:number}|null>(null);
+  const [jobGame,setJobGame]=useState<{jobId:string}|null>(null);
   const [miniGame,setMiniGame]=useState<{active:boolean;score:number;target:number;started:number}>({active:false,score:0,target:1,started:0});
   const [transactions,setTransactions]=useState<Transaction[]>(()=>initialSave?.transactions??[]);
   const [careerXP,setCareerXP]=useState(()=>initialSave?.careerXP??0);
@@ -490,42 +491,24 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     if(campaignFinished){setNotice("Кампания завершена: новый год пока не начат.");return;}
     const offer=jobs.find(x=>x.id===id);
     if(!offer || careerLevel<offer.unlock){setNotice("Эта должность откроется на "+(offer?.unlock??0)+" уровне карьеры.");return;}
-    setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="streetcleaner"?12:id==="courier"?24:id==="analyst"?9:4)),score:0,started:Date.now(),playerX:0,playerY:0});
+    setJobGame({jobId:id});
   };
-  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;const reward=jobPay(job);setEnergy(v=>Math.max(0,v-jobEnergyCost(job.id)));setWorkActions(v=>v+1);setCash(v=>v+reward);setCareerXP(v=>Math.min(30,v+1));setLastJobDay(day);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+reward.toLocaleString("ru-RU")+" VLR. Рабочих действий сегодня: "+(workActions+1)+"/"+GAME_CONFIG.workActionsPerDay+".");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
-  const hitJobTarget=(index:number)=>{
+  const finishJobGame=(performance:number)=>{
     if(!jobGame)return;
-    const size=jobGame.jobId==="streetcleaner"?12:jobGame.jobId==="courier"?8:jobGame.jobId==="analyst"?9:4;
-    const next=()=>Math.floor(Math.random()*size);
-    if(index===jobGame.target){
-      if(jobGame.score>=2) finishJobGame();
-      else setJobGame({...jobGame,score:jobGame.score+1,target:next(),started:Date.now()});
-    }else setJobGame({...jobGame,score:0,target:next(),started:Date.now()});
+    const job=jobs.find(x=>x.id===jobGame.jobId);
+    if(!job)return;
+    const quality=Math.max(.65,Math.min(1.2,.65+performance*.55));
+    const reward=Math.round(jobPay(job)*quality);
+    setEnergy(v=>Math.max(0,v-jobEnergyCost(job.id)));
+    setWorkActions(v=>v+1);
+    setCash(v=>v+reward);
+    setCareerXP(v=>Math.min(30,v+Math.max(1,Math.round(1+performance*2))));
+    setLastJobDay(day);
+    setJobCooldown(job.id);
+    setNotice(job.title+" выполнена: +"+reward.toLocaleString("ru-RU")+" VLR. Качество смены: "+Math.round(performance*100)+"%.");
+    setJobGame(null);
+    setTimeout(()=>setJobCooldown(null),700);
   };
-  const moveJobPlayer=(dx:number,dy:number)=>{
-    if(!jobGame || !["streetcleaner","courier"].includes(jobGame.jobId)) return;
-    const cols=jobGame.jobId==="streetcleaner"?6:6;
-    const rows=jobGame.jobId==="streetcleaner"?2:4;
-    const nx=Math.max(0,Math.min(cols-1,jobGame.playerX+dx));
-    const ny=Math.max(0,Math.min(rows-1,jobGame.playerY+dy));
-    const index=ny*cols+nx;
-    if(index===jobGame.target){
-      if(jobGame.score>=2){finishJobGame();return;}
-      setJobGame({...jobGame,playerX:nx,playerY:ny,score:jobGame.score+1,target:Math.floor(Math.random()*(cols*rows)),started:Date.now()});
-      return;
-    }
-    setJobGame({...jobGame,playerX:nx,playerY:ny});
-  };
-  useEffect(()=>{
-    if(!jobGame || !["streetcleaner","courier"].includes(jobGame.jobId)) return;
-    const onKey=(e:KeyboardEvent)=>{
-      const map:Record<string,[number,number]>={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
-      const move=map[e.key];
-      if(move){e.preventDefault();moveJobPlayer(move[0],move[1]);}
-    };
-    window.addEventListener("keydown",onKey);
-    return()=>window.removeEventListener("keydown",onKey);
-  },[jobGame]);
   const advance=()=>{
     if(day>=365){setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Открой профиль, чтобы оценить результат кампании.");return;}
     const nextDay=Math.min(365,day+1);
@@ -658,7 +641,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       </main>
     </div>
     {selectedCompany&&<div className="company-modal-backdrop" onClick={()=>setSelectedCompany(null)}><div className="company-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setSelectedCompany(null)}>×</button><div className="modal-company-head"><CEOAvatar company={selectedCompany}/><div><span className="ticker">{selectedCompany.ticker}</span><h2>{selectedCompany.name}</h2><p>{selectedCompany.sector} · публичная компания · {country.name}</p></div></div><div className="modal-grid"><div><span className="eyebrow">О КОМПАНИИ</span><p className="company-description">{companyProfile(selectedCompany,country).description}</p><div className="company-metrics">{[["КАПИТАЛИЗАЦИЯ",companyProfile(selectedCompany,country).marketCap],["ВЫРУЧКА",companyProfile(selectedCompany,country).revenue],["ЧИСТАЯ ПРИБЫЛЬ",companyProfile(selectedCompany,country).netProfit],["P / E",companyProfile(selectedCompany,country).pe],["P / B",companyProfile(selectedCompany,country).pb]].map(([label,value])=><div key={label}><span>{label}</span><b>{value}</b></div>)}</div><div className="chart-range-tabs">{chartRangeLabels.map(([id,label])=><button key={id} className={chartRange===id?"active":""} onClick={()=>setChartRange(id)}>{label}</button>)}</div><CandleChart company={selectedCompany} candles={candleSeries(selectedCompany,chartRange)} range={chartRange}/><div className="quote-box"><span>ТЕКУЩАЯ КОТИРОВКА</span><b>{priceFor(selectedCompany).toLocaleString("ru-RU")} VLR</b><small className={priceChange(selectedCompany)>=0?"gain":"loss"}>{priceChange(selectedCompany)>=0?"+":""}{priceChange(selectedCompany).toFixed(2)}% за день</small></div><div className="modal-buy"><span>В портфеле: <b>{holdings[selectedCompany.ticker]||0} шт.</b></span><div><button className="secondary-action" onClick={()=>sell(selectedCompany)}>Продать</button><button className="primary small" onClick={()=>buy(selectedCompany,1000)}>Купить 1 000 акций</button>{!ownedCompanies.includes(selectedCompany.ticker)&&<button className="takeover-button" onClick={()=>acquireCompany(selectedCompany)}>Контроль 51% · {takeoverCost(selectedCompany).toLocaleString("ru-RU")} VLR</button>}</div></div></div><div className="ceo-profile"><span className="eyebrow">CEO · ПЕРСОНАЖ</span><h3>{selectedCompany.ceo}</h3><div className="takeover-explainer"><b>ПОГЛОЩЕНИЕ</b><span>Покупка контрольного пакета 51% компании по оценке капитализации с премией 8%. Это не покупка одной акции и не 100% выкуп. Ты покупаешь контрольный пакет 51% по оценке капитализации с премией 8% — компания входит в твою группу, а остальные 49% остаются у других акционеров.</span></div><b>{selectedCompany.ceoAge} лет · {selectedCompany.ceoRole}</b><p>{selectedCompany.ceoBio}</p><p><strong>Стратегия:</strong> {companyProfile(selectedCompany,country).strategy}</p><p><strong>Цели на игровой год:</strong> {companyProfile(selectedCompany,country).goals}</p><div className="company-facts"><span>Основана</span><b>{companyProfile(selectedCompany,country).founded}</b><span>Штат</span><b>{companyProfile(selectedCompany,country).employees}</b><span>Штаб-квартира</span><b>{companyProfile(selectedCompany,country).headquarters}</b><span>Ресурсы</span><b>{companyProfile(selectedCompany,country).materials}</b></div><div className="ceo-tags"><span>Биография</span><span>Репутация</span><span>Стиль управления</span></div></div></div></div></div>}
-    {jobGame&&<div className="job-game-backdrop" onClick={()=>setJobGame(null)}><div className="job-game-modal" onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setJobGame(null)}>×</button>{(()=>{const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return null;return <><span className="eyebrow">МИНИ-ИГРА · СМЕНА</span><h2>{job.title}</h2><p>{job.text} Собери серию из трёх точных действий. Ошибка сбрасывает серию.</p>{jobGame.jobId==="streetcleaner"&&<div className="job-game-board streetcleaner-board"><div className="job-2d-scene">{Array.from({length:12},(_,i)=>{const x=i%6,y=Math.floor(i/6),playerHere=jobGame.playerX===x&&jobGame.playerY===y,targetHere=jobGame.target===i;return <div key={i} className={`yard-tile ${y===0?"yard-top":"yard-bottom"} ${x===0||x===5?"yard-edge":""}`}><span className="pixel-building" aria-hidden="true"/><span className="pixel-tree" aria-hidden="true"/>{targetHere&&<span className="pixel-trash" aria-hidden="true"/>}{playerHere&&<span className="pixel-player" aria-hidden="true"/>}<small>{targetHere?"УБРАТЬ":"ДВОР"}</small></div>})}</div><div className="job-scene-hint">Двигай персонажа по двору и убери 3 точки мусора.</div><div className="job-controls"><button onClick={()=>moveJobPlayer(0,-1)}>↑</button><button onClick={()=>moveJobPlayer(-1,0)}>←</button><button onClick={()=>moveJobPlayer(1,0)}>→</button><button onClick={()=>moveJobPlayer(0,1)}>↓</button></div></div>}{jobGame.jobId==="courier"&&<div className="job-game-board courier-board"><div className="job-2d-scene courier-scene">{Array.from({length:24},(_,i)=>{const x=i%6,y=Math.floor(i/6),playerHere=jobGame.playerX===x&&jobGame.playerY===y,targetHere=jobGame.target===i;return <div key={i} className={`street-tile ${y===0?"street-upper":"street-lower"}`}><span className="street-house" aria-hidden="true"/>{targetHere&&<span className="delivery-pin" aria-label="Адрес доставки"/>}{playerHere&&<span className="courier-player" aria-label="Курьер"/>}<small>{targetHere?"ДОСТАВКА":i%2===0?"ДОМ":"ОФИС"}</small></div>})}</div><div className="job-scene-hint">Доставь посылку персонажем к отмеченному адресу.</div><div className="job-controls"><button onClick={()=>moveJobPlayer(0,-1)}>↑</button><button onClick={()=>moveJobPlayer(-1,0)}>←</button><button onClick={()=>moveJobPlayer(1,0)}>→</button><button onClick={()=>moveJobPlayer(0,1)}>↓</button></div></div>}{jobGame.jobId==="analyst"&&<div className="job-game-board analyst-board">{Array.from({length:9},(_,i)=><button key={i} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}>{i===jobGame.target?"●":""}</button>)}</div>}{jobGame.jobId==="freelance"&&<div className="job-game-board freelance-board">{["АНАЛИЗ","ТЕКСТ","ДИЗАЙН","КОД"].map((x,i)=><button key={x} className={i===jobGame.target?"job-target":""} onClick={()=>hitJobTarget(i)}><b>{x}</b><small>{["Данные","Документы","Визуал","Задача"][i]}</small></button>)}</div>}<div className="job-game-footer"><span>Серия <b>{jobGame.score}/3</b></span><strong>Награда: {job.pay.toLocaleString("ru-RU")} VLR</strong></div></>})()}</div></div>}
+    {jobGame&&(()=>{const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return null;return <JobMiniGame jobId={jobGame.jobId as "streetcleaner"|"courier"|"analyst"|"freelance"} title={job.title} basePay={job.pay} onComplete={finishJobGame} onCancel={()=>setJobGame(null)}/>})()}
+
   </div>;
 }
 
