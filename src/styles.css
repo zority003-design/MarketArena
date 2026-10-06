@@ -3404,3 +3404,6 @@ button,input,select{font:inherit}
 .market-map-card{overflow:hidden!important}.market-map-card .card-head{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent)}.market-map-card .atlas-head{background:rgba(4,15,21,.52);border-bottom:1px solid rgba(255,255,255,.06)}
 /* Start screen money classes are intentionally compact and readable. */
 .difficulty-list .difficulty strong{font-size:20px!important;color:#e9f2ef}.difficulty-list .difficulty:hover{transform:none!important}.difficulty-list .difficulty.active{border-color:rgba(99,223,186,.42)!important;background:linear-gradient(110deg,rgba(99,223,186,.09),rgba(255,255,255,.02))!important}
+
+.life-control-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.life-control-grid label{display:block;padding:11px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025)}.life-control-grid label>span{display:block;font-size:8px;letter-spacing:.13em;color:#78949b}.life-control-grid select{width:100%;margin-top:7px;padding:8px 7px;border-radius:7px;border:1px solid rgba(255,255,255,.09);background:#08161e;color:#e7f0ed;font-size:11px}.life-control-grid label:hover{border-color:rgba(99,223,186,.22)}
+@media(max-width:900px){.life-control-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.life-control-grid{grid-template-columns:1fr}}
