@@ -103,7 +103,7 @@ export function LifeAvatar({appearance,careerTitle,name,housing="studio",food="b
     {label:"Питание",value:foodLabels[food]??food.toUpperCase(),detail:food==="premium"?"Энергия 88 · репутация +3":"Восстановление энергии"},
     {label:"Транспорт",value:transportLabels[transport]??transport.toUpperCase(),detail:transport==="executive"?"Мобильность 95 · репутация +10":"Мобильность и рабочая нагрузка"}
   ];
-  return <section className={\`life-avatar-stage appearance-\${appearance} housing-\${housing} food-\${food} transport-\${transport}\`} aria-label={\`Персонаж \${name}\`}>
+  return <section className={`life-avatar-stage appearance-${appearance} housing-${housing} food-${food} transport-${transport}`} aria-label={`Персонаж ${name}`}>
     <div className="life-avatar-topline"><div><span className="eyebrow">ПЕРСОНАЖ</span><h3>{name}</h3><p>{careerTitle}</p></div><span className="life-avatar-rank">{labels[appearance]}</span></div>
     <div className="life-avatar-portrait"><div className="life-avatar-halo"/><AvatarFigure appearance={appearance}/><div className="life-avatar-ground"/></div>
     <div className="life-avatar-loadout">{items.map(item=><div className="life-loadout-item" key={item.label}><small>{item.label}</small><b>{item.value}</b><span>{item.detail}</span></div>)}</div>
