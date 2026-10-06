@@ -572,7 +572,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
         <div className="sidebar-status"><span>MARKET STATUS</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>Влияние {countryInfluence}/100 · Контроль {ownedCompanies.length}</small></div>
       </aside>
       <main className="game-main">
-        {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ ${day} · ${country.name.toUpperCase()}</span><h1>Экономическая карта ${country.name}</h1><p>${notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
+        {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>Экономическая карта {country.name}</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
           <section className="command-map-layout">
             <section className="market-map-card command-map-main">
               <div className="card-head">
