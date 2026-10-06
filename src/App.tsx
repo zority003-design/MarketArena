@@ -73,6 +73,24 @@ const sectorTone: Record<string,string> = {
   "Промышленность":"industry","Химия":"chemicals"
 };
 function sectorClass(sector:string){return "sector-"+(sectorTone[sector]??"default");}
+function PlayerAvatar({appearance="basic",size=96}:{appearance?:string;size?:number}){
+  const jacket=appearance==="executive"?"#273b58":appearance==="professional"?"#243c45":appearance==="neat"?"#3f6874":"#58747c";
+  const shirt=appearance==="executive"?"#dfe7ee":appearance==="professional"?"#d8e6e7":"#edf3f1";
+  return <svg className="player-skin-svg" width={size} height={size} viewBox="0 0 100 100" role="img" aria-label="Персонаж игрока">
+    <defs><linearGradient id={"skinBg-"+appearance} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#16313b"/><stop offset="1" stopColor="#08161e"/></linearGradient></defs>
+    <circle cx="50" cy="50" r="49" fill={"url(#skinBg-"+appearance+")"}/>
+    <path d="M22 96c2-19 13-30 28-30s26 11 28 30" fill={jacket}/>
+    <path d="M40 69l10 10 10-10 8 27H32z" fill={shirt}/>
+    <path d="M42 62h16v12c-3 4-13 4-16 0z" fill="#c99572"/>
+    <ellipse cx="50" cy="43" rx="18" ry="21" fill="#c99572"/>
+    <path d="M32 43c0-20 8-29 20-29 13 0 20 10 17 27-4-5-7-10-9-16-8 6-17 9-28 8z" fill={appearance==="executive"?"#22262d":"#382b28"}/>
+    <circle cx="43" cy="44" r="1.7" fill="#172126"/><circle cx="57" cy="44" r="1.7" fill="#172126"/>
+    <path d="M45 53c3 2 7 2 10 0" fill="none" stroke="#7e5144" strokeWidth="1.5" strokeLinecap="round"/>
+    {appearance==="executive"&&<><path d="M50 68l-5 7 5 5 5-5z" fill="#9bb5c0"/><path d="M48 77h4l2 19h-8z" fill="#162330"/></>}
+    {appearance==="professional"&&<path d="M39 67h22" stroke="#9bb9bf" strokeWidth="2"/>
+    }
+  </svg>;
+}
 function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   const [name,setName]=useState("");
   const [register,setRegister]=useState(true);
@@ -663,7 +681,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
 </div></Panel>}
         {tab==="profile"&&<Panel title={"Профиль · "+player} eyebrow="PLAYER PROFILE">
           <div className="profile-hero-card">
-            <div className="profile-avatar">{player.trim().slice(0,1).toUpperCase()}</div>
+            <div className="profile-avatar"><PlayerAvatar appearance={appearance} size={104}/></div>
             <div><span className="eyebrow">АККАУНТ И ПРОГРЕСС</span><h2>{player}</h2><p>{country.name} · {difficultyLevels.find(x=>x.id===difficulty)?.name??difficulty} · День {day}</p></div>
             <button type="button" className="profile-logout" onClick={onLogout}>Выйти из аккаунта</button>
           </div>
