@@ -529,7 +529,7 @@ function makeSnowCap(geo: GeoPoint, size: number) {
   return mesh;
 }
 
-export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany }: Atlas3DProps) {
+export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany, home }: Atlas3DProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const labelRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -873,7 +873,9 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const homeMarker = homeRef.current;
       if (homeMarker) {
         const selectedCapital = capitalGeo[selected];
-        const hp = project(worldFromGeo([selectedCapital[0]+1.15,selectedCapital[1]+1.05]));
+        const housingOffset:Record<string,[number,number]>={dormitory:[-2.2,-1.5],shared:[-1.5,-1.2],studio:[1.6,-1.1],apartment:[2.0,1.7],premium:[2.7,2.1]};
+        const off=housingOffset[home?.housing??"studio"]??housingOffset.studio;
+        const hp = project(worldFromGeo([selectedCapital[0]+off[0],selectedCapital[1]+off[1]]));
         homeMarker.style.transform = `translate3d(${hp.x}px,${hp.y}px,0) translate(-50%,-100%)`;
         homeMarker.style.opacity = hp.z > 1 ? "0" : "1";
       }
@@ -1065,7 +1067,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>СЕВЕР ↑ · DRAG / ZOOM</span></div>
       <div className="atlas-3d-viewport" ref={hostRef}>
         <div className="atlas-3d-overlay" ref={overlayRef}>
-          <div ref={homeRef} className="atlas-home-marker" title="Твой дом"><i/><span>МОЙ ДОМ</span></div>
+          <div ref={homeRef} className="atlas-home-marker" title="Твой дом"><i/><span>{home?.label??"МОЙ ДОМ"}</span></div>
           {countries.map((country) => (
             <button
               key={country.id}
