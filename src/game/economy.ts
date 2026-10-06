@@ -90,8 +90,8 @@ export const STARTING_CLASSES: Record<StartingClassId, StartingClass> = {
   low: {
     id: "low",
     name: "Начальный",
-    startingCash: 25_000,
-    dailySalary: 1_800,
+    startingCash: 50_000,
+    dailySalary: 2_400,
     dailyBaseLiving: 900,
     creditLimit: 8_000,
     careerMultiplier: 1,
@@ -101,8 +101,8 @@ export const STARTING_CLASSES: Record<StartingClassId, StartingClass> = {
   middle: {
     id: "middle",
     name: "Средний",
-    startingCash: 100_000,
-    dailySalary: 4_500,
+    startingCash: 500_000,
+    dailySalary: 6_500,
     dailyBaseLiving: 1_800,
     creditLimit: 45_000,
     careerMultiplier: 1.12,
@@ -112,8 +112,8 @@ export const STARTING_CLASSES: Record<StartingClassId, StartingClass> = {
   high: {
     id: "high",
     name: "Высокий",
-    startingCash: 300_000,
-    dailySalary: 9_000,
+    startingCash: 5_000_000,
+    dailySalary: 18_000,
     dailyBaseLiving: 3_800,
     creditLimit: 140_000,
     careerMultiplier: 1.25,
@@ -152,7 +152,7 @@ export function dailyLifestyleCost(
   appearance: keyof typeof GAME_CONFIG.appearance,
 ) {
   return (
-    STARTING_CLASSES.low.dailyBaseLiving +
+    STARTING_CLASSES.middle.dailyBaseLiving +
     GAME_CONFIG.housing[housing].dailyCost +
     GAME_CONFIG.food[food].dailyCost +
     GAME_CONFIG.transport[transport].dailyCost +
