@@ -4,6 +4,7 @@ import App from "./App";
 import "./styles.css";
 import "./marketarena-gameplay.css";
 import "./game/job-minigames.css";
+import "./economic-world-redesign.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
