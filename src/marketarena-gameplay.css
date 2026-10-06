@@ -54,3 +54,12 @@
 .job-game-bottom{display:flex;justify-content:space-between;margin-top:10px;color:#6d7c82;font-size:9px}.job-game-bottom b{color:#d8bb72}
 @keyframes maPulse{50%{transform:translate(-50%,-50%) scale(1.15)}}
 @media(max-width:700px){.job-game-header{display:block}.job-scoreboard{justify-content:flex-start;margin-top:10px}.job2d-grid{grid-auto-rows:56px}.job2d-world{min-height:390px}.freelance-options{grid-template-columns:repeat(2,1fr)}.job2d-analyst{padding:10px}.job2d-chart{height:230px;gap:3px}.life-avatar-stage{min-height:290px}}
+
+
+/* Deterministic player identity: same avatar, subtle personal variation. */
+.avatar-variant-1 .avatar-head,.avatar-variant-1 .avatar-neck,.avatar-variant-1 .avatar-hand{background:#c58d69}
+.avatar-variant-2 .avatar-head,.avatar-variant-2 .avatar-neck,.avatar-variant-2 .avatar-hand{background:#8b5a3c}
+.avatar-variant-1 .avatar-hair{background:#4a3026}.avatar-variant-1 .avatar-hair i{background:#4a3026}
+.avatar-variant-2 .avatar-hair{background:#111518}.avatar-variant-2 .avatar-hair i{background:#111518}
+.avatar-variant-1 .avatar-hair{border-radius:48% 42% 35% 42%}.avatar-variant-2 .avatar-hair{height:42px;top:19px;border-radius:42% 48% 34% 38%}
+.avatar-variant-2 .avatar-torso{border-radius:16px 16px 10px 10px}
