@@ -21,10 +21,10 @@ const PATCH_NOTES = [
 ] as const;
 
 const jobs = [
-  { id: "streetcleaner", title: "Дворник", pay: 900, time: "3 часа", text: "Пройди двор и собери мусор с отмеченных точек." },
-  { id: "courier", title: "Курьер", pay: 1400, time: "3 часа", text: "Доставь посылку по правильным адресам города." },
-  { id: "analyst", title: "Помощник аналитика", pay: 2100, time: "2 часа", text: "Найди рыночный сигнал среди показателей компании." },
-  { id: "freelance", title: "Фриланс-специалист", pay: 2800, time: "4 часа", text: "Выбери правильный тип задания клиента." }
+  { id: "streetcleaner", title: "Дворник", pay: 900, time: "3 часа", unlock: 1, sector: "Городская инфраструктура", text: "Пройди двор и собери мусор с отмеченных точек." },
+  { id: "courier", title: "Курьер", pay: 1400, time: "3 часа", unlock: 1, sector: "Логистика", text: "Доставь посылку по правильным адресам города." },
+  { id: "analyst", title: "Помощник аналитика", pay: 2100, time: "2 часа", unlock: 3, sector: "Финансы", text: "Найди рыночный сигнал среди показателей компании." },
+  { id: "freelance", title: "Фриланс-специалист", pay: 2800, time: "4 часа", unlock: 4, sector: "Технологии", text: "Выбери правильный тип задания клиента." }
 ];
 
 const lifestyleNames={housing:{dormitory:"Общежитие",shared:"Общий дом",studio:"Студия",apartment:"Апартаменты",premium:"Премиум-апартаменты"},food:{basic:"Базовое",balanced:"Сбалансированное",premium:"Премиум"},transport:{walk:"Пешком",public:"Общественный транспорт",scooter:"Скутер",car:"Автомобиль",executive:"Представительский автомобиль"},appearance:{basic:"Повседневная",neat:"Аккуратная",professional:"Профессиональная",executive:"Премиальная"}} as const;
@@ -118,6 +118,10 @@ function DifficultyScreen({country,onStart,onBack}:{country:Country;onStart:(id:
   const [selected,setSelected]=useState("normal"); const d=difficultyLevels.find(x=>x.id===selected)??difficultyLevels[1];
   return <div className="setup-screen"><div className="setup-inner"><div className="step">04 / 04</div><span className="eyebrow">КЛАСС СТАРТА</span><h1>Каким будет твой<br/>финансовый старт?</h1><p className="setup-lead">Класс определяет стартовый капитал и давление экономики. Это не выбор «хорошо или плохо» — это выбор жизненной позиции.</p>
     <div className="difficulty-list">{difficultyLevels.map(x=><button key={x.id} className={x.id===selected?"difficulty active":"difficulty"} onClick={()=>setSelected(x.id)}><span className="radio"/><div><b>{x.name}</b><strong>{x.money}</strong><p>{x.description}</p><small>{x.rules}</small></div></button>)}</div>
+    <div className="first-week-brief">
+      <div><span>ПЕРВЫЕ 7 ДНЕЙ</span><b>Сначала стабилизируй жизнь</b><small>1. Найди источник дохода · 2. Определи жильё и расходы · 3. Создай резерв · 4. Сделай первую рыночную позицию.</small></div>
+      <div><span>ТВОЙ СТАРТ</span><b>{country.name}</b><small>{country.capital} · {country.exchange} · экономика страны будет влиять на рынок каждый день.</small></div>
+    </div>
     <div className="start-summary"><span>СТАРТ</span><b>{country.name}</b><i>·</i><b>{d.name}</b><i>·</i><b>{d.money}</b><button className="primary small" onClick={()=>onStart(selected)}>Начать игру<span className="button-arrow">→</span></button></div>
     <button className="text-back" onClick={onBack}>← Вернуться к выбору страны</button>
   </div></div>;
@@ -242,7 +246,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(tab!=="exchange"){setSelectedCompany(null);setExchangeCompany(null)}},[tab]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
-  useEffect(()=>{if(day<=1)return; setWorkActions(0); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.72); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
+  useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
@@ -275,8 +279,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const commodity=commodityPulse(company.sector,atDay);
     const sectorBias=company.sector.includes("Нефть")||company.sector.includes("Металлы") ? Math.sin((atDay+seed)*0.09)*0.012 : Math.sin((atDay+seed)*0.07)*0.009;
     const countryBias=marketProfile.bias+(marketProfile.sectors[company.sector]??0);
+    const linked:Record<string,string[]>={"Металлы":["Машиностроение","Логистика"],"Энергетика":["Металлы","Машиностроение","Логистика"],"Нефть":["Логистика","Химия","Ритейл"],"Агро":["Ритейл","Логистика"],"Порты":["Судоходство","Логистика","Страхование"],"Судоходство":["Порты","Страхование"],"Технологии":["Электроника","Робототехника"],"Электроника":["Робототехника","Машиностроение"],"Финансы":["Недвижимость","Машиностроение"]};
+    const upstream=linked[company.sector]??[];
+    const chainImpact=upstream.reduce((sum,sector,index)=>sum+Math.sin((atDay+seed+sector.length*13)*(0.051+index*0.004))*0.0035,0);
     const cycle=Math.sin((atDay+seed*0.17)*0.045)*0.012;
-    return {headline:event.headline+"; цены "+commodity.name+" меняются",impact:event.impact+commodity.impact+sectorBias+countryBias+cycle};
+    return {headline:event.headline+"; цены "+commodity.name+" меняются, цепочка "+(upstream[0]??"спроса")+" реагирует",impact:event.impact+commodity.impact+sectorBias+countryBias+cycle+chainImpact};
   };
   const macroCrisis=(atDay:number)=>{
     const crises=[
@@ -361,21 +368,28 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const negotiation=GAME_CONFIG.housing[housing].negotiation+GAME_CONFIG.appearance[appearance].negotiation;
   const careerLevel=Math.min(10,1+Math.floor(careerXP/3));
   const careerTitle=careerLevel>=10?"Руководитель направления":careerLevel>=8?"Старший специалист":careerLevel>=6?"Профессионал":careerLevel>=4?"Опытный сотрудник":"Начинающий специалист";
+  const careerMultiplier=1+(careerLevel-1)*0.12;
+  const mobilityFactor=Math.max(0.72,1-GAME_CONFIG.transport[transport].mobility/500);
+  const jobEnergyCost=(jobId:string)=>Math.max(9,Math.round((jobId==="courier"?18:jobId==="analyst"?12:jobId==="freelance"?20:16)*mobilityFactor));
+  const jobPay=(job:{pay:number})=>Math.round(job.pay*careerMultiplier*(1+Math.max(0,negotiation)*0.012));
   const ownedPositions=Object.values(holdings).filter(v=>v>0).length;
   const countryInfluence=Math.min(100,ownedPositions*12+Math.min(40,Math.floor(careerXP/2))+Math.min(30,Math.floor(totalWealth/1000000)*5));
   const campaignGoals=[
-    {id:"first-job",title:"Первый доход",text:"Заверши первую оплачиваемую работу.",done:careerXP>0},
-    {id:"first-investment",title:"Первый актив",text:"Купи первую акцию.",done:ownedPositions>0},
-    {id:"ten-deals",title:"Рыночная практика",text:"Соверши 10 сделок.",done:transactions.length>=10},
-    {id:"first-loan",title:"Кредитный рычаг",text:"Возьми первый кредит и используй его осознанно.",done:achievements.includes("loan")},
-    {id:"first-takeover",title:"Первое поглощение",text:"Возьми под контроль первую публичную компанию.",done:ownedCompanies.length>0},
-    {id:"million",title:"Первый миллион",text:"Достигни капитала 1 000 000 VLR.",done:totalWealth>=1000000},
-    {id:"influence",title:"Влияние",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
-    {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
+    {id:"first-job",title:"1 · Создай денежный поток",text:"Заверши первую оплачиваемую работу и получи первые XP.",done:careerXP>0},
+    {id:"secure-home",title:"2 · Закрепись в городе",text:"Выбери жильё, которое соответствует твоему капиталу и стратегии.",done:initialSave?.housing!==undefined || housing!=="studio"},
+    {id:"first-investment",title:"3 · Открой рынок",text:"Купи первую акцию и сформируй первую рыночную позицию.",done:ownedPositions>0},
+    {id:"ten-deals",title:"4 · Научись торговать",text:"Соверши 10 сделок и изучи хотя бы два сектора.",done:transactions.length>=10},
+    {id:"career-three",title:"5 · Получи профессию",text:"Достигни 3 уровня карьеры и открой финансовую работу.",done:careerLevel>=3},
+    {id:"first-loan",title:"6 · Освой капитал",text:"Возьми первый кредит и используй его осознанно.",done:achievements.includes("loan")},
+    {id:"first-takeover",title:"7 · Получи влияние",text:"Сформируй контрольный пакет 51% первой публичной компании.",done:ownedCompanies.length>0},
+    {id:"million",title:"8 · Первый миллион",text:"Достигни капитала 1 000 000 VLR.",done:totalWealth>=1000000},
+    {id:"influence",title:"9 · Экономическая сила",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
+    {id:"year",title:"10 · Полный цикл",text:"Проживи полный экономический год и оцени результат.",done:day>=365}
   ];
   const controlledValue=ownedCompanies.reduce((sum,ticker)=>{const c=country.companies.find(x=>x.ticker===ticker);return sum+(c?priceFor(c)*GAME_CONFIG.startingSharesPerCompany*.51:0)},0);
   const influenceTier=countryInfluence>=75?"Стратегический игрок":countryInfluence>=51?"Влиятельный инвестор":countryInfluence>=33?"Значимый акционер":countryInfluence>=10?"Устойчивый инвестор":"Новый игрок";
   const completedGoals=campaignGoals.filter(g=>g.done).length;
+  const nextGoal=campaignGoals.find(g=>!g.done)??campaignGoals[campaignGoals.length-1];
   const takeoverCost=(company:CompanyPreview)=>{const owned=holdings[company.ticker]||0;const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control);const missing=Math.max(0,target-owned);return Math.round(missing*priceFor(company)*(1+GAME_CONFIG.takeoverPremium)/100)*100;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
   const currentCrisis=macroCrisis(day);
