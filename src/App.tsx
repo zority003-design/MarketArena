@@ -412,7 +412,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const developmentCost=(ticker:string)=>{
     const level=companyDevelopmentLevel(ticker);
     const company=country.companies.find(c=>c.ticker===ticker);
-    return company?Math.round(priceFor(company)*GAME_CONFIG.startingSharesPerCompany*(0.012+level*0.006)/1000)*1000:0;
+    return company?Math.round(priceFor(company)*GAME_CONFIG.startingSharesPerCompany*(0.025+level*0.01)/1000)*1000:0;
   };
   const influenceTier=countryInfluence>=75?"Стратегический игрок":countryInfluence>=51?"Влиятельный инвестор":countryInfluence>=33?"Значимый акционер":countryInfluence>=10?"Устойчивый инвестор":"Новый игрок";
   const completedGoals=campaignGoals.filter(g=>g.done).length;
@@ -483,6 +483,17 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setTransactions(v=>[{day,type:"CONTROL" as const,ticker:company.ticker,quantity:target,price:priceFor(company)},...v].slice(0,100));
     setAchievements(v=>v.includes("takeover")?v:[...v,"takeover"]);
     setNotice("Контроль 51% получен: "+company.name+" теперь входит в твою группу, остальные 49% остаются у рынка.");
+  };
+  const developCompany=(company:CompanyPreview)=>{
+    if(!ownedCompanies.includes(company.ticker)){setNotice("Сначала получи контроль 51% над компанией.");return;}
+    const level=companyDevelopmentLevel(company.ticker);
+    if(level>=5){setNotice(company.name+" уже развита до максимального 5 уровня.");return;}
+    const cost=developmentCost(company.ticker);
+    if(cash<cost){setNotice("Для модернизации нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
+    setCash(v=>v-cost);
+    setCompanyDevelopment(v=>({...v,[company.ticker]:level+1}));
+    setAchievements(v=>v.includes("development")?v:[...v,"development"]);
+    setNotice(company.name+" модернизирована: уровень "+(level+1)+"/5. Производственная эффективность и стоимость компании выросли.");
   };
   const buy=(company:CompanyPreview,quantity=1)=>{
     const price=priceFor(company),gross=price*quantity,fee=gross*GAME_CONFIG.marketOrderFeeRate,cost=gross+fee;
