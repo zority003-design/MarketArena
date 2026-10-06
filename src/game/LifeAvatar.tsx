@@ -29,13 +29,15 @@ function TransportScene({kind}:{kind:string}){
   return <svg className="life-scene-art" viewBox="0 0 360 210" aria-hidden="true"><path d="M50 146 88 89q11-20 35-20h122q24 0 36 20l29 57z" fill="#718f87" stroke="#d7fff2" strokeWidth="3"/><path d="M107 88h146l22 43H85z" fill="#182931"/><path d="M50 146h260v25H50z" fill="#324950"/><circle cx="104" cy="171" r="22" fill="#111b21"/><circle cx="256" cy="171" r="22" fill="#111b21"/><path d="M150 151h60" stroke="#c3f0e1" strokeWidth="3"/><text x="180" y="198" textAnchor="middle" fill="#e5fff6" fontSize="13">ПРЕДСТАВИТЕЛЬСКИЙ АВТОМОБИЛЬ</text></svg>;
 }
 
-function LifeIcon({type}:{type:"housing"|"food"|"transport"|"appearance"}) {
-  if(type==="housing") return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 22 24 8l17 14v19H7z" fill="rgba(83,211,177,.12)" stroke="currentColor" strokeWidth="2.2"/><path d="M18 41V27h12v14M13 23h5M30 23h5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/></svg>;
-  if(type==="food") return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="25" r="14" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2"/><path d="M13 25h22M18 19c3-4 9-4 12 0M17 31c5 3 9 3 14 0M8 10v11M11 10v11M8 16h3M37 10v13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/></svg>;
-  if(type==="transport") return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="m9 29 4-11q2-5 7-5h9q5 0 7 5l3 11v7H9z" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2"/><path d="M15 19h18M12 28h24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/><circle cx="16" cy="36" r="3" fill="currentColor"/><circle cx="32" cy="36" r="3" fill="currentColor"/></svg>;
-  return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 10h16l4 7-5 7 4 14H13l4-14-5-7z" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/><path d="m19 18 5 6 5-6M19 18l-2-6M29 18l2-6M24 24v14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+function LifeDetail({type}:{type:"housing"|"food"|"transport"|"appearance"}) {
+  const art={
+    housing:<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M20 40 60 12l40 28v22H20z" fill="rgba(92,210,177,.10)" stroke="currentColor" strokeWidth="2"/><path d="M50 62V43h20v19M30 39h12M78 39h12" fill="none" stroke="currentColor" strokeWidth="2"/></svg>,
+    food:<svg viewBox="0 0 120 70" aria-hidden="true"><ellipse cx="60" cy="45" rx="40" ry="15" fill="rgba(92,210,177,.08)" stroke="currentColor" strokeWidth="2"/><path d="M28 45q32-30 64 0" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="49" cy="40" r="6" fill="currentColor" opacity=".65"/><circle cx="69" cy="37" r="7" fill="currentColor" opacity=".45"/></svg>,
+    transport:<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M18 48 29 28q3-7 12-7h38q9 0 12 7l10 20z" fill="rgba(92,210,177,.10)" stroke="currentColor" strokeWidth="2"/><path d="M36 25h48l8 17H28z" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="36" cy="51" r="7" fill="currentColor"/><circle cx="84" cy="51" r="7" fill="currentColor"/></svg>,
+    appearance:<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M35 18q25-12 50 0l10 43H25z" fill="rgba(92,210,177,.08)" stroke="currentColor" strokeWidth="2"/><path d="M45 18 60 38 75 18M60 38v23" fill="none" stroke="currentColor" strokeWidth="2"/><path d="M51 29h18" stroke="currentColor" strokeWidth="2"/></svg>
+  }[type];
+  return <span className="life-detail-art">{art}</span>;
 }
-
 function AvatarFigure({appearance}:{appearance:Appearance}) {
   const skin="#e7b18f";
   const skinLight="#f1c5a6";
@@ -111,14 +113,14 @@ function AvatarFigure({appearance}:{appearance:Appearance}) {
 }
 export function LifeAvatar({appearance,careerTitle,name,housing="studio",food="balanced",transport="public"}:Props){
   const items=[
-    {type:"housing" as const,label:"Жильё",value:housingLabels[housing]??housing.toUpperCase()},
-    {type:"appearance" as const,label:"Одежда",value:labels[appearance]},
-    {type:"food" as const,label:"Питание",value:foodLabels[food]??food.toUpperCase()},
-    {type:"transport" as const,label:"Транспорт",value:transportLabels[transport]??transport.toUpperCase()}
+    {type:"housing" as const,label:"Жильё",value:housingLabels[housing]??housing.toUpperCase(),effect:housing==="premium"?"Комфорт +82 · статус +10":"Условия жизни влияют на комфорт и репутацию"},
+    {type:"appearance" as const,label:"Одежда",value:labels[appearance],effect:appearance==="executive"?"Переговоры +9 · репутация +12":"Внешний вид влияет на репутацию и переговоры"},
+    {type:"food" as const,label:"Питание",value:foodLabels[food]??food.toUpperCase(),effect:food==="premium"?"Энергия +88 · репутация +3":"Качество питания определяет восстановление энергии"},
+    {type:"transport" as const,label:"Транспорт",value:transportLabels[transport]??transport.toUpperCase(),effect:transport==="executive"?"Мобильность 95 · репутация +10":"Мобильность влияет на стоимость и рабочую нагрузку"}
   ];
   return <section className={`life-avatar-stage appearance-${appearance} housing-${housing} food-${food} transport-${transport}`} aria-label={`Персонаж ${name}`}>
     <div className="life-avatar-topline"><div><span className="eyebrow">ПЕРСОНАЖ</span><h3>{name}</h3><p>{careerTitle}</p></div><span className="life-avatar-rank">{labels[appearance]}</span></div>
     <div className="life-avatar-portrait"><div className="life-avatar-halo"/><AvatarFigure appearance={appearance}/><div className="life-avatar-ground"/></div>
-    <div className="life-avatar-loadout">{items.map(item=><div className="life-loadout-item" key={item.type}><span className="life-loadout-icon"><LifeIcon type={item.type}/></span><div><small>{item.label}</small><b>{item.value}</b></div></div>)}</div>
+    <div className="life-avatar-loadout">{items.map(item=><div className="life-loadout-item" key={item.type}><LifeDetail type={item.type}/><div><small>{item.label}</small><b>{item.value}</b><span>{item.effect}</span></div></div>)}</div>
   </section>;
 }
