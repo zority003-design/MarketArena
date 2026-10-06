@@ -945,9 +945,9 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
 
     const updateOverlay = () => {
       const rect = host.getBoundingClientRect();
-      const project = (p: THREE.Vector3) => {
+      const project = (p: THREE.Vector3, lift = 0.52) => {
         const q = p.clone();
-        q.y = surfaceHeight(q.x, q.z) + 0.52;
+        q.y = surfaceHeight(q.x, q.z) + lift;
         q.project(camera);
         return { x: (q.x * 0.5 + 0.5) * rect.width, y: (-q.y * 0.5 + 0.5) * rect.height, z: q.z };
       };
@@ -978,7 +978,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         selectedCountry?.companies.forEach((company) => {
           const marker = companyRefs.current[company.ticker];
           if (!marker) return;
-          const p = project(worldFromGeo(safeCompanyGeo(selected, company)));
+          const p = project(worldFromGeo(safeCompanyGeo(selected, company)), 0.95);
           marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-100%)`;
           marker.style.opacity = p.z > 1 ? "0" : "1";
         });
