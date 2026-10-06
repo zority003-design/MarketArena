@@ -95,6 +95,18 @@ function makePort(x:number,z:number,scale=1){
   }
   g.position.set(x,surfaceHeight(x,z)+.03,z); g.castShadow=true; return g;
 }
+function makeBoat(scale=1){
+  const g=new THREE.Group();
+  const hull=new THREE.Mesh(new THREE.BoxGeometry(.62*scale,.12*scale,.22*scale),new THREE.MeshStandardMaterial({color:"#253b48",roughness:.75}));
+  hull.rotation.y=.08; hull.position.y=.02; g.add(hull);
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(.012*scale,.018*scale,.52*scale,8),new THREE.MeshStandardMaterial({color:"#c9b58a",roughness:.7}));
+  mast.position.y=.30*scale; g.add(mast);
+  const sail=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshStandardMaterial({color:"#e9eee8",side:THREE.DoubleSide,roughness:.9}));
+  sail.geometry.setAttribute("position",new THREE.Float32BufferAttribute([-0.01,0.51,0, 0.01,0.10,0, 0.31,0.10,0],3));
+  sail.geometry.computeVertexNormals(); g.add(sail);
+  g.castShadow=true; return g;
+}
+
 function makeFactory(x:number,z:number,scale=1){
   const g=makeModernBuilding(x,z,scale,3);
   for(let i=0;i<2;i++){
@@ -684,7 +696,31 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       }
       for(let i=0;i<Math.floor(cityProfile.trees*2.20);i++){const u=8+hash(i*5.31+17,selectedCountry.id.length*4.2)*84;const v=8+hash(i*2.77+83,selectedCountry.id.length*6.4)*84;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);if(i%6===0)scene.add(makePine(p.x,p.z,.55+hash(i,3)*.4));else if(i%5===0)scene.add(makeBush(p.x,p.z,.65+hash(i,7)*.4));else scene.add(makeGrassPatch(p.x,p.z,.85+hash(i,11)*.65))}}
 for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,selectedCountry.id.length*8.4)*88;const v=6+hash(i*4.19+119,selectedCountry.id.length*5.7)*88;if(pointInPolygon(u,v,selectedPoly)){const p=worldFromGeo([u,v]);scene.add(makeGrassPatch(p.x,p.z,.65+hash(i,19)*.55))}}
-      if(cityProfile.port){ const coast=coastalPoint(selectedCountry.id); if(coast){ const pp=worldFromGeo(coast); scene.add(makePort(pp.x,pp.z,1.15)); } }
+      if(cityProfile.port){
+        const coast=coastalPoint(selectedCountry.id);
+        if(coast){
+          const pp=worldFromGeo(coast);
+          scene.add(makePort(pp.x,pp.z,1.15));
+          const boatCurve=new THREE.CatmullRomCurve3([
+            new THREE.Vector3(pp.x-.8,-.13,pp.z-1.0),
+            new THREE.Vector3(pp.x-2.4,-.15,pp.z-2.8),
+            new THREE.Vector3(pp.x-5.0,-.14,pp.z-1.8)
+          ]);
+          for(let bi=0;bi<3;bi++){
+            const boat=makeBoat(.72+(bi*.08));
+            boat.userData.boatCurve=boatCurve;
+            boat.userData.boatT=(bi*.31)%1;
+            scene.add(boat);
+          }
+        }
+      }
+      // Player residence: a distinct small home next to the capital district.
+      const homePoint=worldFromGeo([capital[0]+1.15,capital[1]+1.05]);
+      const home=makeModernBuilding(homePoint.x,homePoint.z,.62,4);
+      home.userData.playerHome=true;
+      scene.add(home);
+      scene.add(makeTree(homePoint.x+.38,homePoint.z+.18,.48));
+
       for(let i=0;i<Math.min(24,roadCurves.length);i++){
         const car=makeCar(roadCurves[i],.72+(i%4)*.10);
         car.userData.roadT=(i*0.071)%1;
@@ -923,12 +959,19 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       scene.traverse((obj)=>{
         const curve=obj.userData.roadCurve as THREE.CatmullRomCurve3|undefined;
         const walkCurve=obj.userData.walkCurve as THREE.CatmullRomCurve3|undefined;
+        const boatCurve=obj.userData.boatCurve as THREE.CatmullRomCurve3|undefined;
         if(curve){
           obj.userData.roadT=(obj.userData.roadT+0.0009)%1;
           const p=curve.getPointAt(obj.userData.roadT);
           const ahead=curve.getPointAt((obj.userData.roadT+0.01)%1);
           obj.position.set(p.x,surfaceHeight(p.x,p.z)+.11,p.z);
           obj.lookAt(ahead.x,surfaceHeight(ahead.x,ahead.z)+.11,ahead.z);
+        }else if(boatCurve){
+          obj.userData.boatT=(obj.userData.boatT+0.00022)%1;
+          const p=boatCurve.getPointAt(obj.userData.boatT);
+          const ahead=boatCurve.getPointAt((obj.userData.boatT+0.01)%1);
+          obj.position.set(p.x,p.y+Math.sin(performance.now()*0.0015+obj.userData.boatT*8)*0.025,p.z);
+          obj.lookAt(ahead.x,p.y,ahead.z);
         }else if(walkCurve){
           obj.userData.walkT=(obj.userData.walkT+0.00032)%1;
           const p=walkCurve.getPointAt(obj.userData.walkT);
