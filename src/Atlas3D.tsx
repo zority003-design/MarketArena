@@ -873,7 +873,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const homeMarker = homeRef.current;
       if (homeMarker) {
         const selectedCapital = capitalGeo[selected];
-        const housingOffset:Record<string,[number,number]>={dormitory:[-2.2,-1.5],shared:[-1.5,-1.2],studio:[1.6,-1.1],apartment:[2.0,1.7],premium:[2.7,2.1]};
+        const housingOffset:Record<string,[number,number]>={dormitory:[-4.2,-2.8],shared:[-3.0,-2.2],studio:[3.0,-2.1],apartment:[3.7,2.9],premium:[4.8,3.7]};
         const off=housingOffset[home?.housing??"studio"]??housingOffset.studio;
         const hp = project(worldFromGeo([selectedCapital[0]+off[0],selectedCapital[1]+off[1]]));
         homeMarker.style.transform = `translate3d(${hp.x}px,${hp.y}px,0) translate(-50%,-100%)`;
