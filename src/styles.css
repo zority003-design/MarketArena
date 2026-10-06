@@ -4235,8 +4235,8 @@ html,body,#root{width:100%;max-width:100%;overflow-x:hidden}
 .life-avatar-stage{min-height:440px!important;height:100%!important;border-radius:12px!important;background:radial-gradient(circle at 50% 22%,rgba(91,194,178,.14),transparent 30%),linear-gradient(180deg,#102630,#071017)!important}
 .life-avatar{transform:translateY(16px) scale(1.12)!important}
 .life-avatar-caption{padding-top:12px!important}
-@media(max-width:1050px){
-  .game-main{margin-left:0!important}
+@media(max-width:1050px) and (min-width:701px){
+  .game-main{margin-left:84px!important}
   .life-profile-grid{grid-template-columns:1fr!important}
   .life-avatar-stage{min-height:390px!important}
 }
