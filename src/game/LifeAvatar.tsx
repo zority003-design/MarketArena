@@ -29,24 +29,46 @@ function TransportScene({kind}:{kind:string}){
   return <svg className="life-scene-art" viewBox="0 0 360 210" aria-hidden="true"><path d="M50 146 88 89q11-20 35-20h122q24 0 36 20l29 57z" fill="#718f87" stroke="#d7fff2" strokeWidth="3"/><path d="M107 88h146l22 43H85z" fill="#182931"/><path d="M50 146h260v25H50z" fill="#324950"/><circle cx="104" cy="171" r="22" fill="#111b21"/><circle cx="256" cy="171" r="22" fill="#111b21"/><path d="M150 151h60" stroke="#c3f0e1" strokeWidth="3"/><text x="180" y="198" textAnchor="middle" fill="#e5fff6" fontSize="13">ПРЕДСТАВИТЕЛЬСКИЙ АВТОМОБИЛЬ</text></svg>;
 }
 
+function LifeIcon({type}:{type:"housing"|"food"|"transport"|"appearance"}) {
+  if(type==="housing") return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 22 24 8l17 14v19H7z" fill="rgba(83,211,177,.12)" stroke="currentColor" strokeWidth="2.2"/><path d="M18 41V27h12v14M13 23h5M30 23h5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+  if(type==="food") return <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="25" r="14" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2"/><path d="M13 25h22M18 19c3-4 9-4 12 0M17 31c5 3 9 3 14 0M8 10v11M11 10v11M8 16h3M37 10v13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+  if(type==="transport") return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="m9 29 4-11q2-5 7-5h9q5 0 7 5l3 11v7H9z" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2"/><path d="M15 19h18M12 28h24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/><circle cx="16" cy="36" r="3" fill="currentColor"/><circle cx="32" cy="36" r="3" fill="currentColor"/></svg>;
+  return <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 10h16l4 7-5 7 4 14H13l4-14-5-7z" fill="rgba(83,211,177,.10)" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/><path d="m19 18 5 6 5-6M19 18l-2-6M29 18l2-6M24 24v14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+function AvatarFigure({appearance}:{appearance:Appearance}) {
+  const hair=appearance==="executive"?"#18252d":appearance==="professional"?"#27333b":appearance==="neat"?"#34424a":"#46545b";
+  const jacket=appearance==="executive"?"#243b43":appearance==="professional"?"#29434a":appearance==="neat"?"#3c5157":"#51636a";
+  const accent=appearance==="executive"?"#d6b86a":appearance==="professional"?"#79d6bd":"#9ee7d1";
+  return <svg className="life-avatar-figure" viewBox="0 0 260 330" aria-hidden="true">
+    <defs><linearGradient id="avatarSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#f1c7a8"/><stop offset="1" stopColor="#d99f80"/></linearGradient><linearGradient id="avatarJacket" x1="0" x2="1"><stop offset="0" stopColor={jacket}/><stop offset="1" stopColor="#182b33"/></linearGradient></defs>
+    <ellipse cx="130" cy="309" rx="76" ry="11" fill="rgba(0,0,0,.28)"/>
+    <path d="M61 304c4-60 22-88 69-88s65 28 69 88z" fill="url(#avatarJacket)"/>
+    <path d="m94 221 36 42 36-42 17 83H77z" fill={accent} opacity=".28"/>
+    <path d="M106 205h48v40l-24 24-24-24z" fill="url(#avatarSkin)"/>
+    <path d="M83 120c0-48 94-55 96 8v55c-4 42-31 58-49 58-20 0-44-18-47-58z" fill="url(#avatarSkin)"/>
+    <path d="M82 135c-10-47 14-78 53-78 40 0 58 26 47 76l-15-25c-22 8-47 9-71 0z" fill={hair}/>
+    <path d="M95 143q10-7 20 0M145 143q10-7 20 0" fill="none" stroke="#633f35" strokeWidth="3" strokeLinecap="round"/>
+    <circle cx="109" cy="149" r="3" fill="#243238"/><circle cx="151" cy="149" r="3" fill="#243238"/>
+    <path d="M130 151v22l-7 4h12M113 190q17 11 34 0" fill="none" stroke="#a96f62" strokeWidth="3" strokeLinecap="round"/>
+    <path d="m92 222 38 43 38-43 15 82H77z" fill="url(#avatarJacket)"/>
+    <path d="m106 215 24 50 24-50-24 17z" fill="#dcebe6"/>
+    <path d="m124 232 6 34 6-34-6-7z" fill={accent}/>
+    <path d="M81 237 56 278M179 237l25 41" stroke={jacket} strokeWidth="18" strokeLinecap="round"/>
+    <circle cx="55" cy="279" r="10" fill="url(#avatarSkin)"/><circle cx="205" cy="279" r="10" fill="url(#avatarSkin)"/>
+  </svg>;
+}
+
 export function LifeAvatar({appearance,careerTitle,name,housing="studio",food="balanced",transport="public"}:Props){
-  const housingKey=housingLabels[housing]??housing.toUpperCase();
-  const foodKey=foodLabels[food]??food.toUpperCase();
-  const transportKey=transportLabels[transport]??transport.toUpperCase();
-  return <div className={`life-avatar-stage appearance-${appearance} housing-${housing} food-${food} transport-${transport}`} aria-label={`Персонаж ${name}`}>
-    <div className="life-scene-glow"/>
-    <div className="life-home-scene" aria-hidden="true"><HousingScene kind={housing}/><span>{housingKey}</span></div>
-    <div className="life-food-scene" aria-hidden="true"><FoodScene kind={food}/><span>{foodKey}</span></div>
-    <div className="life-transport-scene" aria-hidden="true"><TransportScene kind={transport}/><span>{transportKey}</span></div>
-    <div className="life-avatar-shadow"/>
-    <div className="life-avatar">
-      <div className="avatar-hair"><i/><i/><i/></div>
-      <div className="avatar-head"><span className="avatar-ear left"/><span className="avatar-ear right"/><i className="avatar-brow left"/><i className="avatar-brow right"/><i className="avatar-eye left"/><i className="avatar-eye right"/><b className="avatar-nose"/><span className="avatar-mouth"/></div>
-      <div className="avatar-neck"/>
-      <div className="avatar-torso"><span className="avatar-collar left"/><span className="avatar-collar right"/><b className="avatar-tie"/><span className="avatar-pocket"/><span className="avatar-shirt-panel"/></div>
-      <div className="avatar-arm left"/><div className="avatar-arm right"/><div className="avatar-hand left"/><div className="avatar-hand right"/>
-      <div className="avatar-leg left"/><div className="avatar-leg right"/><div className="avatar-shoe left"/><div className="avatar-shoe right"/>
-    </div>
-    <div className="life-avatar-caption"><span>ИГРОК · {labels[appearance]}</span><b>{careerTitle}</b></div>
-  </div>;
+  const items=[
+    {type:"housing" as const,label:"Жильё",value:housingLabels[housing]??housing.toUpperCase()},
+    {type:"appearance" as const,label:"Одежда",value:labels[appearance]},
+    {type:"food" as const,label:"Питание",value:foodLabels[food]??food.toUpperCase()},
+    {type:"transport" as const,label:"Транспорт",value:transportLabels[transport]??transport.toUpperCase()}
+  ];
+  return <section className={`life-avatar-stage appearance-${appearance} housing-${housing} food-${food} transport-${transport}`} aria-label={`Персонаж ${name}`}>
+    <div className="life-avatar-topline"><div><span className="eyebrow">ПЕРСОНАЖ</span><h3>{name}</h3><p>{careerTitle}</p></div><span className="life-avatar-rank">{labels[appearance]}</span></div>
+    <div className="life-avatar-portrait"><div className="life-avatar-halo"/><AvatarFigure appearance={appearance}/><div className="life-avatar-ground"/></div>
+    <div className="life-avatar-loadout">{items.map(item=><div className="life-loadout-item" key={item.type}><span className="life-loadout-icon"><LifeIcon type={item.type}/></span><div><small>{item.label}</small><b>{item.value}</b></div></div>)}</div>
+  </section>;
 }
