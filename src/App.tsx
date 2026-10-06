@@ -579,7 +579,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
                 <div><span>ЖИВОЙ ЭКОНОМИЧЕСКИЙ АТЛАС</span><h2>{country.name} · предприятия и влияние</h2><p className="map-subline">Нажми на предприятие: открой котировку, купи долю и оставь свой след на карте.</p></div>
                 <div className="map-head-stats"><b>{country.companies.length}</b><span>компаний</span><b>{ownedPositions}</b><span>позиций</span><b>{ownedCompanies.length}</b><span>контроль</span></div>
               </div>
-              <AtlasMap selected={country.id} onSelect={()=>{}} showCompanies onCompany={openExchange} holdings={holdings} home={{housing,label={`${housing==="dormitory"?"Общежитие":housing==="shared"?"Общий дом":housing==="studio"?"Студия":housing==="apartment"?"Апартаменты":"Премиум-дом"} · МОЙ ДОМ`}}/>
+              <AtlasMap selected={country.id} onSelect={()=>{}} showCompanies onCompany={openExchange} holdings={holdings} home={{housing,label: `${housing==="dormitory"?"Общежитие":housing==="shared"?"Общий дом":housing==="studio"?"Студия":housing==="apartment"?"Апартаменты":"Премиум-дом"} · МОЙ ДОМ`}}/>
             </section>
             <aside className="command-map-rail">
               <div className="command-rail-card capital-focus"><span>ОБЩИЙ КАПИТАЛ</span><strong>{totalWealth.toLocaleString("ru-RU")} VLR</strong><small>Кэш {cash.toLocaleString("ru-RU")} · активы {portfolioValue.toLocaleString("ru-RU")}</small><div className="money-bar"><i style={{width:cashPct+"%"}}/></div></div>
