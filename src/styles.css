@@ -3394,7 +3394,7 @@ button,input,select{font:inherit}
 
 /* Map identity + player residence */
 .atlas-home-marker{position:absolute;left:0;top:0;z-index:20;pointer-events:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,218,118,.48);background:rgba(11,22,25,.86);border-radius:8px;box-shadow:0 7px 18px rgba(0,0,0,.34),0 0 18px rgba(244,199,87,.12);backdrop-filter:blur(6px);white-space:nowrap}.atlas-home-marker i{width:9px;height:9px;border-radius:50%;background:#f0c95e;box-shadow:0 0 0 3px rgba(240,201,94,.13),0 0 12px rgba(240,201,94,.7)}.atlas-home-marker span{font:800 8px "Space Grotesk",sans-serif;letter-spacing:.12em;color:#f8e9b3}
-.atlas-3d-watermark{opacity:.35!important}.atlas-capital-marker{transition:none!important}.atlas-capital-marker:hover{transform:translate3d(var(--x),var(--y),0) translate(-50%,-50%)!important}
+.atlas-3d-watermark{opacity:.35!important}.atlas-capital-marker{transition:none!important}.atlas-capital-marker:hover{scale:1.05;filter:brightness(1.08)}
 /* Dashboard cards stay inside their geometry; no hover lift that breaks borders. */
 .game-main .ticker-row:hover,.game-main .news-item:hover,.game-main .event-card:hover,.game-main .life-job:hover,.game-main .company-focus-card:hover,.game-main .exchange-safe-companies button:hover{transform:none!important}
 /* Company imagery: less cartoon-like, more editorial terminal */
@@ -4139,14 +4139,14 @@ button,input,select{font:inherit}
 .atlas-map-hud b{color:#d7b66f;margin-right:4px}
 .atlas-map-hud b.owned{color:#61d2b0}
 .atlas-map-hud b.control{color:#e7bd67}
-.premium-company-marker{min-width:34px!important;min-height:30px!important;padding:4px 6px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:rgba(7,18,24,.92)!important;border:1px solid rgba(152,178,183,.23)!important;border-radius:6px!important;box-shadow:0 6px 15px rgba(0,0,0,.25)!important;transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease,background .12s ease}
+.premium-company-marker{min-width:34px!important;min-height:30px!important;padding:4px 6px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:rgba(7,18,24,.92)!important;border:1px solid rgba(152,178,183,.23)!important;border-radius:6px!important;box-shadow:0 6px 15px rgba(0,0,0,.25)!important;transition:border-color .12s ease,box-shadow .12s ease,background .12s ease}
 .premium-company-marker b{font-size:9px;letter-spacing:.09em;color:#d9e2e4}
 .premium-company-marker span{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;color:#8ea0a6}
 .premium-company-marker small{font-size:6px;letter-spacing:.08em;color:#687d84}
 .premium-company-marker.owned{border-color:rgba(93,207,174,.48)!important;background:rgba(8,33,31,.94)!important;box-shadow:0 0 0 1px rgba(93,207,174,.10),0 8px 22px rgba(0,0,0,.28)!important}
 .premium-company-marker.strategic{border-color:rgba(95,183,168,.68)!important}
 .premium-company-marker.control{border-color:#d7b568!important;background:rgba(50,38,18,.96)!important;box-shadow:0 0 0 2px rgba(215,181,104,.16),0 0 24px rgba(215,181,104,.18)!important}
-.premium-company-marker:hover{transform:translate(-50%,-50%) scale(1.12)!important;z-index:20}
+.premium-company-marker:hover{scale:1.08;z-index:20;filter:brightness(1.08)}
 .atlas-home-marker{filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
 .atlas-home-marker span{background:rgba(7,18,24,.9)!important;border-color:rgba(215,181,104,.45)!important;color:#ead7a8!important}
 .atlas-3d-watermark{font-size:7px!important;letter-spacing:.12em!important}
@@ -4184,3 +4184,66 @@ button,input,select{font:inherit}
 .chain-flow .chain-current{color:#e7d3a0;border-color:rgba(215,181,104,.38);background:#2a2418}
 .chain-flow i{font-style:normal;color:#657980;margin-right:4px}
 @media(max-width:800px){.economic-chain-card{display:block}.chain-flow{justify-content:flex-start;margin-top:12px}}
+
+
+/* FINAL FIX PASS — layout, projected map labels and Life presentation */
+html,body,#root{width:100%;max-width:100%;overflow-x:hidden}
+.auth-screen{width:100%;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+.auth-panel{width:100%!important;max-width:none!important;min-width:0!important;justify-self:stretch!important;border-right:0!important}
+.auth-visual{min-width:0!important;border-left:1px solid rgba(148,205,214,.10)!important}
+
+.game-shell{width:100%;max-width:100vw;overflow-x:clip}
+.game-topbar{width:100%;min-width:0;overflow:hidden}
+.game-topbar>*{min-width:0}
+.game-right{min-width:0;max-width:100%;overflow:hidden}
+.topbar-time-controls{min-width:0;max-width:100%}
+.topbar-time-status{min-width:0!important}
+.game-body{min-width:0;width:100%}
+.game-main{min-width:0;width:auto!important;max-width:none!important;overflow-x:clip}
+.command-map-layout,.hero-map-grid,.command-map-main,.market-map-card,.panel,.exchange-safe,.life-profile-grid{min-width:0}
+.command-map-layout>*{min-width:0}
+
+.atlas-3d-viewport{position:relative;min-width:0;overflow:hidden}
+.atlas-3d-overlay{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:5}
+.atlas-3d-overlay button{position:absolute;left:0;top:0;margin:0;pointer-events:auto;transform-origin:center bottom;will-change:transform}
+.atlas-company-marker,.premium-company-marker{will-change:transform;transition:border-color .12s ease,box-shadow .12s ease,background .12s ease!important}
+.premium-company-marker:hover{scale:1.08;z-index:20;filter:brightness(1.08)}
+.atlas-capital-marker:hover{scale:1.05;filter:brightness(1.08)}
+
+.life-profile-grid{grid-template-columns:minmax(330px,420px) minmax(0,1fr)!important;gap:18px!important;align-items:stretch}
+.life-character-card{padding:14px!important;background:linear-gradient(145deg,#0b202b,#071018)!important;border-color:rgba(126,194,204,.20)!important;box-shadow:0 20px 55px rgba(0,0,0,.22)}
+.life-stats-card{padding:20px!important;background:linear-gradient(145deg,#0c1a23,#071018)!important;border-color:rgba(126,194,204,.17)!important}
+.life-stats-card h2{font-size:24px!important;letter-spacing:-.035em!important;margin:7px 0 15px!important}
+.life-option-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px!important}
+.life-option{position:relative;min-height:112px;padding:15px 15px 14px 48px!important;border-radius:12px!important;background:linear-gradient(145deg,rgba(20,42,52,.72),rgba(8,18,25,.82))!important;border-color:rgba(126,194,204,.11)!important;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.life-option:hover{transform:translateY(-2px);border-color:rgba(99,223,186,.28)!important;background:linear-gradient(145deg,rgba(25,52,61,.82),rgba(8,18,25,.92))!important}
+.life-option:before{position:absolute;left:14px;top:15px;width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:rgba(99,223,186,.08);border:1px solid rgba(99,223,186,.16);color:#79dcbf;font-size:14px;font-weight:800}
+.life-option:nth-child(1):before{content:"⌂"}
+.life-option:nth-child(2):before{content:"◆"}
+.life-option:nth-child(3):before{content:"+"}
+.life-option:nth-child(4):before{content:"→"}
+.life-option span{font-size:9px!important;color:#789aa3!important}
+.life-option b{font-size:16px!important;color:#edf6f5!important}
+.life-option small{font-size:10px!important;color:#80969e!important}
+.life-control-grid{gap:10px!important;margin-top:16px!important}
+.life-control-grid label{min-width:0;padding:13px!important;background:#09151d!important;border-color:rgba(126,194,204,.10)!important}
+.life-control-grid label>span{font-size:9px!important;color:#7fa0a8!important}
+.life-control-grid select{height:38px!important;font-size:11px!important}
+.life-impact{gap:10px!important;margin-top:15px!important}
+.life-impact>div{padding:13px!important;background:rgba(255,255,255,.025)!important}
+.life-impact b{font-size:16px!important;color:#edf5f4!important}
+.life-avatar-stage{min-height:440px!important;height:100%!important;border-radius:12px!important;background:radial-gradient(circle at 50% 22%,rgba(91,194,178,.14),transparent 30%),linear-gradient(180deg,#102630,#071017)!important}
+.life-avatar{transform:translateY(16px) scale(1.12)!important}
+.life-avatar-caption{padding-top:12px!important}
+@media(max-width:1050px){
+  .game-main{margin-left:0!important}
+  .life-profile-grid{grid-template-columns:1fr!important}
+  .life-avatar-stage{min-height:390px!important}
+}
+@media(max-width:700px){
+  .auth-screen{grid-template-columns:1fr!important}
+  .auth-visual{display:none!important}
+  .game-main{width:100%!important;padding:20px 14px 60px!important}
+  .life-option-grid,.life-control-grid{grid-template-columns:1fr!important}
+  .life-avatar-stage{min-height:350px!important}
+}
