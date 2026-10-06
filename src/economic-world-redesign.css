@@ -176,3 +176,11 @@
 
 /* Campaign mission status */
 .mission-card small{display:block;margin-top:10px;color:var(--muted,#8b98a8);font-size:12px;line-height:1.4}.mission-card.done small{color:#70d39b}.mission-card strong{white-space:nowrap}
+
+/* v1.2 — profession progression */
+.profession-level-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 6px;font-size:11px;color:rgba(236,247,243,.82)}
+.profession-level-row span{opacity:.52}
+.profession-xp-bar{height:6px;border-radius:999px;background:rgba(0,0,0,.22);overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.profession-xp-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#52d6b0,#8ae6c7);box-shadow:0 0 12px rgba(82,214,176,.22);transition:width .3s ease}
+.profession-bonus{display:block;margin-top:7px;color:rgba(142,231,199,.72);font-size:10px;line-height:1.35}
+.career-job.locked .profession-xp-bar{opacity:.35}
