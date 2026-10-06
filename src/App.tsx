@@ -296,13 +296,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     saverniya:{bias:.005,sectors:{"Агро":.024,"Ритейл":.018,"Логистика":.012},strength:"плодородные земли и большой потребительский рынок",risk:"погода, урожайность и инфляция спроса"}
   };
   const marketProfile=countryMarketProfile[country.id]??countryMarketProfile.slavoriya;
-  const marketSnapshot=useMemo(()=>{
-    const rows=country.companies.map(c=>({company:c,price:priceFor(c),change:priceChange(c),news:marketEvent(c,day)}));
-    const breadth=rows.length?rows.filter(x=>x.change>0).length/rows.length:.5;
-    const index=rows.length?rows.reduce((sum,x)=>sum+x.price/Math.max(.01,priceFor(x.company,1)),0)/rows.length*100:100;
-    const sentiment=rows.length?rows.reduce((sum,x)=>sum+x.news.impact,0)/rows.length:0;
-    return {rows,breadth,index,sentiment};
-  },[country.companies,day,marketPulse]);
+
   const commodityPulse=(sector:string,atDay:number)=>{
     const map:Record<string,{name:string;wave:number}>={"Нефть":{name:"нефти",wave:.030},"Металлы":{name:"металлов",wave:.022},"Агро":{name:"зерна",wave:.018},"Энергетика":{name:"газа и электроэнергии",wave:.014},"Машиностроение":{name:"стали и оборудования",wave:.010},"Логистика":{name:"топлива",wave:.012},"Порты":{name:"фрахта",wave:.016},"Судоходство":{name:"фрахта",wave:.021}};
     const c=map[sector]; if(!c) return {name:"ключевых компонентов",impact:Math.sin((atDay+sector.length)*.083)*.006};
@@ -361,7 +355,14 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const old=day>1?priceFor(company,oldDay):priceFor(company,1)*(1-(Math.sin(seed*1.91)*0.006+Math.cos(seed*0.73)*0.003));
     return ((priceFor(company,day)-old)/old)*100;
   };
-  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,start)+(priceFor(company,end)-priceFor(company,start));});};
+
+  const marketSnapshot=useMemo(()=>{
+    const rows=country.companies.map(c=>({company:c,price:priceFor(c),change:priceChange(c),news:marketEvent(c,day)}));
+    const breadth=rows.length?rows.filter(x=>x.change>0).length/rows.length:.5;
+    const index=rows.length?rows.reduce((sum,x)=>sum+x.price/Math.max(.01,priceFor(x.company,1)),0)/rows.length*100:100;
+    const sentiment=rows.length?rows.reduce((sum,x)=>sum+x.news.impact,0)/rows.length:0;
+    return {rows,breadth,index,sentiment};
+  },[country.companies,day,marketPulse]);  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,start)+(priceFor(company,end)-priceFor(company,start));});};
   const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{
     // One candle = one real interval of the selected range.
     const configs:Record<ChartRange,{count:number;step:number;vol:number;label:string}>={
