@@ -46,6 +46,14 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   const [startedAt]=useState(()=>Date.now());
   const [message,setMessage]=useState("Смена начинается. Работай внимательно.");
   const [finished,setFinished]=useState(false);
+  const [difficulty,setDifficulty]=useState<1|2|3>(2);
+  const [shiftLength,setShiftLength]=useState<"short"|"normal"|"long">("normal");
+  const [stamina,setStamina]=useState(100);
+  const [started,setStarted]=useState(false);
+  const difficultyName={1:"Стажёр",2:"Стандарт",3:"Эксперт"}[difficulty];
+  const shiftMultiplier={short:.75,normal:1,long:1.3}[shiftLength];
+  const difficultyMultiplier={1:.82,2:1,3:1.22}[difficulty];
+  const shiftTarget={short:3,normal:5,long:7}[shiftLength];
 
   const [player,setPlayer]=useState({x:0,y:0});
   const [target,setTarget]=useState(()=>({x:(seed%6),y:Math.floor(seed%5)}));
@@ -90,22 +98,24 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
     setFinished(true);
     const elapsed=(Date.now()-startedAt)/1000;
     const speedBonus=elapsed<55?.10:elapsed<90?.05:0;
-    const raw=.45+score*.08-mistakes*.07+speedBonus+bonus;
+    const staminaBonus=stamina>=70?.08:stamina>=40?.03:0;
+    const raw=(.45+score*.08-mistakes*.07+speedBonus+staminaBonus+bonus)*difficultyMultiplier*shiftMultiplier;
     onComplete(clamp(raw,.25,1));
   };
 
   const move=(dx:number,dy:number)=>{
-    if(finished)return;
+    if(finished||!started)return;
+    setStamina(v=>Math.max(0,v-(difficulty===3?2.2:1.4)));
     const nx=Math.max(0,Math.min(5,player.x+dx)),ny=Math.max(0,Math.min(4,player.y+dy));
     setPlayer({x:nx,y:ny});
     if(jobId==="courier"&&nx===target.x&&ny===target.y){
       const next=deliveryCount+1;
       setDeliveryCount(next);
       setScore(v=>v+1);
-      if(next>=3){setMessage("Все три доставки выполнены.");setTimeout(()=>finish(.10),120);}
+      if(next>=shiftTarget){setMessage("Маршрут смены выполнен.");setTimeout(()=>finish(.10),120);}
       else{
         setMessage("Адрес подтверждён. Следующая доставка.");
-        setTarget({x:(seed+next*7+3)%6,y:(seed+next*5+2)%5});
+        setTarget({x:(seed+next*7+3+difficulty*2)%6,y:(seed+next*5+2+difficulty)%5});
       }
     }
   };
@@ -127,11 +137,11 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   });
 
   const cleanTile=(cell:{x:number;y:number;i:number})=>{
-    if(finished)return;
+    if(finished||!started)return;
     const distance=Math.abs(cell.x-player.x)+Math.abs(cell.y-player.y);
     if(distance>1){setMessage("Сначала подойди к соседней клетке.");return;}
     if(cleaned.includes(cell.i))return;
-    const isTrash=cell.i%7===0||cell.i===targetIndex;
+    const isTrash=cell.i%(difficulty===3?5:7)===0||cell.i===targetIndex;
     if(!isTrash){
       setMistakes(v=>v+1);
       setMessage("Здесь чисто. Не трать время на пустую зону.");
@@ -141,16 +151,16 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
     setCleaned(next);
     setScore(v=>v+1);
     setMessage("Мусор убран. Ищи следующую точку.");
-    if(next.length>=5)setTimeout(()=>finish(.08),120);
+    if(next.length>=shiftTarget)setTimeout(()=>finish(.08),120);
   };
 
   const addCash=(value:number)=>{
-    if(finished)return;
+    if(finished||!started)return;
     setCashierSelected(v=>Math.min(300,v+value));
   };
   const resetCash=()=>setCashierSelected(0);
   const serveCustomer=()=>{
-    if(finished)return;
+    if(finished||!started)return;
     const customer=customers[customerIndex];
     if(!customer)return;
     const correct=customer.paid-customer.price;
@@ -167,7 +177,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   };
 
   const analyst=(i:number)=>{
-    if(finished)return;
+    if(finished||!started)return;
     if(i===signal){
       const next=analystRound+1;
       setAnalystRound(next);
@@ -175,7 +185,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       setMessage("Сигнал подтверждён: цена и информационный импульс расходятся с обычным диапазоном.");
       setSignal(3+((signal*7+seed+next*5)%12));
       setChart(c=>c.map((v,j)=>j===i?v+9:v));
-      if(next>=4)setTimeout(()=>finish(.10),120);
+      if(next>=shiftTarget-1)setTimeout(()=>finish(.10),120);
     }else{
       setMistakes(v=>v+1);
       setMessage("Это обычное движение. Сверь цену, новость и контекст.");
@@ -183,7 +193,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   };
 
   const evaluateCase=(i:number)=>{
-    if(finished)return;
+    if(finished||!started)return;
     const picked=caseCompanies[i];
     if(!picked)return;
     const scoreMetric=(x:CaseCompany)=>x.growth*1.35+x.profit*.035-x.debt*.028-x.pe*.65+(x.change*.35);
@@ -194,7 +204,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       setCaseRound(next);
       setScore(v=>v+1);
       setMessage("Инвестиционный кейс разобран: фундаментал и риск подтверждают выбор.");
-      if(next>=3){setTimeout(()=>finish(.16),120);return;}
+      if(next>=Math.max(2,shiftTarget-2)){setTimeout(()=>finish(.16),120);return;}
       setCaseTarget((caseTarget+1)%caseCompanies.length);
     }else{
       setMistakes(v=>v+1);
@@ -211,6 +221,16 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   };
 
   return <div className="job-game-backdrop" onClick={onCancel}>
+    {!started&&<div className="job-shift-setup" onClick={e=>e.stopPropagation()}>
+      <div className="job-shift-kicker">ПРОФЕССИОНАЛЬНАЯ СМЕНА</div>
+      <h2>{title}</h2>
+      <p>Выбери уровень нагрузки и длину смены. Более сложная смена даёт больший заработок и быстрее развивает профессию, но ошибки и усталость стоят дороже.</p>
+      <div className="job-choice-group"><span>Сложность</span><div>{([1,2,3] as const).map(v=><button key={v} className={difficulty===v?"selected":""} onClick={()=>setDifficulty(v)}><b>{v===1?"Стажёр":v===2?"Стандарт":"Эксперт"}</b><small>{v===1?"меньше штрафов":v===2?"баланс": "выше награда"}</small></button>)}</div></div>
+      <div className="job-choice-group"><span>Длина смены</span><div>{([["short","Короткая","быстрый заработок"],["normal","Обычная","рекомендуется"],["long","Длинная","больше XP"]] as const).map(([v,label,sub])=><button key={v} className={shiftLength===v?"selected":""} onClick={()=>setShiftLength(v)}><b>{label}</b><small>{sub}</small></button>)}</div></div>
+      <div className="job-shift-summary"><span>Нагрузка <b>{difficultyName}</b></span><span>Целей <b>{shiftTarget}</b></span><span>База <b>{money(Math.round(basePay*shiftMultiplier*difficultyMultiplier))} VLR</b></span></div>
+      <button className="job-start-button" onClick={()=>setStarted(true)}>НАЧАТЬ СМЕНУ</button>
+    </div>}
+    <div className={"job-game-modal premium-job-modal "+(!started?"job-game-hidden":"")} onClick={e=>e.stopPropagation()}>
     <div className="job-game-modal premium-job-modal" onClick={e=>e.stopPropagation()}>
       <button className="modal-close" onClick={onCancel}>×</button>
       <div className="job-game-header">
@@ -270,7 +290,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
         <small>3 кейса · решение должно учитывать фундаментал и новостной фон</small>
       </div>}
 
-      <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b></span><span>Результат смены влияет на зарплату, энергию и карьерный XP</span></div>
+      <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b> · Выносливость <b>{Math.round(stamina)}%</b></span><span>Сложность: <b>{difficultyName}</b> · Смена: <b>{shiftLength==="short"?"короткая":shiftLength==="normal"?"обычная":"длинная"}</b></span></div>
     </div>
   </div>;
 }
