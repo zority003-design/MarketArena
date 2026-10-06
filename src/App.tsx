@@ -371,7 +371,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
   ];
   const completedGoals=campaignGoals.filter(g=>g.done).length;
-  const takeoverCost=(company:CompanyPreview)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const marketCapBillions=18+(seed%140);return Math.round((marketCapBillions*1_000_000_000*.51*1.15)/1_000_000)*1_000_000;};
+  const takeoverCost=(company:CompanyPreview)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const marketCap=1_200_000+(seed%8)*350_000;return Math.round(marketCap*.51*1.15/1000)*1000;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
   const currentCrisis=macroCrisis(day);
   const portfolioHistory=useMemo(()=>Array.from({length:30},(_,i)=>cash+country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c,Math.max(1,day-29+i)),0)),[cash,country.companies,holdings,day,marketPulse]);
@@ -469,7 +469,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       setNotice("Начислены проценты по кредиту: +"+charged.toLocaleString("ru-RU")+" VLR.");
     }
     if(day%30===0 && ownedCompanies.length){
-      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);return sum+(company?Math.round(takeoverCost(company)*.012):0);},0);
+      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);return sum+(company?Math.round(takeoverCost(company)*.12):0);},0);
       if(income>0){setCash(v=>v+income);setNotice("Доход холдинга: +"+income.toLocaleString("ru-RU")+" VLR.");}
     }
   },[day]);
