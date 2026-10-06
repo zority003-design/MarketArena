@@ -454,6 +454,9 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
   const takeoverCost=(company:CompanyPreview)=>{const owned=holdings[company.ticker]||0;const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control);const missing=Math.max(0,target-owned);return Math.round(missing*priceFor(company)*(1+GAME_CONFIG.takeoverPremium)/100)*100;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
   const currentCrisis=macroCrisis(day);
+  useEffect(()=>{
+    if(currentCrisis && totalWealth>0 && !crisisSurvived)setCrisisSurvived(true);
+  },[currentCrisis,totalWealth,crisisSurvived]);
   const economyNow=economicSnapshot(day,country.id);
   const storyChapter = day <= 1
     ? {title:"Прибытие",text:"Ты начинаешь в своём районе. Первое решение — закрепиться, найти работу и понять стоимость жизни."}
