@@ -23,6 +23,11 @@ export const GAME_CONFIG = {
   startingSharesPerCompany: 1_000_000,
   marketOrderFeeRate: 0.0025,
   takeoverPremium: 0.08,
+  // One "control target" per sector is intentionally cheaper to make 51% a real mid-game goal.
+  // The remaining companies keep their normal valuation so the market is not flattened.
+  controlEntryPriceMultiplier: 0.42,
+  monthlyDividendBaseYield: 0.032,
+  monthlyDividendMaxYield: 0.085,
   dailyInterestRate: 0.0012,
   inflationPerDay: 0.00035,
 
@@ -38,6 +43,7 @@ export const GAME_CONFIG = {
   },
 
   // Company capitalization is deliberately reachable in stages.
+  controlTargetTickers: ["SVM","NPE","VLB","KRM","ELM","LIS","BPT","DOL","ERC","SLD","ESB","VCL","ESR","RVF","GFR"],
   companyMarketCaps: {
     micro: { min: 80_000, max: 250_000, shares: 1_000_000 },
     small: { min: 250_000, max: 750_000, shares: 1_000_000 },
@@ -196,4 +202,8 @@ export function economicPowerScore(input: {
     normalizedCareer * w.careerLevel +
     input.territoryDevelopment * w.territoryDevelopment,
   );
+}
+
+export function isControlTarget(ticker: string) {
+  return GAME_CONFIG.controlTargetTickers.includes(ticker as never);
 }
