@@ -471,11 +471,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setNotice("Контроль 51% получен: "+company.name+" теперь входит в твою группу, остальные 49% остаются у рынка.");
   };
   const buy=(company:CompanyPreview,quantity=1)=>{
-    const price=priceFor(company),cost=price*quantity;
-    if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR.");return;}
+    const price=priceFor(company),cost=price*quantity*(1+GAME_CONFIG.marketOrderFeeRate);
+    if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR с учётом комиссии.");return;}
     setCash(v=>v-cost);setHoldings(v=>({...v,[company.ticker]:(v[company.ticker]||0)+quantity}));
     setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
-    setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс списан: -"+cost.toLocaleString("ru-RU")+" VLR.");
+    setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс списан: -"+cost.toLocaleString("ru-RU")+" VLR с учётом комиссии.");
   };
   const buyStake=(company:CompanyPreview,targetPct:number)=>{
     const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*(targetPct/100));
