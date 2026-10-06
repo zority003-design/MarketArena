@@ -60,3 +60,26 @@
 .life-avatar-stage:after{content:"";position:absolute;inset:auto 5% 0;height:34%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.16));border-radius:30% 30% 0 0}
 @media(max-width:1050px){.exchange-safe{grid-template-columns:1fr}.exchange-safe-companies,.exchange-safe-focus,.exchange-safe-recovery{grid-column:1;grid-row:auto;position:static;max-height:none}.exchange-safe-companies{grid-template-columns:repeat(2,minmax(0,1fr))}.financial-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.exchange-safe-top{flex-direction:column}.exchange-safe-clock{text-align:left;min-width:0}.exchange-safe-clock>div{justify-content:flex-start}.exchange-safe-companies{grid-template-columns:1fr}.ownership-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.financial-report-grid{grid-template-columns:1fr}.company-modal{width:100vw;border-radius:0}.exchange-safe-marketline button{margin-left:0;width:100%}}
+
+.life-home-sofa,.life-home-tv,.life-home-plant,.life-home-bed,.life-home-desk,.life-food-drink{position:absolute;display:block;transition:all .3s ease}
+.life-home-sofa{left:18%;bottom:18%;width:28%;height:10%;border-radius:12px 12px 5px 5px;background:rgba(86,180,166,.42);box-shadow:0 8px 18px rgba(0,0,0,.16)}
+.life-home-tv{right:17%;bottom:26%;width:17%;height:13%;border:2px solid rgba(120,230,220,.4);background:rgba(10,20,28,.72);border-radius:5px}
+.life-home-plant{right:9%;bottom:15%;width:9%;height:18%;border-radius:50% 50% 30% 30%;background:rgba(76,190,126,.45)}
+.life-home-bed{left:10%;bottom:12%;width:38%;height:13%;border-radius:10px;background:rgba(180,190,205,.28)}
+.life-home-desk{right:10%;bottom:12%;width:30%;height:7%;background:rgba(170,135,90,.32);border-radius:4px}
+.housing-dormitory .life-home-sofa,.housing-dormitory .life-home-tv,.housing-dormitory .life-home-plant,.housing-dormitory .life-home-desk{display:none}
+.housing-shared .life-home-plant{display:none}
+.housing-studio .life-home-bed{width:34%}
+.housing-apartment .life-home-plant{transform:scale(1.25)}
+.housing-premium .life-home-sofa{width:34%;height:12%;background:rgba(120,210,180,.52)}.housing-premium .life-home-tv{width:21%;height:16%}.housing-premium .life-home-plant{transform:scale(1.5)}
+.life-food-drink{right:25%;bottom:26%;width:8%;height:13%;border-radius:45%;background:rgba(90,190,240,.4);display:none}
+.food-balanced .life-food-drink,.food-premium .life-food-drink{display:block}
+.food-premium .life-food-main{transform:scale(1.25)}.food-premium .life-food-side{transform:scale(1.3)}.food-premium .life-food-drink{transform:scale(1.15)}
+.life-transport-wheel{position:absolute;bottom:15%;width:11%;height:11%;border-radius:50%;background:rgba(15,22,30,.9);border:2px solid rgba(150,230,220,.45);display:none}
+.life-transport-wheel.left{left:20%}.life-transport-wheel.right{right:20%}
+.transport-scooter .life-transport-wheel,.transport-car .life-transport-wheel,.transport-executive .life-transport-wheel{display:block}
+.transport-walk .life-transport-icon{border:0!important;background:transparent!important}
+.transport-public .life-transport-icon{transform:scaleX(1.25)}
+.transport-scooter .life-transport-icon{transform:scaleX(.85) translateY(-5px)}
+.transport-car .life-transport-icon{transform:scaleX(1.45)}
+.transport-executive .life-transport-icon{transform:scaleX(1.7);filter:drop-shadow(0 0 12px rgba(90,220,190,.3))}
