@@ -338,3 +338,99 @@ React должен отображать состояние игры, а не с�
 10. Next Move.
 
 После этого добавляем полноценный Online.
+
+---
+
+# MarketArena — Concept Expansion v2.0
+
+## 20. Художественное направление
+
+MarketArena должна восприниматься как премиальная браузерная экономическая стратегия, а не как административная панель.
+
+Визуальный принцип: финансовый терминал + современный city-builder + живой экономический мир.
+
+Основная палитра: graphite / near-black, cold steel, muted emerald, warm gold, off-white и restrained red.
+
+Нельзя использовать случайные emoji как игровые ассеты, чрезмерные градиенты, дешёвые стеклянные карточки, огромные декоративные цифры без смысла и разноцветные кнопки без иерархии.
+
+## 21. Economic Command Center
+
+Главный экран становится рабочим местом владельца капитала. Центр экрана занимает карта мира; поверх карты находятся столица, жилой район игрока, дороги, предприятия, порты, транспорт, экономические маршруты, компании, зоны развития и активные события.
+
+Справа находятся четыре компактных блока: Capital, Influence, Risk и Next Move.
+
+## 22. Живая карта
+
+Карта становится симуляцией. Каждый крупный объект имеет economic state: activity, capacity, employment, traffic, investment, ownership и condition.
+
+Завод развивается от небольшого комплекса до модернизированного предприятия: появляются корпуса, склады, техника и транспорт. Кризис уменьшает активность. Контроль игрока получает собственную визуальную маркировку.
+
+## 23. Города
+
+Столица состоит из downtown, residential, industrial, commercial, logistics и waterfront при наличии побережья. Районы различаются архитектурой, плотностью, транспортом и освещением. Жильё игрока находится в residential district и остаётся визуально узнаваемым.
+
+## 24. Транспортная экономика
+
+Типы транспорта: автомобили, автобусы, грузовики, поезда, портовые суда и торговые корабли.
+
+Количество транспорта зависит от economic activity. Логика порта: cargo demand → ships → port activity → logistics revenue. Логика завода: production → trucks → roads → warehouse.
+
+## 25. Море
+
+Ocean rendering использует vertex displacement, layered wave normals, fresnel-like shoreline reflection, specular highlights, subtle foam и animated trade vessels. Вода должна быть спокойной и дорогой на вид.
+
+## 26. Компании как экономические объекты
+
+Компания имеет market cap, revenue, profit, employees, production, logistics, debt, reputation, technology, efficiency, ownership, headquarters и assets. Цена акции реагирует на фундаментальные показатели, новости и системные события.
+
+## 27. Corporate Development
+
+После 51% открывается дерево развития: Production — capacity, quality, automation; Logistics — warehouse, trucks, rail, port access; People — hiring, salaries, training, management; Technology — automation, R&D, software, energy efficiency; Corporate — headquarters, subsidiaries, board, acquisitions.
+
+Каждое улучшение имеет стоимость, срок и риск.
+
+## 28. Карьерная экономика
+
+Карьерная лестница: Intern → Specialist → Senior → Manager → Head → Director. Переход зависит от XP, качества работы, репутации, энергии и образования.
+
+## 29. Образ жизни
+
+Каждый день рассчитываются жильё, питание, транспорт, одежда, энергия, комфорт, репутация и переговорная способность. Высокий класс даёт преимущества, но требует постоянного денежного потока.
+
+## 30. Экономическое влияние
+
+Influence открывает возможности: 10 — деловые знакомства; 25 — лучшие банковские условия; 40 — переговоры с менеджментом; 60 — места в советах директоров; 75 — корпоративные альянсы; 90 — крупные международные сделки.
+
+Influence нельзя просто купить за деньги.
+
+## 31. Рейтинг
+
+Economic Power: 35% net worth, 25% controlled company value, 15% influence, 10% reputation, 10% career, 5% territory development. В Online добавляются season score, territory score, alliance score и controlled sectors.
+
+## 32. Новости → ожидания → события
+
+Экономическая информация создаёт причинно-следственную цепочку: Rumor → News → Forecast → Economic Event → Market reaction → Secondary effects.
+
+## 33. Сезонный Online
+
+Игрок выбирает страну, получает стартовую карьеру и конкурирует с другими игроками. Компании имеют ограниченное количество акций, города — ограниченную землю. Возможны альянсы, корпоративные войны и поглощения. Сезон заканчивается рейтингом Economic Power.
+
+## 34. Fair monetization
+
+Монетизация влияет только на визуальную идентичность: clothing, cars, apartments, offices, HQ themes, profile frames и map effects. Analytics Terminal расширяет удобство анализа, но не даёт эксклюзивной информации.
+
+## 35. UX-принцип
+
+Любой экран должен отвечать на три вопроса: Что происходит? Почему это важно? Что я могу сделать сейчас?
+
+## 36. Визуальный roadmap
+
+Stage A — Command Center: premium shell, typography, navigation, dashboard, capital, influence, risk, next move.
+
+Stage B — Living World: detailed terrain, districts, roads, houses, factories, ports, ships, dynamic traffic, player residence.
+
+Stage C — Economic Simulation: production, logistics, employment, company development, territory investment.
+
+Stage D — Competitive Economy: rankings, seasons, alliances, corporate conflicts, multiplayer.
+
+MarketArena должна ощущаться как единый мир, где UI только показывает происходящую экономику, а не заменяет её.
