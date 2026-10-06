@@ -154,7 +154,12 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
     // People and vehicles move only on actual roads/sidewalks.
     const routes=[...trunkCurves,...localCurves];routes.slice(0,Math.min(18,routes.length)).forEach((curve,i)=>{const car=makeCar(curve,.7+(i%3)*.12);car.userData.roadT=(i*.071)%1;scene.add(car);});
     routes.slice(0,Math.min(22,routes.length)).forEach((curve,i)=>{const person=makePerson(curve,.7+(i%2)*.12);person.userData.walkT=(i*.11)%1;scene.add(person);});
-    for(let i=0;i<30;i++){const d=districts[i%districts.length],p=worldFromGeo([d.center[0]+(hash(i,3)-.5)*d.size[0],d.center[1]+(hash(i,7)-.5)*d.size[1]]);if(pointInPolygon(d.center[0],d.center[1],countryPolygons[selected]))scene.add(makeTree(p.x,p.z,.32+hash(i,8)*.28));}
+    for(let i=0;i<30;i++){
+      const d=districts[i%districts.length];
+      const treeGeo:GeoPoint=[d.center[0]+(hash(i,3)-.5)*d.size[0],d.center[1]+(hash(i,7)-.5)*d.size[1]];
+      const p=worldFromGeo(treeGeo);
+      if(pointInPolygon(treeGeo[0],treeGeo[1],countryPolygons[selected]))scene.add(makeTree(p.x,p.z,.32+hash(i,8)*.28));
+    }
 
     const pointer=new THREE.Vector2(),raycaster=new THREE.Raycaster();let drag=false,moved=false,lastX=0,lastY=0,zoom=1.62,panX=0,panZ=0;
     const updateCamera=()=>{const dist=22/zoom;camera.position.set(focus.x+panX,dist*.66,focus.z+dist*.78+panZ);target.set(focus.x+panX*.55,.12,focus.z+panZ*.42);camera.lookAt(target);};
