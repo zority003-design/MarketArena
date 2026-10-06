@@ -296,7 +296,9 @@ function makeTerrain(selectedId?: string) {
     for (let x = 0; x < nx; x += 1) {
       const a = z * (nx + 1) + x;
       const b = a + 1;
-      const c = a + nx + 1;      const d = c + 1;      indices.push(a, c, b, b, c, d);
+      const c = a + nx + 1;
+      const d = c + 1;
+      indices.push(a, c, b, b, c, d);
     }
   }
 
@@ -614,8 +616,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     sun.shadow.camera.left = -20;
     sun.shadow.camera.right = 20;
     sun.shadow.camera.top = 15;
-    sun.shadow.camera.bottom = -15;    sun.shadow.camera.near = 1;
-    sun.shadow.camera.far = 55;    sun.shadow.bias = -0.00015;
+    sun.shadow.camera.bottom = -15;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 55;
+    sun.shadow.bias = -0.00015;
     scene.add(sun);
 
     const fill = new THREE.DirectionalLight("#86a8b1", 0.7);
@@ -697,9 +701,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const roadCurves: THREE.CatmullRomCurve3[] = [];
       const nodes:[GeoPoint,number][]=[capital,...companyGeos].map((geo,index)=>[geo,index]);
 
-      // Main city arteries: every issuer has a real physical headquarters and a road
-      // connection into the same street network. The existing building materials and
-      // lighting are intentionally reused; only the composition is changed.
+      // Business district network: one physical headquarters per issuer, all tied
+      // into the same street system. Existing geometry/materials are reused.
       const connected:number[]=[0], remaining:number[]=nodes.slice(1).map((_,i)=>i+1);
       while(remaining.length){
         let bestR=0,bestC=connected[0],bestD=Infinity;
@@ -719,9 +722,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         remaining.splice(remaining.indexOf(bestR),1);
       }
 
-      // Exactly one recognizable building per public issuer.
-      // Its type/scale varies by issuer so the country reads as a real business district,
-      // while keeping the same existing 3D building language.
+      // Exactly one recognizable building per issuer.
       selectedCountry.companies.forEach((company,index)=>{
         const geo=companyGeos[index];
         const p=worldFromGeo(geo);
@@ -738,19 +739,17 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         scene.add(headquarters);
         scene.add(makeTree(p.x+.38,p.z+.22,.46+(index%3)*.07));
 
-        // Short access street ties the headquarters into the nearest city block.
-        if(index<companyGeos.length){
-          const nearest=companyGeos.reduce((best,other,j)=>{
-            if(j===index) return best;
-            const d=Math.hypot(other[0]-geo[0],other[1]-geo[1]);
-            return d<best.d ? {j,d} : best;
-          },{j:-1,d:Infinity});
-          if(nearest.j>=0){
-            const access=inCountryRoad(selectedCountry.id,geo,companyGeos[nearest.j],(hash(index*9.1,7.7)-.5)*.035);
-            scene.add(makeHighway(access,.075));
-            scene.add(makeSidewalk(access,.026));
-            roadCurves.push(access);
-          }
+        // Short access street makes every headquarters part of the same city network.
+        const nearest=companyGeos.reduce((best,other,j)=>{
+          if(j===index) return best;
+          const d=Math.hypot(other[0]-geo[0],other[1]-geo[1]);
+          return d<best.d ? {j,d} : best;
+        },{j:-1,d:Infinity});
+        if(nearest.j>=0){
+          const access=inCountryRoad(selectedCountry.id,geo,companyGeos[nearest.j],(hash(index*9.1,7.7)-.5)*.035);
+          scene.add(makeHighway(access,.075));
+          scene.add(makeSidewalk(access,.026));
+          roadCurves.push(access);
         }
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
@@ -768,8 +767,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           const type=citySites.length%7;
           const scale=.32+hash(i*4.2,selectedCountry.id.length)*.42;
           scene.add(makeCityBuilding(p.x,p.z,scale,type));
-          // Small residential pockets use the same existing building assets, keeping
-          // the visual language untouched while making the city feel inhabited.
+          // Small residential pockets use the same existing building assets.
           if(citySites.length%6===0){
             scene.add(makeModernBuilding(p.x+.34,p.z+.20,.34,2));
             scene.add(makeModernBuilding(p.x-.30,p.z-.22,.30,2));
@@ -897,6 +895,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const tree=makeTree(p.x+.08,p.z-.04,.55);
       scene.add(tree);
     });
+
     const selectedMeshes: THREE.Mesh[] = [];
     countries.forEach((country) => {
       const poly = countryPolygons[country.id];
@@ -931,7 +930,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     let hoveredCountry = "";
     let drag = false;
     let moved = false;
-    let lastX = 0;    let lastY = 0;
+    let lastX = 0;
+    let lastY = 0;
     let zoom = home?.housing ? homeZoom : 1.62;
     let panX = 0;
     let panZ = 0;
@@ -1085,6 +1085,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     observer.observe(host);
     resize();
     updateCamera();
+
     let raf = 0;
     const render = () => {
       raf = requestAnimationFrame(render);
@@ -1119,7 +1120,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     render();
 
     return () => {
-      cancelAnimationFrame(raf);      observer.disconnect();
+      cancelAnimationFrame(raf);
+      observer.disconnect();
       renderer.domElement.removeEventListener("pointerdown", pointerDown);
       renderer.domElement.removeEventListener("pointermove", pointerMove);
       renderer.domElement.removeEventListener("pointerup", pointerUp);
@@ -1151,3 +1153,46 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
               ref={(el) => { capitalRefs.current[country.id] = el; }}
               className={`atlas-capital-marker ${selected === country.id ? "selected" : ""}`}
               onClick={() => onSelect(country.id)}
+              type="button"
+            >
+              <i /><span>{country.capital}</span>
+            </button>
+          ))}
+          {showCompanies && selectedCountry?.companies.map((company) => {
+            const shares = holdings[company.ticker] || 0;
+            const ownership = Math.min(100, Math.round((shares / GAME_CONFIG_SHARES) * 100));
+            const controlled = ownership >= 51;
+            const strategic = ownership >= 10;
+            return (
+              <button
+                key={company.ticker}
+                ref={(el) => { companyRefs.current[company.ticker] = el; }}
+                className={`atlas-company-marker premium-company-marker ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
+                type="button"
+                title={`${company.name} · ${company.ticker} · ${ownership}%`}
+                onClick={() => onCompanyRef.current?.(company)}
+              >
+                <b>{company.ticker}</b>
+                <span>{company.name}</span>
+                <small>{controlled ? "КОНТРОЛЬ 51%" : shares > 0 ? `${ownership}% ДОЛЯ` : "ПУБЛИЧНАЯ"}</small>
+              </button>
+            );
+          })}
+        </div>
+        <div className="atlas-map-hud">
+        <span><b>●</b> твой дом</span>
+        <span><b>◉</b> предприятие</span>
+        <span><b className="owned">◆</b> твоя доля</span>
+        <span><b className="control">◆</b> контроль 51%</span>
+      </div>
+      <div className="atlas-3d-watermark">WEBGL · ECONOMIC TERRAIN · DRAG / ZOOM</div>
+      </div>
+      <div className="map-key">
+        <span><b className="dot" /> столица</span>
+        <span><b className="mount" /> физический рельеф</span>
+        <span><b className="company-dot" /> компания · нажми</span><span><b className="water-dot" /> вода</span>
+      </div>
+    </div>
+  );
+}
+
