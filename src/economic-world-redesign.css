@@ -104,3 +104,36 @@
 .ownership-ladder button small{font-size:10px;color:rgba(220,235,230,.52);line-height:1.2}
 .ownership-ladder button.control span{color:#d9fff0}
 .ownership-ladder button.control small{color:rgba(205,255,231,.68)}
+
+/* Interaction pass: exchange ticker strip, visible company intelligence and distinct life scenes */
+.exchange-safe{grid-template-columns:1fr}
+.exchange-safe-companies{grid-column:1/-1;display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;position:static;max-height:none;padding:4px 2px 10px;scroll-snap-type:x proximity}
+.exchange-safe-companies>button{flex:0 0 210px;min-height:78px;scroll-snap-align:start}
+.exchange-safe-focus{grid-column:1/-1;grid-row:auto;position:static;max-height:none;overflow:visible;padding:22px}
+.company-quick-dossier{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:12px;margin:14px 0}
+.quick-dossier-main,.quick-dossier-news{padding:16px 18px;border:1px solid rgba(255,255,255,.09);border-radius:17px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025))}
+.quick-dossier-main h3{margin:4px 0 6px;font-size:20px}
+.quick-dossier-main p{margin:0;opacity:.72;line-height:1.5}
+.quick-dossier-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.quick-dossier-facts>div{padding:10px;border-radius:12px;background:rgba(0,0,0,.12)}
+.quick-dossier-facts span,.quick-dossier-news .eyebrow{display:block;font-size:9px;letter-spacing:.1em;opacity:.55}
+.quick-dossier-facts b{display:block;margin-top:5px;font-size:13px}
+.quick-dossier-facts small{display:block;margin-top:3px;opacity:.55;line-height:1.25}
+.quick-dossier-news{display:flex;flex-direction:column;justify-content:center}
+.quick-dossier-news>b{margin:7px 0;font-size:16px;line-height:1.3}
+.quick-dossier-news p{margin:0 0 8px;opacity:.68;font-size:12px;line-height:1.4}
+.quick-dossier-news>strong{font-size:14px}
+.exchange-safe-chart{min-width:0}
+.company-intel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exchange-safe-focus .company-intel>div,.exchange-safe-focus .economic-chain-card,.exchange-safe-focus .exchange-safe-report{border:1px solid rgba(255,255,255,.08);border-radius:17px;padding:16px;background:rgba(255,255,255,.025)}
+.life-home-scene,.life-food-scene,.life-transport-scene{position:absolute;inset:8% 5% auto;height:54%;display:flex;align-items:center;justify-content:center;transition:none!important;transform:none!important;filter:none!important;opacity:1!important}
+.life-home-scene>span,.life-food-scene>span,.life-transport-scene>span{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.12em;opacity:.6;white-space:nowrap}
+.life-scene-art{width:100%;height:100%;display:block;filter:drop-shadow(0 16px 25px rgba(0,0,0,.18))}
+.life-home-scene{inset:7% 4% auto;height:53%}
+.life-food-scene{inset:48% 8% auto;height:34%}
+.life-transport-scene{inset:auto 8% 4%;height:29%}
+.life-avatar-stage .life-home-scene,.life-avatar-stage .life-food-scene,.life-avatar-stage .life-transport-scene{z-index:1}
+.life-avatar-stage .life-avatar{z-index:3}
+.life-avatar-stage .life-avatar-caption{z-index:4}
+@media(max-width:900px){.quick-dossier-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.company-quick-dossier,.company-intel{grid-template-columns:1fr}}
+@media(max-width:680px){.exchange-safe-companies>button{flex-basis:185px}.exchange-safe-focus{padding:14px}.quick-dossier-facts{grid-template-columns:1fr}.life-avatar-stage{min-height:430px}}
