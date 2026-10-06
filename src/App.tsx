@@ -562,7 +562,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     }
   },[day]);
   const startMiniGame=()=>setMiniGame({active:true,score:0,target:Math.floor(Math.random()*6),started:Date.now()});
-  const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=miniGameRewardDay===day?0:3500+Math.max(0,2500-Math.min(2500,Date.now()-miniGame.started));if(reward>0){setCash(v=>v+reward);setMiniGameRewardDay(day);setNotice("Точная реакция: +"+Math.round(reward).toLocaleString("ru-RU")+" VLR. Бонус мини-игры на сегодня получен.");}else setNotice("Точная реакция. Денежный бонус за сегодня уже получен.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
+  const hitMiniGame=(index:number)=>{if(!miniGame.active)return; if(index===miniGame.target){const reward=miniGameRewardDay===day?0:250;if(reward>0){setCash(v=>v+reward);setMiniGameRewardDay(day);setNotice("Точная реакция: +"+reward.toLocaleString("ru-RU")+" VLR. Тренировочный бонус получен.");}else setNotice("Точная реакция. Бонус за сегодня уже получен.");setMiniGame({active:true,score:miniGame.score+1,target:Math.floor(Math.random()*6),started:Date.now()});}else{setNotice("Промах. Следующая цель появится после точного клика.");}};
   const tabs:[GameTab,string][]=[["overview","Обзор"],["exchange","Биржа"],["portfolio","Портфель"],["companies","Компании"],["life","Жизнь"],["map","Карта"],["news","Новости"],["events","События"],["history","История"],["updates","Обновления"],["profile","Профиль"]];
   const cashPct=Math.min(100,Math.max(8,cash/(totalWealth||1)*100));
   const openExchange=(company?:CompanyPreview)=>{
