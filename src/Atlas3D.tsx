@@ -248,11 +248,11 @@ function residenceGeo(countryId:string, housing:string): GeoPoint {
 }
 
 function residenceStyle(housing:string){
-  if(housing==="dormitory") return {scale:0.74,type:3,lot:1.35};
-  if(housing==="shared") return {scale:0.78,type:2,lot:1.25};
-  if(housing==="studio") return {scale:0.82,type:1,lot:1.15};
-  if(housing==="apartment") return {scale:1.05,type:0,lot:1.35};
-  return {scale:1.28,type:4,lot:1.70};
+  if(housing==="dormitory") return {scale:0.62,type:3,lot:1.05,neighbors:3};
+  if(housing==="shared") return {scale:0.76,type:2,lot:1.35,neighbors:2};
+  if(housing==="studio") return {scale:0.92,type:1,lot:1.55,neighbors:1};
+  if(housing==="apartment") return {scale:1.22,type:0,lot:1.95,neighbors:0};
+  return {scale:1.58,type:4,lot:2.45,neighbors:0};
 }
 
 function pointInPolygon(u: number, v: number, poly: GeoPoint[]) {
@@ -581,8 +581,31 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     if (!host || !overlay) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#07131d");
-    scene.fog = new THREE.Fog("#07131d", 32, 58);
+    scene.background = new THREE.Color("#86b8d1");
+    scene.fog = new THREE.Fog("#8bb8c9", 34, 68);
+
+    const sky = new THREE.Mesh(
+      new THREE.SphereGeometry(78, 48, 32),
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: { uSun: { value: 0.0 } },
+        vertexShader: `varying vec3 vWorld; void main(){ vWorld=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+        fragmentShader: `varying vec3 vWorld; void main(){ float h=clamp(normalize(vWorld).y*.5+.5,0.0,1.0); vec3 horizon=vec3(.72,.84,.88); vec3 zenith=vec3(.10,.29,.48); vec3 c=mix(horizon,zenith,pow(h,.72)); float sunGlow=pow(max(dot(normalize(vWorld),normalize(vec3(-.45,.72,.3))),0.0),36.0); c+=vec3(1.0,.78,.45)*sunGlow*.28; gl_FragColor=vec4(c,1.0); }`
+      })
+    );
+    scene.add(sky);
+
+    const cloudGroup = new THREE.Group();
+    for (let i = 0; i < 18; i += 1) {
+      const cloud = new THREE.Mesh(
+        new THREE.SphereGeometry(0.55 + (i % 4) * 0.18, 12, 8),
+        new THREE.MeshBasicMaterial({ color: "#eef7f5", transparent: true, opacity: 0.12 })
+      );
+      cloud.position.set(-22 + (i * 7.3) % 44, 9 + (i % 5) * 1.2, -18 + ((i * 11) % 36));
+      cloud.scale.set(2.4, 0.45, 0.8);
+      cloudGroup.add(cloud);
+    }
+    scene.add(cloudGroup);
 
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
     const selectedPoly = countryPolygons[selected];
@@ -835,9 +858,12 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const localStreet=inCountryRoad(selectedCountry.id,residenceGeo(selectedCountry.id,home?.housing??"studio"),capital,.08);
       scene.add(makeHighway(localStreet,.12));
       scene.add(makeSidewalk(localStreet,.028));
-      if(home?.housing==="dormitory"||home?.housing==="shared"){
-        scene.add(makeModernBuilding(homePoint.x+.52,homePoint.z+.22,.52,2));
-        scene.add(makeModernBuilding(homePoint.x-.48,homePoint.z-.18,.48,2));
+      const neighborCount=residence.neighbors??0;
+      for(let ni=0;ni<neighborCount;ni++){
+        const angle=(ni/Math.max(1,neighborCount))*Math.PI*2;
+        const nx=homePoint.x+Math.cos(angle)*(.62+ni*.08);
+        const nz=homePoint.z+Math.sin(angle)*(.52+ni*.07);
+        scene.add(makeModernBuilding(nx,nz,.42+ni*.06,2));
       }
       const driveway=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.72),new THREE.MeshStandardMaterial({color:"#6a7070",roughness:.95}));
       driveway.position.set(homePoint.x-.62,surfaceHeight(homePoint.x-.62,homePoint.z)+.04,homePoint.z+.05);
@@ -933,13 +959,21 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     let lastX = 0;
     let lastY = 0;
     let zoom = home?.housing ? homeZoom : 1.62;
+    let orbitYaw = 0.58;
+    let orbitPitch = 0.62;
     let panX = 0;
     let panZ = 0;
 
     const updateCamera = () => {
       const distance = 23 / zoom;
-      camera.position.set(centerWorld.x + panX, distance * 0.62, centerWorld.z + distance * 0.78 + panZ);
-      target.set(centerWorld.x + panX * 0.55, 0.15, centerWorld.z + panZ * 0.42);
+      const horizontal = Math.cos(orbitPitch) * distance;
+      const height = Math.sin(orbitPitch) * distance;
+      camera.position.set(
+        centerWorld.x + panX + Math.sin(orbitYaw) * horizontal,
+        Math.max(2.8, height),
+        centerWorld.z + panZ + Math.cos(orbitYaw) * horizontal
+      );
+      target.set(centerWorld.x + panX * 0.55, 0.12, centerWorld.z + panZ * 0.42);
       camera.lookAt(target);
     };
 
@@ -1034,8 +1068,13 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-      panX = clamp(panX - dx * 0.022 / zoom, -5.8, 5.8);
-      panZ = clamp(panZ + dy * 0.018 / zoom, -4.8, 4.8);
+      if (event.shiftKey || event.buttons === 2) {
+        orbitYaw = (orbitYaw - dx * 0.008) % (Math.PI * 2);
+        orbitPitch = clamp(orbitPitch - dy * 0.005, 0.28, 1.18);
+      } else {
+        panX = clamp(panX - dx * 0.022 / zoom, -7.2, 7.2);
+        panZ = clamp(panZ + dy * 0.018 / zoom, -6.0, 6.0);
+      }
       lastX = event.clientX;
       lastY = event.clientY;
       updateCamera();
@@ -1047,7 +1086,18 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.0012), 0.92, 2.75);
+      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.00145), 0.72, 4.2);
+      updateCamera();
+      updateOverlay();
+    };
+    const contextMenu = (event: MouseEvent) => event.preventDefault();
+    const keyDown = (event: KeyboardEvent) => {
+      if (event.key === "q" || event.key === "Q") orbitYaw -= 0.16;
+      if (event.key === "e" || event.key === "E") orbitYaw += 0.16;
+      if (event.key === "r" || event.key === "R") orbitPitch = clamp(orbitPitch - 0.08, 0.28, 1.18);
+      if (event.key === "f" || event.key === "F") orbitPitch = clamp(orbitPitch + 0.08, 0.28, 1.18);
+      if (event.key === "+" || event.key === "=") zoom = clamp(zoom * 1.12, 0.72, 4.2);
+      if (event.key === "-" || event.key === "_") zoom = clamp(zoom / 1.12, 0.72, 4.2);
       updateCamera();
       updateOverlay();
     };
@@ -1080,6 +1130,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     renderer.domElement.addEventListener("pointermove", pointerMove);
     renderer.domElement.addEventListener("pointerup", pointerUp);
     renderer.domElement.addEventListener("wheel", wheel, { passive: false });
+    renderer.domElement.addEventListener("contextmenu", contextMenu);
+    window.addEventListener("keydown", keyDown);
     renderer.domElement.addEventListener("click", click);
     const observer = new ResizeObserver(resize);
     observer.observe(host);
@@ -1126,6 +1178,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       renderer.domElement.removeEventListener("pointermove", pointerMove);
       renderer.domElement.removeEventListener("pointerup", pointerUp);
       renderer.domElement.removeEventListener("wheel", wheel);
+      renderer.domElement.removeEventListener("contextmenu", contextMenu);
+      window.removeEventListener("keydown", keyDown);
       renderer.domElement.removeEventListener("click", click);
       scene.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
@@ -1143,7 +1197,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
 
   return (
     <div className="atlas atlas-3d">
-      <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>СЕВЕР ↑ · DRAG / ZOOM</span></div>
+      <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>ЛКМ · ПАНОРАМА · SHIFT+ЛКМ / ПКМ · ВРАЩЕНИЕ · Q/E · ZOOM</span></div>
       <div className="atlas-3d-viewport" ref={hostRef}>
         <div className="atlas-3d-overlay" ref={overlayRef}>
           <div ref={homeRef} className="atlas-home-marker" title="Твой дом"><i/><span>{home?.label??"МОЙ ДОМ"}</span></div>
