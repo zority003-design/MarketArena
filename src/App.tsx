@@ -8,12 +8,12 @@ import { LifeAvatar } from "./game/LifeAvatar";
 
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates" | "profile";
-type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
+type Transaction = { day:number; type:"BUY"|"SELL"|"DIVIDEND"|"CONTROL"; ticker:string; quantity:number; price:number };
 type GameSave = {
   player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
   day:number; transactions:Transaction[]; tab:GameTab; savedAt:string; careerXP?:number; achievements?:string[];
   loan?:{principal:number;balance:number;lastChargeDay:number;rate:number}|null;
-  ownedCompanies?:string[]; lastJobDay?:number; miniGameRewardDay?:number; workActionsDay?:number; workActions?:number; housing?:keyof typeof GAME_CONFIG.housing; food?:keyof typeof GAME_CONFIG.food; transport?:keyof typeof GAME_CONFIG.transport; appearance?:keyof typeof GAME_CONFIG.appearance; energy?:number;
+  ownedCompanies?:string[]; companyDevelopment?:Record<string,number>; dividendHistory?:{day:number;ticker:string;amount:number}[]; lastJobDay?:number; miniGameRewardDay?:number; workActionsDay?:number; workActions?:number; housing?:keyof typeof GAME_CONFIG.housing; food?:keyof typeof GAME_CONFIG.food; transport?:keyof typeof GAME_CONFIG.transport; appearance?:keyof typeof GAME_CONFIG.appearance; energy?:number;
 };
 
 const PATCH_NOTES = [
@@ -247,6 +247,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [achievements,setAchievements]=useState<string[]>(()=>initialSave?.achievements??[]);
   const [loan,setLoan]=useState<GameSave["loan"]>(()=>initialSave?.loan??null);
   const [ownedCompanies,setOwnedCompanies]=useState<string[]>(()=>initialSave?.ownedCompanies??[]);
+  const [companyDevelopment,setCompanyDevelopment]=useState<Record<string,number>>(()=>initialSave?.companyDevelopment??{});
+  const [dividendHistory,setDividendHistory]=useState<{day:number;ticker:string;amount:number}[]>(()=>initialSave?.dividendHistory??[]);
   const [lastJobDay,setLastJobDay]=useState(()=>initialSave?.lastJobDay??0);
   const [miniGameRewardDay,setMiniGameRewardDay]=useState(()=>initialSave?.miniGameRewardDay??0);
   const [workActions,setWorkActions]=useState(()=>initialSave?.workActionsDay===day?initialSave?.workActions??0:0);
@@ -265,7 +267,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(GAME_CONFIG.dayDurationMs/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(GAME_CONFIG.seasonDays,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=GAME_CONFIG.seasonDays){setDay(GAME_CONFIG.seasonDays);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,companyDevelopment,dividendHistory,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,companyDevelopment,dividendHistory,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
     slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
     lirania:{bias:.004,sectors:{"Судоходство":.020,"Порты":.018,"Страхование":.013,"Финансы":.010},strength:"торговые маршруты и портовая инфраструктура",risk:"зависимость от мирового товарооборота и фрахта"},
@@ -325,7 +327,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const profit=Math.max(.05,(.42+(seed%38)/20)*(1+event.impact*4+commodity.impact*2));
     return {event,commodity,revenue,profit,outlook:event.impact>=0?"прогноз повышен":"прогноз снижен"};
   };
-  const priceFor=(company:CompanyPreview, atDay=day)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const base=companyMarketCapValue(company)/GAME_CONFIG.startingSharesPerCompany;const level=(t:number)=>{const whole=Math.max(1,Math.floor(t));let log=0,momentum=0;for(let d=1;d<=whole;d++){const rnd=Math.sin(seed*12.9898+d*78.233)*43758.5453;const noise=(rnd-Math.floor(rnd)-.5)*.028;const macro=Math.sin((d+seed)*.031)*.0065+Math.cos((d+seed*.37)*.013)*.004;const sector=Math.sin((d+seed*1.7)*.071)*.0045;const event=marketEvent(company,d).impact*.34;const crisis=macroCrisis(d);const crisisSector=crisis?(company.sector==="Финансы"&&crisis.name==="Банковский шок"?-.012:company.sector==="Энергетика"&&crisis.name==="Энергетический кризис"?+.006:company.sector==="Судоходство"&&crisis.name==="Торговая блокада"?-.009:company.sector==="Нефть"&&crisis.name==="Сырьевой обвал"?-.011:0):0;momentum=momentum*.72+noise*.28;log+=noise*.62+momentum*.38+macro+sector+event+(crisis?.impact??0)*.45+crisisSector;}return log;};const whole=Math.max(1,Math.floor(atDay)),frac=Math.max(0,atDay-whole),current=level(whole),next=level(whole+1),interpolated=current+(next-current)*frac;const intraday=Math.sin((atDay*17.31+seed)*2.1)*.0018+Math.cos((atDay*9.17+seed)*1.37)*.0012;return Math.max(1,Math.round(base*Math.exp(interpolated+intraday)*100)/100);};
+  const priceFor=(company:CompanyPreview, atDay=day)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const base=companyMarketCapValue(company)/GAME_CONFIG.startingSharesPerCompany;const level=(t:number)=>{const whole=Math.max(1,Math.floor(t));let log=0,momentum=0;for(let d=1;d<=whole;d++){const rnd=Math.sin(seed*12.9898+d*78.233)*43758.5453;const noise=(rnd-Math.floor(rnd)-.5)*.028;const macro=Math.sin((d+seed)*.031)*.0065+Math.cos((d+seed*.37)*.013)*.004;const sector=Math.sin((d+seed*1.7)*.071)*.0045;const event=marketEvent(company,d).impact*.34;const crisis=macroCrisis(d);const crisisSector=crisis?(company.sector==="Финансы"&&crisis.name==="Банковский шок"?-.012:company.sector==="Энергетика"&&crisis.name==="Энергетический кризис"?+.006:company.sector==="Судоходство"&&crisis.name==="Торговая блокада"?-.009:company.sector==="Нефть"&&crisis.name==="Сырьевой обвал"?-.011:0):0;momentum=momentum*.72+noise*.28;log+=noise*.62+momentum*.38+macro+sector+event+(crisis?.impact??0)*.45+crisisSector;}return log;};const whole=Math.max(1,Math.floor(atDay)),frac=Math.max(0,atDay-whole),current=level(whole),next=level(whole+1),interpolated=current+(next-current)*frac;const intraday=Math.sin((atDay*17.31+seed)*2.1)*.0018+Math.cos((atDay*9.17+seed)*1.37)*.0012;return Math.max(0.1,Math.round(base*developmentMultiplier*Math.exp(interpolated+intraday)*100)/100);
+  };
   const priceChange=(company:CompanyPreview)=>{
     const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
     const oldDay=day>1?day-1:0.5;
@@ -378,7 +381,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       return {period:i,open:Math.round(open*100)/100,high:Math.round(high*100)/100,low:Math.round(low*100)/100,close:Math.round(close*100)/100};
     });
   };
-  const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
+  const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse,companyDevelopment]);
   const totalWealth=cash+portfolioValue;
   const baseLivingByDifficulty=difficulty==="easy"?1600:difficulty==="hard"?420:850;
   const lifestyleCost=dailyLifestyleCost(housing,food,transport,appearance,baseLivingByDifficulty);
@@ -405,6 +408,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"year",title:"10 · Полный цикл",text:"Пройди полный сезон и оцени результат.",done:day>=GAME_CONFIG.seasonDays}
   ];
   const controlledValue=ownedCompanies.reduce((sum,ticker)=>{const c=country.companies.find(x=>x.ticker===ticker);return sum+(c?priceFor(c)*GAME_CONFIG.startingSharesPerCompany*.51:0)},0);
+  const companyDevelopmentLevel=(ticker:string)=>Math.max(0,Math.min(5,companyDevelopment[ticker]??0));
+  const developmentCost=(ticker:string)=>{
+    const level=companyDevelopmentLevel(ticker);
+    const company=country.companies.find(c=>c.ticker===ticker);
+    return company?Math.round(priceFor(company)*GAME_CONFIG.startingSharesPerCompany*(0.012+level*0.006)/1000)*1000:0;
+  };
   const influenceTier=countryInfluence>=75?"Стратегический игрок":countryInfluence>=51?"Влиятельный инвестор":countryInfluence>=33?"Значимый акционер":countryInfluence>=10?"Устойчивый инвестор":"Новый игрок";
   const completedGoals=campaignGoals.filter(g=>g.done).length;
   const nextGoal=campaignGoals.find(g=>!g.done)??campaignGoals[campaignGoals.length-1];
@@ -471,6 +480,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setCash(v=>v-cost);
     setHoldings(v=>({...v,[company.ticker]:target}));
     setOwnedCompanies(v=>v.includes(company.ticker)?v:[...v,company.ticker]);
+    setTransactions(v=>[{day,type:"CONTROL" as const,ticker:company.ticker,quantity:target,price:priceFor(company)},...v].slice(0,100));
     setAchievements(v=>v.includes("takeover")?v:[...v,"takeover"]);
     setNotice("Контроль 51% получен: "+company.name+" теперь входит в твою группу, остальные 49% остаются у рынка.");
   };
@@ -478,7 +488,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const price=priceFor(company),gross=price*quantity,fee=gross*GAME_CONFIG.marketOrderFeeRate,cost=gross+fee;
     if(cash<cost){setNotice("Недостаточно денег: нужно "+cost.toLocaleString("ru-RU")+" VLR с комиссией.");return;}
     setCash(v=>v-cost);setHoldings(v=>({...v,[company.ticker]:(v[company.ticker]||0)+quantity}));
-    setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setTransactions(v=>[{day,type:"BUY" as const,ticker:company.ticker,quantity,price},...v].slice(0,100));
     setNotice("Куплено "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Комиссия "+fee.toLocaleString("ru-RU")+" VLR.");
   };
   const buyStake=(company:CompanyPreview,targetPct:number)=>{
@@ -507,7 +517,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     } else {
       setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Комиссия "+fee.toLocaleString("ru-RU")+" VLR.");
     }
-    setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,30));
+    setTransactions(v=>[{day,type:"SELL" as const,ticker:company.ticker,quantity,price},...v].slice(0,100));
   };
   const startJobGame=(id:string)=>{
     if(energy<jobEnergyCost(id)){setNotice("Недостаточно энергии для этой смены. Улучши питание, жильё или транспорт.");return;}
@@ -547,17 +557,21 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
       setNotice("Начислены проценты по кредиту: +"+charged.toLocaleString("ru-RU")+" VLR.");
     }
     if(day%GAME_CONFIG.dividendPaymentDay===0){
-      const income=country.companies.reduce((sum,company)=>{
+      const payouts=country.companies.flatMap(company=>{
         const shares=holdings[company.ticker]||0;
-        if(!shares)return sum;
+        if(!shares)return [];
         const annual=dividendYield(company.ticker,company.sector);
         const controlBonus=ownedCompanies.includes(company.ticker)?1+GAME_CONFIG.dividendControlBonus:1;
-        return sum+Math.round(shares*priceFor(company)*annual/12*controlBonus);
-      },0);
+        const amount=Math.round(shares*priceFor(company)*annual/12*controlBonus);
+        return amount>0?[{day,ticker:company.ticker,amount}]:[];
+      });
+      const income=payouts.reduce((sum,p)=>sum+p.amount,0);
       if(income>0){
         setCash(v=>v+income);
+        setDividendHistory(v=>[...payouts,...v].slice(0,100));
+        setTransactions(v=>[...payouts.map(p=>({day,type:"DIVIDEND" as const,ticker:p.ticker,quantity:1,price:p.amount})),...v].slice(0,100));
         setAchievements(v=>v.includes("dividend")?v:[...v,"dividend"]);
-        setNotice("Дивидендная выплата: +"+income.toLocaleString("ru-RU")+" VLR. Контролируемые компании дают +25% к выплате.");
+        setNotice("Дивидендная выплата: +"+income.toLocaleString("ru-RU")+" VLR.");
       }
     }
   },[day]);
