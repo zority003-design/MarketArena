@@ -309,6 +309,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [timePaused,setTimePaused]=useState(false);
   const [campaignFinished,setCampaignFinished]=useState(()=>((initialSave?.day??1)>=120));
   useEffect(()=>{if(tab!=="exchange"){setSelectedCompany(null);setExchangeCompany(null)}},[tab]);
+  useEffect(()=>{if(tab==="economy")setEconomyVisited(true)},[tab]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(120,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
@@ -680,7 +681,7 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
             })()}
           </div>
         </Panel>}
-{tab==="economy"&&<Panel title="Экономика" eyebrow="КАК РАБОТАЕТ МИР">{(()=>{if(!economyVisited)setEconomyVisited(true);return null;})()}<p className="panel-lead">Здесь можно понять не только цифры, но и причинно-следственные связи. Все показатели ниже — индексы относительно нормального состояния экономики: 100% означает базовый уровень, а не «процент зарплаты» или «вероятность».</p><div className="economy-explainer-grid">
+{tab==="economy"&&<Panel title="Экономика" eyebrow="КАК РАБОТАЕТ МИР"><p className="panel-lead">Здесь можно понять не только цифры, но и причинно-следственные связи. Все показатели ниже — индексы относительно нормального состояния экономики: 100% означает базовый уровень, а не «процент зарплаты» или «вероятность».</p><div className="economy-explainer-grid">
 <div className="economy-explainer-card"><span>ВВП</span><b>{(economyNow.gdpGrowth*100).toFixed(1)}%</b><p>Темп роста экономики. Положительное значение означает расширение производства и услуг; отрицательное — спад.</p></div>
 <div className="economy-explainer-card"><span>ИНФЛЯЦИЯ</span><b>{(economyNow.inflation*100).toFixed(1)}%</b><p>Скорость роста цен. Чем выше инфляция, тем быстрее дорожают жизнь и ресурсы и тем сильнее давление на реальные доходы.</p></div>
 <div className="economy-explainer-card"><span>СТАВКА</span><b>{(economyNow.policyRate*100).toFixed(1)}%</b><p>Цена денег в экономике. Высокая ставка делает кредиты дороже и обычно давит на инвестиции и дорогие активы.</p></div>
