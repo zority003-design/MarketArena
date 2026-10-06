@@ -302,7 +302,8 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [jobGame,setJobGame]=useState<{jobId:string}|null>(null);
   const [miniGame,setMiniGame]=useState<{active:boolean;score:number;target:number;started:number}>({active:false,score:0,target:1,started:0});
   const [transactions,setTransactions]=useState<Transaction[]>(()=>initialSave?.transactions??[]);
-  const [careerXP,setCareerXP]=useState(()=>initialSave?.careerXP??0);\n  const [jobXP,setJobXP]=useState<Partial<Record<JobId,number>>>(()=>initialSave?.jobXP??{});
+  const [careerXP,setCareerXP]=useState(()=>initialSave?.careerXP??0);
+  const [jobXP,setJobXP]=useState<Partial<Record<JobId,number>>>(()=>initialSave?.jobXP??{});
   const [achievements,setAchievements]=useState<string[]>(()=>initialSave?.achievements??[]);
   const [loan,setLoan]=useState<GameSave["loan"]>(()=>initialSave?.loan??null);
   const [ownedCompanies,setOwnedCompanies]=useState<string[]>(()=>initialSave?.ownedCompanies??[]);
