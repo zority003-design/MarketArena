@@ -159,7 +159,7 @@ export function Atlas3D({countries,selected,onSelect,showCompanies=false,onCompa
       // District buildings are purposeful: production, office, retail, or housing based on the sector.
       const company=country.companies[di];const kind=d.kind;
       const p=worldFromGeo(d.center);const owned=(holdings[company.ticker]??0)/SHARES>=.51;
-      scene.add(makeBuilding(p.x,p.z,1.0,di%4,kind,owned));
+      const companyBuilding=makeBuilding(p.x,p.z,1.0,di%4,kind,owned);companyBuilding.userData.companyTicker=company.ticker;companyBuilding.userData.company=company;scene.add(companyBuilding);
       scene.add(makeTree(p.x+.45,p.z+.38,.5));
       if(kind!=="residential")for(let i=0;i<2;i++){const hp=worldFromGeo([d.center[0]+(i?0.85:-.85),d.center[1]+.85]);scene.add(makeBuilding(hp.x,hp.z,.42,i%3,"residential",false));}
     });
