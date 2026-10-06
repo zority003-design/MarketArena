@@ -11,7 +11,7 @@ type GameSave = {
   player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
   day:number; transactions:Transaction[]; tab:GameTab; savedAt:string; careerXP?:number; achievements?:string[];
   loan?:{principal:number;balance:number;lastChargeDay:number;rate:number}|null;
-  ownedCompanies?:string[]; lastJobDay?:number; miniGameRewardDay?:number;
+  ownedCompanies?:string[]; lastJobDay?:number; miniGameRewardDay?:number; housing?:keyof typeof GAME_CONFIG.housing; food?:keyof typeof GAME_CONFIG.food; transport?:keyof typeof GAME_CONFIG.transport; appearance?:keyof typeof GAME_CONFIG.appearance; energy?:number;
 };
 
 const PATCH_NOTES = [
@@ -226,6 +226,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [ownedCompanies,setOwnedCompanies]=useState<string[]>(()=>initialSave?.ownedCompanies??[]);
   const [lastJobDay,setLastJobDay]=useState(()=>initialSave?.lastJobDay??0);
   const [miniGameRewardDay,setMiniGameRewardDay]=useState(()=>initialSave?.miniGameRewardDay??0);
+  const [housing,setHousing]=useState<keyof typeof GAME_CONFIG.housing>(()=>initialSave?.housing??(difficulty==="easy"?"apartment":difficulty==="hard"?"dormitory":"studio"));
+  const [food,setFood]=useState<keyof typeof GAME_CONFIG.food>(()=>initialSave?.food??(difficulty==="easy"?"premium":difficulty==="hard"?"basic":"balanced"));
+  const [transport,setTransport]=useState<keyof typeof GAME_CONFIG.transport>(()=>initialSave?.transport??(difficulty==="easy"?"car":"public"));
+  const [appearance,setAppearance]=useState<keyof typeof GAME_CONFIG.appearance>(()=>initialSave?.appearance??(difficulty==="easy"?"professional":difficulty==="hard"?"basic":"neat"));
+  const [energy,setEnergy]=useState(()=>initialSave?.energy??GAME_CONFIG.food[food].energy);
   const [chartRange,setChartRange]=useState<ChartRange>("1Y");
   const [marketPulse,setMarketPulse]=useState(0);
   const [timeSpeed,setTimeSpeed]=useState<1|1.5|2>(1);
@@ -235,7 +240,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
     slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
     lirania:{bias:.004,sectors:{"Судоходство":.020,"Порты":.018,"Страхование":.013,"Финансы":.010},strength:"торговые маршруты и портовая инфраструктура",risk:"зависимость от мирового товарооборота и фрахта"},
@@ -347,6 +352,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
   const portfolioValue=useMemo(()=>country.companies.reduce((sum,c)=>sum+(holdings[c.ticker]||0)*priceFor(c),0),[country.companies,holdings,day,marketPulse]);
   const totalWealth=cash+portfolioValue;
+  const lifestyleCost=dailyLifestyleCost(housing,food,transport,appearance);
+  const lifestyleReputation=GAME_CONFIG.housing[housing].reputation+GAME_CONFIG.food[food].reputation+GAME_CONFIG.transport[transport].reputation+GAME_CONFIG.appearance[appearance].reputation;
+  const negotiation=GAME_CONFIG.housing[housing].negotiation+GAME_CONFIG.appearance[appearance].negotiation;
   const careerLevel=Math.min(10,1+Math.floor(careerXP/3));
   const careerTitle=careerLevel>=10?"Руководитель направления":careerLevel>=8?"Старший специалист":careerLevel>=6?"Профессионал":careerLevel>=4?"Опытный сотрудник":"Начинающий специалист";
   const ownedPositions=Object.values(holdings).filter(v=>v>0).length;
@@ -408,11 +416,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     setNotice("Продано "+quantity+" "+company.ticker+" по "+price.toLocaleString("ru-RU")+" VLR. Баланс зачислен: +"+proceeds.toLocaleString("ru-RU")+" VLR.");
   };
   const startJobGame=(id:string)=>{
+    if(energy<18){setNotice("Недостаточно энергии. Дождись следующего дня.");return;}
     if(lastJobDay===day){setNotice("На сегодня рабочая смена уже выполнена. Вернись завтра.");return;}
     if(campaignFinished){setNotice("Кампания завершена: новый год пока не начат.");return;}
     setJobGame({jobId:id,target:Math.floor(Math.random()*(id==="streetcleaner"?12:id==="courier"?8:id==="analyst"?9:4)),score:0,started:Date.now(),playerX:0,playerY:0});
   };
-  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setCash(v=>v+job.pay);setCareerXP(v=>Math.min(30,v+1));setLastJobDay(day);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR. Следующая работа — завтра.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
+  const finishJobGame=()=>{if(!jobGame)return;const job=jobs.find(x=>x.id===jobGame.jobId);if(!job)return;setEnergy(v=>Math.max(0,v-(jobGame.jobId==="courier"?18:jobGame.jobId==="analyst"?12:jobGame.jobId==="freelance"?20:16)));setCash(v=>v+job.pay);setCareerXP(v=>Math.min(30,v+1));setLastJobDay(day);setJobCooldown(job.id);setNotice(job.title+" выполнена: +"+job.pay.toLocaleString("ru-RU")+" VLR. Следующая работа — завтра.");setJobGame(null);setTimeout(()=>setJobCooldown(null),700);};
   const hitJobTarget=(index:number)=>{
     if(!jobGame)return;
     const size=jobGame.jobId==="streetcleaner"?12:jobGame.jobId==="courier"?8:jobGame.jobId==="analyst"?9:4;
@@ -448,8 +457,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   },[jobGame]);
   const advance=()=>{
     if(day>=365){setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Открой профиль, чтобы оценить результат кампании.");return;}
+    const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.72);
+    setCash(v=>Math.max(0,v-lifestyleCost));
+    setEnergy(nextEnergy);
     setDay(v=>Math.min(365,v+1));
-    setNotice("Новый игровой день: котировки, новости, кредиты и стоимость портфеля обновились.");
+    setNotice(`Новый день. Расходы −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);
   };
   useEffect(()=>{
     if(day<=1)return;
@@ -474,7 +486,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   };
 
   return <div className="game-shell">
-    <header className="game-topbar"><button type="button" className="topbar-logout" onClick={onLogout}>Выйти</button><button className="game-brand" onClick={()=>setTab("overview")} aria-label="MarketArena"><img src="/marketarena-logo.svg" alt="MarketArena"/></button><div className="topbar-context"><span>ECONOMIC WORLD</span><b>{country.name}</b><em>DAY {day}</em></div><div className="game-right"><div className="topbar-time-controls" aria-label="Управление временем"><div className="topbar-time-status"><span>ИГРОВОЕ ВРЕМЯ</span><b>ДЕНЬ {day}</b><em>{timePaused?"ПАУЗА":"ИДЁТ"} · 5 мин/день · ×{timeSpeed}</em></div><button type="button" className={timePaused?"time-main paused":"time-main"} onClick={()=>setTimePaused(v=>!v)} aria-label={timePaused?"Продолжить время":"Поставить время на паузу"}>{timePaused?"▶":"Ⅱ"} <span>{timePaused?"Продолжить":"Пауза"}</span></button><div className="time-speed-group">{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>{setTimePaused(false);setTimeSpeed(x as 1|1.5|2)}} aria-label={"Скорость ×"+x}>×{x}</button>)}</div></div><b className="topbar-wealth">{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
+    <header className="game-topbar"><button type="button" className="topbar-logout" onClick={onLogout}>Выйти</button><button className="game-profile-button" type="button" onClick={()=>setTab("profile")}><span>{player.trim().slice(0,1).toUpperCase()}</span><b>{player}</b></button><button className="game-brand" onClick={()=>setTab("overview")} aria-label="MarketArena"><img src="/marketarena-logo.svg" alt="MarketArena"/></button><div className="topbar-context"><span>ECONOMIC WORLD</span><b>{country.name}</b></div><div className="game-right"><div className="topbar-time-controls" aria-label="Управление временем"><div className="topbar-time-status"><span>ИГРОВОЕ ВРЕМЯ</span><b>ДЕНЬ {day}</b><em>{timePaused?"ПАУЗА":"ИДЁТ"} · 5 мин/день · ×{timeSpeed}</em></div><button type="button" className={timePaused?"time-main paused":"time-main"} onClick={()=>setTimePaused(v=>!v)} aria-label={timePaused?"Продолжить время":"Поставить время на паузу"}>{timePaused?"▶":"Ⅱ"} <span>{timePaused?"Продолжить":"Пауза"}</span></button><div className="time-speed-group">{[1,1.5,2].map(x=><button type="button" key={x} className={timeSpeed===x?"active":""} onClick={()=>{setTimePaused(false);setTimeSpeed(x as 1|1.5|2)}} aria-label={"Скорость ×"+x}>×{x}</button>)}</div></div><b className="topbar-wealth">{totalWealth.toLocaleString("ru-RU")} VLR</b></div></header>
     <div className="game-body">
       <aside className="game-sidebar">
         <div className="sidebar-player">
