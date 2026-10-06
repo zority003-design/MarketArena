@@ -232,7 +232,7 @@ function residenceGeo(countryId:string, housing:string): GeoPoint {
     premium:[5.1,3.5]
   };
   const [du,dv]=profiles[housing]??profiles.studio;
-  const candidates:[[number,number],[number,number],[number,number],[number,number]]=[
+  const candidates:GeoPoint[]=[
     [capital[0]+du,capital[1]+dv],
     [capital[0]+du*.55,capital[1]+dv*.55],
     [capital[0]-du*.45,capital[1]-dv*.45],
