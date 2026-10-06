@@ -296,8 +296,7 @@ function makeTerrain(selectedId?: string) {
     for (let x = 0; x < nx; x += 1) {
       const a = z * (nx + 1) + x;
       const b = a + 1;
-      const c = a + nx + 1;      const d = c + 1;
-      indices.push(a, c, b, b, c, d);
+      const c = a + nx + 1;      const d = c + 1;      indices.push(a, c, b, b, c, d);
     }
   }
 
@@ -616,8 +615,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     sun.shadow.camera.right = 20;
     sun.shadow.camera.top = 15;
     sun.shadow.camera.bottom = -15;    sun.shadow.camera.near = 1;
-    sun.shadow.camera.far = 55;
-    sun.shadow.bias = -0.00015;
+    sun.shadow.camera.far = 55;    sun.shadow.bias = -0.00015;
     scene.add(sun);
 
     const fill = new THREE.DirectionalLight("#86a8b1", 0.7);
@@ -749,7 +747,9 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           },{j:-1,d:Infinity});
           if(nearest.j>=0){
             const access=inCountryRoad(selectedCountry.id,geo,companyGeos[nearest.j],(hash(index*9.1,7.7)-.5)*.035);
+            scene.add(makeHighway(access,.075));
             scene.add(makeSidewalk(access,.026));
+            roadCurves.push(access);
           }
         }
       });
@@ -897,7 +897,6 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const tree=makeTree(p.x+.08,p.z-.04,.55);
       scene.add(tree);
     });
-
     const selectedMeshes: THREE.Mesh[] = [];
     countries.forEach((country) => {
       const poly = countryPolygons[country.id];
@@ -1086,7 +1085,6 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     observer.observe(host);
     resize();
     updateCamera();
-
     let raf = 0;
     const render = () => {
       raf = requestAnimationFrame(render);
@@ -1153,32 +1151,3 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
               ref={(el) => { capitalRefs.current[country.id] = el; }}
               className={`atlas-capital-marker ${selected === country.id ? "selected" : ""}`}
               onClick={() => onSelect(country.id)}
-              type="button"
-            >
-              <i /><span>{country.capital}</span>
-            </button>
-          ))}
-          {showCompanies && selectedCountry?.companies.map((company) => {
-            const shares = holdings[company.ticker] || 0;
-            const ownership = Math.min(100, Math.round((shares / GAME_CONFIG_SHARES) * 100));
-            const controlled = ownership >= 51;
-            const strategic = ownership >= 10;
-            return (
-              <button
-                key={company.ticker}
-                ref={(el) => { companyRefs.current[company.ticker] = el; }}
-                className={`atlas-company-marker premium-company-marker ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
-                type="button"
-                title={`${company.name} · ${company.ticker} · ${ownership}%`}
-                onClick={() => onCompanyRef.current?.(company)}
-              >
-                <b>{company.ticker}</b>
-                <span>{company.name}</span>
-                <small>{controlled ? "КОНТРОЛЬ 51%" : shares > 0 ? `${ownership}% ДОЛЯ` : "ПУБЛИЧНАЯ"}</small>
-              </button>
-            );
-          })}
-        </div>
-        <div className="atlas-map-hud">
-        <span><b>●</b> твой дом</span>
-        <span><b>◉</b> предприятие</span>
