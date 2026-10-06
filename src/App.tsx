@@ -205,7 +205,7 @@ function ExchangeScreen({country,day,cash,holdings,exchangeCompany,setExchangeCo
 }
 
 function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:string;country:Country;difficulty:string;onRestart:()=>void;onLogout:()=>void}) {
-  const saveKey=`marketarena.save.v4.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`;
+  const saveKey=`marketarena.save.v5.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`;
   const initialSave=useMemo<GameSave|null>(()=>{try{const raw=window.localStorage.getItem(saveKey);return raw?JSON.parse(raw) as GameSave:null;}catch{return null;}},[saveKey]);
   const [tab,setTab]=useState<GameTab>(()=>initialSave?.tab??"overview");
   const [cash,setCash]=useState(()=>initialSave?.cash??(difficulty==="easy"?500000:difficulty==="hard"?25000:100000));
@@ -592,7 +592,7 @@ function App(){
   if(screen==="mode") return <ModeScreen onChoose={m=>{setMode(m);if(m==="offline")setScreen("country")}}/>;
   if(screen==="country") return <CountryScreen selected={countryId} setSelected={setCountryId} onNext={()=>setScreen("difficulty")}/>;
   if(screen==="difficulty") return <DifficultyScreen country={country} onStart={id=>{setDifficulty(id);setScreen("game")}} onBack={()=>setScreen("country")}/>;
-  return <GameScreen player={player} country={country} difficulty={difficulty} onLogout={()=>{try{window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("auth");setPlayer("Игрок");}} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v4.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
+  return <GameScreen player={player} country={country} difficulty={difficulty} onLogout={()=>{try{window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("auth");setPlayer("Игрок");}} onRestart={()=>{try{window.localStorage.removeItem(`marketarena.save.v5.${player.toLowerCase().trim().replace(/\\s+/g,"-")}`);window.localStorage.removeItem("marketarena.screen");}catch{} setScreen("mode")}}/>;
 }
 
 export default App;
