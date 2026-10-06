@@ -3248,3 +3248,124 @@ body{overflow-x:hidden;overflow-y:auto}
 .pixel-player{position:absolute;left:50%;top:57%;transform:translate(-50%,-50%);width:21px;height:30px;background:#d59a73;border-radius:7px 7px 3px 3px;z-index:8;box-shadow:0 17px 0 -4px #263e56,0 0 0 2px #13222b}
 .pixel-player:before{content:"";position:absolute;left:-4px;top:-7px;width:29px;height:9px;background:#e4b74f;border-radius:3px}
 .pixel-player:after{content:"";position:absolute;left:5px;top:9px;width:4px;height:4px;background:#263039;box-shadow:7px 0 #263039}
+
+
+/* MARKETARENA // COMMAND CENTER REDESIGN 2.0 */
+:root{
+  --ink:#071016;--panel:#0b151c;--panel2:#0f1c24;--line:rgba(190,225,229,.12);
+  --text:#edf5f5;--muted:#8297a0;--accent:#73d0c0;--accent2:#9fe3d7;--gold:#d6b875;
+}
+body{background:#050b10;color:var(--text)}
+.app{background:
+ radial-gradient(900px 500px at 75% -10%,rgba(56,127,128,.10),transparent 62%),
+ radial-gradient(700px 500px at 15% 30%,rgba(36,83,99,.10),transparent 60%),#050b10}
+.game-shell{background:transparent!important}
+.game-topbar{
+  height:70px!important;padding:0 22px!important;background:rgba(5,10,14,.90)!important;
+  border-bottom:1px solid var(--line)!important;backdrop-filter:blur(20px) saturate(130%);
+}
+.game-topbar:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,#76d4c555,transparent)}
+.game-brand{opacity:.96}
+.game-brand b{font-size:16px!important;letter-spacing:-.03em}
+.topbar-context{margin-left:24px!important;gap:13px!important}
+.topbar-context span{font-size:8px!important;letter-spacing:.22em!important}
+.topbar-context b{font:700 11px "Space Grotesk"!important}
+.topbar-context em{padding-left:8px;border-left:1px solid var(--line);letter-spacing:.12em}
+.topbar-logout{margin-left:auto!important}
+
+.game-sidebar{
+  background:rgba(6,12,17,.88)!important;border-right:1px solid var(--line)!important;
+  backdrop-filter:blur(22px)!important;padding:18px 11px!important;
+}
+.sidebar-player{background:linear-gradient(145deg,#0d1b22,#091219)!important;border-color:var(--line)!important;padding:11px!important}
+.sidebar-avatar{background:linear-gradient(145deg,#9de2d6,#487d7b)!important;color:#061015!important}
+.sidebar-section{margin-top:20px!important}
+.sidebar-section>span{font-size:7px!important;letter-spacing:.22em!important;color:#55717b!important;padding:0 8px!important}
+.sidebar-section button{
+  min-height:38px!important;border:1px solid transparent!important;border-radius:8px!important;
+  background:transparent!important;color:#789099!important;font-size:10px!important;
+}
+.sidebar-section button:hover{background:#ffffff06!important;color:#dce9e9!important}
+.sidebar-section button.active{
+  background:linear-gradient(90deg,rgba(91,190,175,.14),rgba(91,190,175,.025))!important;
+  border-color:rgba(115,208,192,.16)!important;color:#dff7f2!important;
+  box-shadow:inset 2px 0 0 var(--accent)!important;
+}
+.sidebar-next,.sidebar-status{border-color:var(--line)!important;background:#0a151c!important}
+
+.game-main{padding:34px clamp(26px,4vw,68px) 90px!important}
+.game-heading{max-width:1440px;margin:0 auto 22px!important}
+.game-heading h1{font:700 clamp(30px,3vw,48px)/1.02 "Space Grotesk"!important;letter-spacing:-.055em!important}
+.game-heading p{max-width:700px!important;color:#71858d!important}
+.day-button{border-radius:8px!important;background:#e4efed!important;color:#061015!important;box-shadow:0 10px 30px #0005!important}
+
+.empire-roadmap{
+  max-width:1440px!important;margin:0 auto 18px!important;padding:22px!important;
+  background:linear-gradient(135deg,rgba(17,34,41,.96),rgba(8,17,23,.96))!important;
+  border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:0 25px 70px #0003!important;
+}
+.empire-roadmap h2{font:700 24px "Space Grotesk"!important;letter-spacing:-.04em}
+.empire-score{background:#071217!important;border:1px solid rgba(115,208,192,.18)!important}
+.empire-score b{color:var(--accent)!important;font:700 30px "Space Grotesk"!important}
+.empire-step{background:#09151b!important;border-color:var(--line)!important}
+.empire-step b{color:#55747b!important}
+.empire-step strong{font-family:"Space Grotesk"!important}
+.hero-map-grid{
+  max-width:1440px!important;margin:0 auto!important;
+  grid-template-columns:minmax(0,1.7fr) minmax(300px,.7fr)!important;
+  gap:14px!important;align-items:start;
+}
+.market-map-card{grid-row:span 3!important;min-height:720px!important;background:#071116!important;border:1px solid var(--line)!important;border-radius:14px!important;overflow:hidden!important;box-shadow:0 30px 80px #0005}
+.market-map-card .card-head{padding:18px 20px!important}
+.market-map-card .card-head h2{font:700 20px "Space Grotesk"!important}
+.atlas-3d-viewport{min-height:650px!important;background:#071c26!important}
+.atlas-head{padding:10px 16px!important;background:#09161d!important;border-color:var(--line)!important}
+.atlas-3d-watermark{opacity:.35!important}
+.map-key{background:#081219!important;border-color:var(--line)!important}
+
+.capital-card,.jobs-card,.campaign-card,.risk-dashboard,.finance-card,.companies-card,.home-news-card{
+  background:linear-gradient(145deg,#0c171e,#091219)!important;border:1px solid var(--line)!important;
+  border-radius:13px!important;box-shadow:0 18px 45px #0002!important;
+}
+.capital-card strong{font:700 34px "Space Grotesk"!important;letter-spacing:-.05em}
+.capital-actions button,.jobs-card .job-row button{border-radius:7px!important}
+.card-head h2{font:700 18px "Space Grotesk"!important;letter-spacing:-.035em}
+.ticker-row{background:#0a151c!important;border-color:rgba(190,225,229,.08)!important}
+.ticker-row:hover{background:#102128!important;border-color:rgba(115,208,192,.20)!important}
+
+.exchange-safe{
+  max-width:1440px;margin:0 auto;background:#071016;border:1px solid var(--line);border-radius:15px;padding:20px;
+  box-shadow:0 30px 90px #0005;
+}
+.exchange-safe-top h2{font:700 30px "Space Grotesk"!important;letter-spacing:-.045em}
+.exchange-safe-companies>button{background:linear-gradient(145deg,#0d1a21,#0a141b)!important;border-color:var(--line)!important}
+.exchange-safe-companies>button:hover,.exchange-safe-companies>button.selected{
+  border-color:rgba(115,208,192,.35)!important;background:linear-gradient(145deg,#10262b,#0b171e)!important;
+  box-shadow:0 15px 40px #0004, inset 2px 0 var(--accent);
+}
+.exchange-safe-focus{background:#09151b!important;border:1px solid var(--line)!important;border-radius:13px!important;padding:18px!important}
+.exchange-safe-chart{background:#050c11!important;border-radius:10px!important;border:1px solid var(--line)!important}
+
+.life-profile-grid{max-width:1100px}
+.life-character-card,.life-stats-card{background:linear-gradient(145deg,#0d1b22,#081219)!important;border-color:var(--line)!important}
+.life-character{height:330px!important;background:
+ radial-gradient(circle at 50% 28%,#2b5961 0,#132d37 35%,#071219 75%)!important;
+ border:1px solid rgba(115,208,192,.14)!important}
+.life-character:after{content:"";position:absolute;left:12%;right:12%;bottom:20px;height:1px;background:#73d0c022;box-shadow:0 -18px 0 #73d0c00a}
+.life-option{background:#08141b!important;border-color:var(--line)!important}
+.life-option b{font-family:"Space Grotesk"!important}
+.life-impact>div{background:#08141b!important;border-color:var(--line)!important}
+
+.company-focus-card{background:linear-gradient(145deg,#0d1b22,#081219)!important;border-color:var(--line)!important;border-radius:13px!important;box-shadow:0 18px 50px #0003!important}
+.company-focus-card:hover{transform:translateY(-3px);border-color:rgba(115,208,192,.24)!important}
+.panel{max-width:1440px!important;margin:0 auto!important}
+.panel-title h1,.panel-title h2{font-family:"Space Grotesk"!important;letter-spacing:-.045em!important}
+
+.job-game-modal{
+  background:linear-gradient(145deg,#09161d,#050c11)!important;
+  border:1px solid rgba(115,208,192,.22)!important;
+}
+.job-game-modal>h2{font:700 30px "Space Grotesk"!important;letter-spacing:-.04em}
+.job-2d-scene{box-shadow:inset 0 0 80px #06101466!important}
+@media(max-width:1000px){.hero-map-grid{grid-template-columns:1fr!important}.market-map-card{grid-row:auto!important}.atlas-3d-viewport{min-height:540px!important}}
+@media(max-width:700px){.game-main{padding:24px 12px 60px!important}.game-heading h1{font-size:32px!important}.atlas-3d-viewport{min-height:460px!important}}
