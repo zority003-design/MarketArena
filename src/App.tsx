@@ -447,9 +447,11 @@ const missionChecks=useMemo<Record<string,boolean>>(()=>({
 const missionState=useMemo(()=>CAMPAIGN_MISSIONS.map(m=>({ ...m,done:completedMissions.includes(m.id)||!!missionChecks[m.id]})),[completedMissions,missionChecks]);
 const nextMission=missionState.find(m=>!m.done)??missionState[missionState.length-1];
 const completedGoals=campaignGoals.filter(g=>g.done).length;
+  const currentCrisis=macroCrisis(day);
   useEffect(()=>{
     if(currentCrisis && totalWealth>0 && !crisisSurvived)setCrisisSurvived(true);
   },[currentCrisis,totalWealth,crisisSurvived]);
+  
   const nextGoal=campaignGoals.find(g=>!g.done)??campaignGoals[campaignGoals.length-1];
   const takeoverCost=(company:CompanyPreview)=>{const owned=holdings[company.ticker]||0;const target=Math.ceil(GAME_CONFIG.startingSharesPerCompany*GAME_CONFIG.ownershipThresholds.control);const missing=Math.max(0,target-owned);return Math.round(missing*priceFor(company)*(1+GAME_CONFIG.takeoverPremium)/100)*100;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
