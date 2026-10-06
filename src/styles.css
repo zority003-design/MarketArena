@@ -4096,3 +4096,76 @@ button,input,select{font:inherit}
   .career-job-grid{grid-template-columns:1fr}
   .career-track-head{flex-direction:column}
 }
+
+
+/* PHASE 2 — MAP-FIRST ECONOMIC COMMAND CENTER */
+.game-main{max-width:1920px;margin:0 auto;padding:24px 28px 64px}
+.game-heading{margin-bottom:18px}
+.game-heading h1{letter-spacing:-.035em}
+.command-map-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px;align-items:stretch}
+.command-map-main{min-width:0;overflow:hidden}
+.command-map-main .card-head{padding:18px 20px 14px}
+.map-subline{margin:6px 0 0!important;max-width:760px;font-size:12px!important;color:#83959d!important}
+.map-head-stats{display:grid;grid-template-columns:repeat(3,auto);gap:3px 9px;align-content:center;text-align:right}
+.map-head-stats b{font-size:18px;line-height:1}
+.map-head-stats span{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#71838b}
+.command-map-main .atlas{border-radius:0 0 14px 14px}
+.command-map-main .atlas-3d-viewport{height:min(67vh,690px);min-height:500px}
+.command-map-rail{display:flex;flex-direction:column;gap:10px}
+.command-rail-card{background:linear-gradient(180deg,rgba(17,30,37,.96),rgba(10,20,26,.96));border:1px solid rgba(116,144,153,.15);border-radius:12px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.16)}
+.command-rail-card>span{display:block;font-size:8px;letter-spacing:.16em;color:#72878f;text-transform:uppercase;margin-bottom:8px}
+.command-rail-card>strong{display:block;font-size:24px;letter-spacing:-.035em}
+.command-rail-card>b{display:block;font-size:15px;line-height:1.25}
+.command-rail-card>small{display:block;color:#82959d;font-size:10px;line-height:1.45;margin-top:5px}
+.command-rail-card p{font-size:11px;line-height:1.5;color:#899ba2;margin:7px 0 11px}
+.command-rail-card button{margin-top:10px;border:0;background:rgba(255,255,255,.045);color:#dbe5e7;border-radius:7px;padding:8px 10px;font-size:10px;cursor:pointer}
+.capital-focus strong{font-size:28px}
+.next-focus{border-color:rgba(210,176,104,.24);background:linear-gradient(180deg,rgba(35,31,24,.96),rgba(12,20,25,.96))}
+.next-focus>b{color:#f1dfb2}
+.market-focus{margin-top:auto}
+.influence-meter{height:5px;background:#17272e;border-radius:999px;overflow:hidden;margin-top:9px}
+.influence-meter i{display:block;height:100%;background:#d1aa62;border-radius:999px}
+.command-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.command-strip button{appearance:none;text-align:left;border:1px solid rgba(116,144,153,.13);background:#0c171d;color:#dce5e6;border-radius:10px;padding:14px 15px;cursor:pointer;transition:.18s ease}
+.command-strip button:hover{border-color:rgba(209,170,98,.4);transform:translateY(-1px)}
+.command-strip span{display:block;font-size:8px;letter-spacing:.15em;color:#70858d}
+.command-strip b{display:block;font-size:16px;margin-top:6px}
+.command-strip small{display:block;color:#778b93;font-size:10px;margin-top:4px}
+.command-news{margin-top:12px}
+.command-news .home-news-list{grid-template-columns:repeat(4,1fr)}
+.command-news .home-news-list>button{min-width:0}
+.atlas-map-hud{position:absolute;left:16px;bottom:16px;display:flex;gap:6px;flex-wrap:wrap;z-index:5;pointer-events:none}
+.atlas-map-hud span{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#d5dfdf;background:rgba(5,15,20,.72);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:5px;padding:6px 8px}
+.atlas-map-hud b{color:#d7b66f;margin-right:4px}
+.atlas-map-hud b.owned{color:#61d2b0}
+.atlas-map-hud b.control{color:#e7bd67}
+.premium-company-marker{min-width:34px!important;min-height:30px!important;padding:4px 6px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:rgba(7,18,24,.92)!important;border:1px solid rgba(152,178,183,.23)!important;border-radius:6px!important;box-shadow:0 6px 15px rgba(0,0,0,.25)!important;transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease,background .12s ease}
+.premium-company-marker b{font-size:9px;letter-spacing:.09em;color:#d9e2e4}
+.premium-company-marker span{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;color:#8ea0a6}
+.premium-company-marker small{font-size:6px;letter-spacing:.08em;color:#687d84}
+.premium-company-marker.owned{border-color:rgba(93,207,174,.48)!important;background:rgba(8,33,31,.94)!important;box-shadow:0 0 0 1px rgba(93,207,174,.10),0 8px 22px rgba(0,0,0,.28)!important}
+.premium-company-marker.strategic{border-color:rgba(95,183,168,.68)!important}
+.premium-company-marker.control{border-color:#d7b568!important;background:rgba(50,38,18,.96)!important;box-shadow:0 0 0 2px rgba(215,181,104,.16),0 0 24px rgba(215,181,104,.18)!important}
+.premium-company-marker:hover{transform:translate(-50%,-50%) scale(1.12)!important;z-index:20}
+.atlas-home-marker{filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.atlas-home-marker span{background:rgba(7,18,24,.9)!important;border-color:rgba(215,181,104,.45)!important;color:#ead7a8!important}
+.atlas-3d-watermark{font-size:7px!important;letter-spacing:.12em!important}
+@media(max-width:1180px){
+  .command-map-layout{grid-template-columns:minmax(0,1fr) 260px}
+  .command-map-main .atlas-3d-viewport{height:600px}
+  .command-news .home-news-list{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .game-main{padding:16px 14px 40px}
+  .command-map-layout{grid-template-columns:1fr}
+  .command-map-main .atlas-3d-viewport{height:68vh;min-height:440px}
+  .command-map-rail{display:grid;grid-template-columns:repeat(2,1fr)}
+  .market-focus{margin-top:0}
+  .command-strip{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .command-map-rail,.command-strip{grid-template-columns:1fr}
+  .command-map-main .atlas-3d-viewport{height:64vh;min-height:390px}
+  .map-head-stats{display:none}
+  .command-news .home-news-list{grid-template-columns:1fr}
+}
