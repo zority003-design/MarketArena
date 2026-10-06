@@ -3771,3 +3771,328 @@ button,input,select{font:inherit}
   .game-main:has(> .empire-roadmap) .market-map-card{min-height:480px !important}
   .game-main:has(> .empire-roadmap) .market-map-card .atlas-3d-viewport{min-height:420px !important}
 }
+
+/* =========================================================
+   PHASE 1 — PLAYABLE WORLD / SETUP / CAREER
+   ========================================================= */
+
+/* Serious country selection: map first, information second. */
+.setup-screen{
+  background:
+    radial-gradient(circle at 72% 18%,rgba(255,255,255,.035),transparent 30%),
+    #070b0e !important;
+  color:#e7ecec;
+}
+.setup-inner.wide{
+  max-width:1500px !important;
+}
+.setup-inner > h1{
+  letter-spacing:-.035em !important;
+  color:#eef1f1 !important;
+}
+.setup-lead{
+  max-width:850px !important;
+  color:#737f84 !important;
+  font-size:13px !important;
+  line-height:1.65 !important;
+}
+.country-picker{
+  grid-template-columns:minmax(0,1fr) 330px !important;
+  gap:12px !important;
+  align-items:stretch !important;
+}
+.country-picker > .atlas{
+  min-height:610px;
+  border:1px solid rgba(207,220,222,.15) !important;
+  border-radius:10px !important;
+  background:#090e12 !important;
+}
+.country-options{
+  display:flex !important;
+  flex-direction:column;
+  gap:5px !important;
+  padding:8px !important;
+  border:1px solid rgba(207,220,222,.12);
+  border-radius:10px;
+  background:#0b1014;
+}
+.country-option{
+  min-height:72px !important;
+  border:1px solid transparent !important;
+  border-radius:6px !important;
+  background:transparent !important;
+  color:#89959a !important;
+}
+.country-option.active{
+  background:#141b20 !important;
+  border-color:rgba(211,168,75,.28) !important;
+  box-shadow:inset 2px 0 0 #d3a84b !important;
+}
+.country-option:hover{
+  background:#11171b !important;
+}
+.country-option b{
+  color:#dce2e2 !important;
+}
+.country-option small{
+  color:#626e73 !important;
+}
+.country-profile-rich{
+  margin-top:12px !important;
+  padding:20px !important;
+  border-radius:10px !important;
+  background:#0b1014 !important;
+  border:1px solid rgba(207,220,222,.11) !important;
+}
+.country-detail-grid{
+  gap:10px !important;
+}
+.country-detail-grid > div:not(.investor-box){
+  padding:12px 14px !important;
+  background:#0d1318 !important;
+  border:1px solid rgba(207,220,222,.07) !important;
+}
+.investor-box{
+  border-radius:7px !important;
+  background:#0d1318 !important;
+}
+.setup-actions{
+  position:sticky;
+  bottom:10px;
+  z-index:5;
+  padding:10px 12px !important;
+  border:1px solid rgba(207,220,222,.12);
+  border-radius:8px;
+  background:rgba(8,12,15,.96);
+  backdrop-filter:blur(12px);
+}
+
+/* Make the first decision feel like the opening of a strategy game. */
+.first-week-brief{
+  display:grid;
+  grid-template-columns:1.6fr 1fr;
+  gap:8px;
+  margin:12px 0 4px;
+}
+.first-week-brief > div{
+  padding:14px 16px;
+  border:1px solid rgba(207,220,222,.10);
+  border-radius:8px;
+  background:#0c1216;
+}
+.first-week-brief span{
+  display:block;
+  color:#606c71;
+  font-size:8px;
+  letter-spacing:.16em;
+}
+.first-week-brief b{
+  display:block;
+  margin-top:6px;
+  color:#e2e7e7;
+  font-size:13px;
+}
+.first-week-brief small{
+  display:block;
+  margin-top:5px;
+  color:#788489;
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* Career becomes a progression system, not a list of jobs. */
+.career-track{
+  margin-top:14px;
+  padding:18px;
+  border:1px solid rgba(207,220,222,.11);
+  border-radius:10px;
+  background:#0a1014;
+}
+.career-track-head{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:flex-start;
+  padding-bottom:15px;
+  border-bottom:1px solid rgba(207,220,222,.08);
+}
+.career-track-head h2{
+  margin:5px 0 4px;
+  color:#e9eeee;
+  font-size:21px;
+}
+.career-track-head p{
+  margin:0;
+  max-width:680px;
+  color:#6f7b80;
+  font-size:11px;
+  line-height:1.55;
+}
+.career-next{
+  min-width:150px;
+  padding:12px 14px;
+  border:1px solid rgba(211,168,75,.22);
+  border-radius:7px;
+  background:rgba(211,168,75,.045);
+}
+.career-next span{
+  display:block;
+  color:#796b4e;
+  font-size:8px;
+  letter-spacing:.12em;
+}
+.career-next b{
+  display:block;
+  margin-top:3px;
+  color:#d8bb72;
+  font-size:24px;
+}
+.career-next small{
+  color:#6f7779;
+  font-size:9px;
+}
+.career-job-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.career-job{
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:14px;
+  border:1px solid rgba(207,220,222,.09);
+  border-radius:8px;
+  background:#0d1318;
+}
+.career-job.locked{
+  opacity:.48;
+}
+.career-job > div:first-child > span{
+  color:#5f6a6e;
+  font-size:8px;
+  letter-spacing:.08em;
+}
+.career-job h3{
+  margin:7px 0 4px;
+  color:#dfe4e4;
+  font-size:15px;
+}
+.career-job p{
+  margin:0;
+  color:#6e7a7f;
+  font-size:10px;
+  line-height:1.45;
+}
+.career-job-foot{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:13px;
+}
+.career-job-foot b{
+  color:#d8bb72;
+  font-size:13px;
+}
+.career-job-foot small{
+  color:#5f6b70;
+  margin-right:auto;
+}
+.career-job-foot button{
+  min-height:31px;
+  padding:0 12px;
+  border:1px solid rgba(207,220,222,.13);
+  border-radius:5px;
+  background:#11181d;
+  color:#aeb8ba;
+  font-size:9px;
+}
+.career-job-foot button:hover:not(:disabled){
+  border-color:rgba(211,168,75,.35);
+  color:#e2e5e5;
+}
+
+/* One objective on the overview — no wall of information. */
+.next-move-inline{
+  margin:13px 0 14px;
+  padding:10px 11px;
+  border-left:2px solid #d3a84b;
+  background:#0e1418;
+}
+.next-move-inline span{
+  display:block;
+  color:#71664f !important;
+  font-size:7px !important;
+  letter-spacing:.14em;
+}
+.next-move-inline b{
+  display:block;
+  margin-top:4px;
+  color:#dfe5e5 !important;
+  font-size:11px !important;
+}
+.next-move-inline small{
+  display:block;
+  margin-top:3px;
+  color:#687479 !important;
+  font-size:8px !important;
+  line-height:1.35;
+}
+
+/* Map: make the home marker feel like a strategic location, not a tooltip. */
+.atlas-home-marker{
+  padding:6px 8px !important;
+  border-radius:5px !important;
+  border:1px solid rgba(211,168,75,.55) !important;
+  background:rgba(7,10,12,.94) !important;
+  box-shadow:0 8px 28px rgba(0,0,0,.42) !important;
+}
+.atlas-home-marker i{
+  width:7px !important;
+  height:7px !important;
+  box-shadow:0 0 0 4px rgba(211,168,75,.10) !important;
+}
+.atlas-home-marker span{
+  color:#d6ba74 !important;
+  font-size:8px !important;
+  letter-spacing:.08em;
+}
+.map-key{
+  background:#090e12 !important;
+  border-top:1px solid rgba(207,220,222,.10) !important;
+}
+.atlas-3d-watermark{
+  opacity:.32 !important;
+}
+
+/* Compact lifestyle hierarchy. */
+.life-stats-card{
+  background:#0b1014 !important;
+  border-color:rgba(207,220,222,.11) !important;
+}
+.life-option{
+  background:#0d1318 !important;
+  border-color:rgba(207,220,222,.08) !important;
+}
+.life-impact{
+  background:#0e1418 !important;
+  border-color:rgba(207,220,222,.08) !important;
+}
+.life-job{
+  background:#0d1318 !important;
+  border-color:rgba(207,220,222,.08) !important;
+}
+.life-job button{
+  background:#12191d !important;
+  border-color:rgba(207,220,222,.12) !important;
+}
+
+@media(max-width:900px){
+  .country-picker{grid-template-columns:1fr !important}
+  .country-picker > .atlas{min-height:500px}
+  .first-week-brief{grid-template-columns:1fr}
+  .career-job-grid{grid-template-columns:1fr}
+  .career-track-head{flex-direction:column}
+}
