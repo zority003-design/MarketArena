@@ -234,7 +234,7 @@ export function marketPriceAtDay(
   const d=Math.max(1,day);
   const seed=hash(company.ticker);
   const country=countryFactors[countryId]??countryFactors.slavoriya;
-  const longTrend=(profile.growth+country.gdp*.45)*d*.42;
+  const longTrend=(profile.growth+country.gdp*.45)*(d/365)*.65;
   const valuationCycle=Math.sin((d+seed)*.021)*.08+Math.cos((d+seed)*.009)*.045;
   const companyCycle=Math.sin((d+seed*.17)*.047)*.065;
   const noise=Math.sin(seed*0.017+d*1.73)*.018+Math.cos(seed*.031+d*.47)*.012;
