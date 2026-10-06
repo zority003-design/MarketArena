@@ -33,7 +33,7 @@ export function createPlayer(name: string, classId: StartingClassId): PlayerStat
     housing: classId === "high" ? "apartment" : classId === "middle" ? "studio" : "dormitory",
     food: classId === "high" ? "balanced" : "basic",
     transport: classId === "high" ? "car" : "public",
-    appearance: classId === "high" ? "professional" : classId === "basic" ? "basic" : "neat",
+    appearance: classId === "high" ? "professional" : classId === "middle" ? "neat" : "basic",
     netWorth: profile.startingCash,
     territoryDevelopment: 0,
   };
