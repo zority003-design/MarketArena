@@ -18,6 +18,7 @@ type Props = {
   marketContext?: MarketRow[];
   onComplete: (performance: number) => void;
   onCancel: () => void;
+  professionLevel?: number;
 };
 
 type Customer = { price:number; paid:number; basket:string };
@@ -39,10 +40,11 @@ function makeAnalystSeries(seed:number){
   return Array.from({length:18},(_,i)=>48+Math.sin((i+seed)*.72)*7+i*.8+(((seed+i*17)%11)-5)*.35);
 }
 
-export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onCancel}:Props){
+export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onCancel,professionLevel=1}:Props){
   const seed=useMemo(()=>title.split("").reduce((n,ch)=>n+ch.charCodeAt(0),17),[title]);
   const [score,setScore]=useState(0);
   const [mistakes,setMistakes]=useState(0);
+  const [abilityUsed,setAbilityUsed]=useState(false);
   const [startedAt]=useState(()=>Date.now());
   const [message,setMessage]=useState("Смена начинается. Работай внимательно.");
   const [finished,setFinished]=useState(false);
@@ -54,6 +56,9 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
   const shiftMultiplier={short:.75,normal:1,long:1.3}[shiftLength];
   const difficultyMultiplier={1:.82,2:1,3:1.22}[difficulty];
   const shiftTarget={short:3,normal:5,long:7}[shiftLength];
+  const abilityLevel=Math.max(1,Math.min(5,professionLevel));
+  const abilityName:Record<JobMiniGameId,string>={janitor:"Широкая зона уборки",courier:"Предпросмотр маршрута",cashier:"Защита от одной ошибки",analyst:"Подсказка сигнала",junioranalyst:"Дополнительная улика"};
+  const abilityUnlocked=abilityLevel>=3;
 
   const [player,setPlayer]=useState({x:0,y:0});
   const [target,setTarget]=useState(()=>({x:(seed%6),y:Math.floor(seed%5)}));
@@ -143,6 +148,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
     if(cleaned.includes(cell.i))return;
     const isTrash=cell.i%(difficulty===3?5:7)===0||cell.i===targetIndex;
     if(!isTrash){
+      if(abilityLevel>=3&&!abilityUsed&&jobId==="janitor"){setAbilityUsed(true);setMessage("Навык «Широкая зона» спас смену: ошибка не засчитана.");return;}
       setMistakes(v=>v+1);
       setMessage("Здесь чисто. Не трать время на пустую зону.");
       return;
@@ -171,6 +177,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       if(customerIndex>=Math.min(customers.length,shiftTarget)-1){setTimeout(()=>finish(.13),120);return;}
       setCustomerIndex(v=>v+1);
     }else{
+      if(abilityLevel>=3&&!abilityUsed&&jobId==="cashier"){setAbilityUsed(true);setMessage("Навык «Защита кассы» отменил первую ошибку.");return;}
       setMistakes(v=>v+1);
       setMessage("Сумма не сходится. Проверь купюры и сдачу.");
     }
@@ -187,6 +194,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       setChart(c=>c.map((v,j)=>j===i?v+9:v));
       if(next>=shiftTarget-1)setTimeout(()=>finish(.10),120);
     }else{
+      if(abilityLevel>=3&&!abilityUsed&&jobId==="analyst"){setAbilityUsed(true);setMessage("Подсказка аналитика: ищи пик рядом с сильным новостным импульсом.");return;}
       setMistakes(v=>v+1);
       setMessage("Это обычное движение. Сверь цену, новость и контекст.");
     }
@@ -207,6 +215,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       if(next>=Math.max(2,shiftTarget-2)){setTimeout(()=>finish(.16),120);return;}
       setCaseTarget((caseTarget+1)%caseCompanies.length);
     }else{
+      if(abilityLevel>=3&&!abilityUsed&&jobId==="junioranalyst"){setAbilityUsed(true);setMessage("Дополнительная улика: особенно внимательно сравни долг и P/E с ростом прибыли.");return;}
       setMistakes(v=>v+1);
       setMessage("Решение слабое. Смотри на рост, прибыль, долг, P/E, динамику и новость вместе.");
     }
@@ -248,7 +257,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
           }}>{cell.i%5===0&&<span className="job2d-building"/>}{marked&&<span className="job2d-marker">⌖</span>}{here&&<span className="job2d-person"/>}</button>;
         })}</div>
         <div className="job2d-controls"><button onClick={()=>move(0,-1)}>↑</button><button onClick={()=>move(-1,0)}>←</button><button onClick={()=>move(1,0)}>→</button><button onClick={()=>move(0,1)}>↓</button></div>
-        <small>WASD / стрелки · 3 адреса · лишние шаги снижают качество смены</small>
+        <small>WASD / стрелки · {abilityUnlocked&&jobId==="courier"?"Навык: маршрутная подсказка · ":""}лишние шаги снижают качество смены</small>
       </div>}
 
       {jobId==="janitor"&&<div className="job2d-world streetcleaner">
@@ -261,7 +270,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
           </button>;
         })}</div>
         <div className="job2d-controls"><button onClick={()=>move(0,-1)}>↑</button><button onClick={()=>move(-1,0)}>←</button><button onClick={()=>move(1,0)}>→</button><button onClick={()=>move(0,1)}>↓</button></div>
-        <small>Собери 5 зон мусора · сначала подойди к точке · чистые клетки штрафуют</small>
+        <small>Собери {shiftTarget} зон · {abilityUnlocked&&jobId==="janitor"?"одна ошибка может быть отменена навыком · ":""}сначала подойди к точке</small>
       </div>}
 
       {jobId==="cashier"&&<div className="job2d-cashier">
@@ -270,6 +279,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
           <div className="cashier-screen">СДАЧА: {money(cashierSelected)} VLR</div>
           <div className="cashier-options">{[5,10,20,50,100,200].map(v=><button key={v} onClick={()=>addCash(v)}>+{money(v)}</button>)}</div>
           <div className="cashier-actions"><button onClick={resetCash}>СБРОСИТЬ</button><button className="cashier-submit" onClick={serveCustomer}>ВЫДАТЬ СДАЧУ</button></div>
+          {abilityUnlocked&&jobId==="cashier"&&<small>Навык уровня {abilityLevel}: первая ошибка смены может быть отменена.</small>}
           <div className="cashier-belt"><i/><i/><i/></div>
         </div>
         <small>7 покупателей · составь точную сдачу купюрами · ошибка сбрасывает серию</small>
@@ -278,7 +288,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       {jobId==="analyst"&&<div className="job2d-analyst">
         <div className="job2d-chart">{chart.map((v,i)=><button key={i} style={{height:(v+18)+"%"}} className={i===signal?"signal":""} onClick={()=>analyst(i)}><i/></button>)}</div>
         <div className="analyst-feed"><b>ТЕРМИНАЛ · LIVE</b><p>Найди 4 аномалии: сопоставляй график с новостным импульсом и текущей котировкой.</p>{marketRows.slice(0,3).map(c=><div className="analyst-market-row" key={c.ticker}><strong>{c.ticker}</strong><span>{money(c.price)} VLR</span><em className={c.change>=0?"gain":"loss"}>{c.change>=0?"+":""}{c.change.toFixed(2)}%</em><small>{c.news}</small></div>)}</div>
-        <small>4 сигнала · ошибки снижают качество смены · данные взяты из текущего рынка</small>
+        <small>{shiftTarget-1} сигнала · {abilityUnlocked&&jobId==="analyst"?"одна ошибка может превратиться в подсказку · ":""}данные взяты из текущего рынка</small>
       </div>}
 
       {jobId==="junioranalyst"&&<div className="job2d-investment">
@@ -286,10 +296,10 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
         <div className="investment-company-grid">{caseCompanies.map((c,i)=><button key={c.ticker} className={i===caseTarget?"case-target":""} onClick={()=>evaluateCase(i)}>
           <b>{c.ticker} · {c.name}</b><span>{c.sector}</span><span>Рост <strong>+{c.growth}%</strong></span><span>Прибыль <strong>{c.profit} млн</strong></span><span>Долг <strong>{c.debt} млн</strong></span><span>P/E <strong>{c.pe}×</strong> · день <strong className={c.change>=0?"gain":"loss"}>{c.change>=0?"+":""}{c.change.toFixed(2)}%</strong></span><small>{c.news}</small>
         </button>)}</div>
-        <small>3 кейса · решение должно учитывать фундаментал и новостной фон</small>
+        <small>{Math.max(2,shiftTarget-2)} кейса · {abilityUnlocked&&jobId==="junioranalyst"?"одна ошибка может открыть дополнительную улику · ":""}решение должно учитывать фундаментал и новостной фон</small>
       </div>}
 
-      <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b> · Выносливость <b>{Math.round(stamina)}%</b></span><span>Сложность: <b>{difficultyName}</b> · Смена: <b>{shiftLength==="short"?"короткая":shiftLength==="normal"?"обычная":"длинная"}</b></span></div>
+      <div className="job-game-bottom"><span>Серия <b>{score}</b> · Ошибки <b>{mistakes}</b> · Выносливость <b>{Math.round(stamina)}%</b></span><span>{abilityUnlocked?"Навык: ":"До уровня 3: "}<b>{abilityName[jobId]}</b>{abilityUnlocked?"":" — заблокирован"}</span><span>Сложность: <b>{difficultyName}</b> · Смена: <b>{shiftLength==="short"?"короткая":shiftLength==="normal"?"обычная":"длинная"}</b></span></div>
     </div>
   </div>;
 }
