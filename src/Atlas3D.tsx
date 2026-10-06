@@ -979,7 +979,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           const marker = companyRefs.current[company.ticker];
           if (!marker) return;
           const p = project(worldFromGeo(safeCompanyGeo(selected, company)));
-          marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-50%)`;
+          marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-100%)`;
           marker.style.opacity = p.z > 1 ? "0" : "1";
         });
       }
