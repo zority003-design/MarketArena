@@ -376,7 +376,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const countryInfluence=Math.min(100,ownedPositions*12+Math.min(40,Math.floor(careerXP/2))+Math.min(30,Math.floor(totalWealth/1000000)*5));
   const campaignGoals=[
     {id:"first-job",title:"1 · Создай денежный поток",text:"Заверши первую оплачиваемую работу и получи первые XP.",done:careerXP>0},
-    {id:"secure-home",title:"2 · Закрепись в городе",text:"Выбери жильё, которое соответствует твоему капиталу и стратегии.",done:initialSave?.housing!==undefined || housing!=="studio"},
+    {id:"secure-home",title:"2 · Закрепись в городе",text:"Выбери жильё, которое соответствует твоему капиталу и стратегии.",done:housing!=="studio"},
     {id:"first-investment",title:"3 · Открой рынок",text:"Купи первую акцию и сформируй первую рыночную позицию.",done:ownedPositions>0},
     {id:"ten-deals",title:"4 · Научись торговать",text:"Соверши 10 сделок и изучи хотя бы два сектора.",done:transactions.length>=10},
     {id:"career-three",title:"5 · Получи профессию",text:"Достигни 3 уровня карьеры и открой финансовую работу.",done:careerLevel>=3},
