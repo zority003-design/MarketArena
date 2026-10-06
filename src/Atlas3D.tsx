@@ -757,7 +757,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const yard=new THREE.Mesh(new THREE.BoxGeometry(1.45,.045,1.05),new THREE.MeshStandardMaterial({color:"#6d805d",roughness:1}));
       yard.position.set(homePoint.x,surfaceHeight(homePoint.x,homePoint.z)+.025,homePoint.z);
       yard.receiveShadow=true; scene.add(yard);
-      const home=makeModernBuilding(homePoint.x,homePoint.z,.68,4);
+      const homeBuilding=makeModernBuilding(homePoint.x,homePoint.z,.68,4);
       home.userData.playerHome=true; home.traverse(o=>{o.userData.playerHome=true});
       scene.add(home);
       const driveway=new THREE.Mesh(new THREE.BoxGeometry(.28,.025,.72),new THREE.MeshStandardMaterial({color:"#6a7070",roughness:.95}));
