@@ -335,7 +335,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     const old=day>1?priceFor(company,oldDay):priceFor(company,1)*(1-(Math.sin(seed*1.91)*0.006+Math.cos(seed*0.73)*0.003));
     return ((priceFor(company,day)-old)/old)*100;
   };
-  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;const startPrice=priceFor(company,start);const endPrice=priceFor(company,end);return startPrice+(endPrice-startPrice)*0.5;});};
+  const history=(company:CompanyPreview, range:ChartRange=chartRange)=>{const lengths:Record<ChartRange,number>={ALL:20,"10Y":10,"5Y":20,"1Y":12,"6M":6,"1M":30,"1W":8,"1D":1};const steps:Record<ChartRange,number>={ALL:365,"10Y":365,"5Y":90,"1Y":30,"6M":30,"1M":1,"1W":7,"1D":1};const count=lengths[range],step=steps[range];return Array.from({length:count},(_,i)=>{const end=day-(count-1-i)*step;const start=end-step+1;return priceFor(company,end);});};
   const candleSeries=(company:CompanyPreview,range:ChartRange=chartRange):CandlePoint[]=>{
     // One candle = one real interval of the selected range.
     const configs:Record<ChartRange,{count:number;step:number;vol:number;label:string}>={
