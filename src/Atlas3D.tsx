@@ -1068,12 +1068,14 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-      if (event.shiftKey || event.buttons === 2) {
-        orbitYaw = (orbitYaw - dx * 0.008) % (Math.PI * 2);
-        orbitPitch = clamp(orbitPitch - dy * 0.005, 0.28, 1.18);
+      // ЛКМ всегда вращает остров вокруг центра — это основной способ навигации.
+      // ПКМ оставляет свободное перемещение камеры по сцене.
+      if (event.buttons === 2) {
+        panX = clamp(panX - dx * 0.018 / zoom, -8.5, 8.5);
+        panZ = clamp(panZ + dy * 0.015 / zoom, -7.0, 7.0);
       } else {
-        panX = clamp(panX - dx * 0.022 / zoom, -7.2, 7.2);
-        panZ = clamp(panZ + dy * 0.018 / zoom, -6.0, 6.0);
+        orbitYaw = (orbitYaw - dx * 0.0095) % (Math.PI * 2);
+        orbitPitch = clamp(orbitPitch - dy * 0.0065, 0.16, 1.42);
       }
       lastX = event.clientX;
       lastY = event.clientY;
@@ -1086,7 +1088,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.00145), 0.72, 4.2);
+      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.0017), 0.58, 5.4);
       updateCamera();
       updateOverlay();
     };
@@ -1094,10 +1096,10 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     const keyDown = (event: KeyboardEvent) => {
       if (event.key === "q" || event.key === "Q") orbitYaw -= 0.16;
       if (event.key === "e" || event.key === "E") orbitYaw += 0.16;
-      if (event.key === "r" || event.key === "R") orbitPitch = clamp(orbitPitch - 0.08, 0.28, 1.18);
-      if (event.key === "f" || event.key === "F") orbitPitch = clamp(orbitPitch + 0.08, 0.28, 1.18);
-      if (event.key === "+" || event.key === "=") zoom = clamp(zoom * 1.12, 0.72, 4.2);
-      if (event.key === "-" || event.key === "_") zoom = clamp(zoom / 1.12, 0.72, 4.2);
+      if (event.key === "r" || event.key === "R") orbitPitch = clamp(orbitPitch - 0.09, 0.16, 1.42);
+      if (event.key === "f" || event.key === "F") orbitPitch = clamp(orbitPitch + 0.09, 0.16, 1.42);
+      if (event.key === "+" || event.key === "=") zoom = clamp(zoom * 1.12, 0.58, 5.4);
+      if (event.key === "-" || event.key === "_") zoom = clamp(zoom / 1.12, 0.58, 5.4);
       updateCamera();
       updateOverlay();
     };
@@ -1197,7 +1199,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
 
   return (
     <div className="atlas atlas-3d">
-      <div className="atlas-head"><span>АТЛАС · 3D PHYSICAL TERRAIN</span><span>ЛКМ · ПАНОРАМА · SHIFT+ЛКМ / ПКМ · ВРАЩЕНИЕ · Q/E · ZOOM</span></div>
+      <div className="atlas-head"><span>АТЛАС · 3D-РЕЛЬЕФ</span><span>ЛКМ · ВРАЩЕНИЕ · ПКМ · ПЕРЕМЕЩЕНИЕ · КОЛЕСО · МАСШТАБ</span></div>
       <div className="atlas-3d-viewport" ref={hostRef}>
         <div className="atlas-3d-overlay" ref={overlayRef}>
           <div ref={homeRef} className="atlas-home-marker" title="Твой дом"><i/><span>{home?.label??"МОЙ ДОМ"}</span></div>
@@ -1239,7 +1241,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         <span><b className="owned">◆</b> твоя доля</span>
         <span><b className="control">◆</b> контроль 51%</span>
       </div>
-      <div className="atlas-3d-watermark">WEBGL · ECONOMIC TERRAIN · DRAG / ZOOM</div>
+      <div className="atlas-3d-watermark">3D-МИР · ЭКОНОМИКА · ВРАЩЕНИЕ / МАСШТАБ</div>
       </div>
       <div className="map-key">
         <span><b className="dot" /> столица</span>
