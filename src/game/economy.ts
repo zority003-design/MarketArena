@@ -18,11 +18,14 @@ export type StartingClass = {
 
 export const GAME_CONFIG = {
   seasonDays: 60,
-  // One season is deliberately short enough to form a complete offline session.\n  dayDurationMs: 300_000,
+  // One season is deliberately short enough to form a complete offline session.
+  dayDurationMs: 300_000,
   workActionsPerDay: 2,
   maxOwnedCompaniesForEarlyGame: 3,
   startingSharesPerCompany: 1_000_000,
-  marketOrderFeeRate: 0.0025,\n  dividendPaymentDay: 30,\n  dividendControlBonus: 0.25,
+  marketOrderFeeRate: 0.0025,
+  dividendPaymentDay: 30,
+  dividendControlBonus: 0.25,
   takeoverPremium: 0.08,
   dailyInterestRate: 0.0012,
   inflationPerDay: 0.00035,
@@ -151,9 +154,10 @@ export function dailyLifestyleCost(
   food: keyof typeof GAME_CONFIG.food,
   transport: keyof typeof GAME_CONFIG.transport,
   appearance: keyof typeof GAME_CONFIG.appearance,
+  baseLiving = STARTING_CLASSES.middle.dailyBaseLiving,
 ) {
   return (
-    STARTING_CLASSES.middle.dailyBaseLiving +
+    baseLiving +
     GAME_CONFIG.housing[housing].dailyCost +
     GAME_CONFIG.food[food].dailyCost +
     GAME_CONFIG.transport[transport].dailyCost +
