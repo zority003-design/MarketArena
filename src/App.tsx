@@ -214,7 +214,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [notice,setNotice]=useState("Сегодня доступны работа, рынок и первые инвестиции.");
   const [selectedCompany,setSelectedCompany]=useState<CompanyPreview|null>(null);
   const [exchangeCompany,setExchangeCompany]=useState<CompanyPreview|null>(null);
-  useEffect(()=>{if(tab==="exchange"&&!exchangeCompany&&country.companies.length){setExchangeCompany(country.companies[0]);}},[tab,exchangeCompany,country.companies]);
+  
   const [selectedNews,setSelectedNews]=useState<string|null>(null);
   const [jobCooldown,setJobCooldown]=useState<string|null>(null);
   const [jobGame,setJobGame]=useState<{jobId:string;target:number;score:number;started:number;playerX:number;playerY:number}|null>(null);
