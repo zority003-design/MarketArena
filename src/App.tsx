@@ -287,12 +287,12 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [marketPulse,setMarketPulse]=useState(0);
   const [timeSpeed,setTimeSpeed]=useState<1|1.5|2>(1);
   const [timePaused,setTimePaused]=useState(false);
-  const [campaignFinished,setCampaignFinished]=useState(()=>((initialSave?.day??1)>=365));
+  const [campaignFinished,setCampaignFinished]=useState(()=>((initialSave?.day??1)>=120));
   useEffect(()=>{if(tab!=="exchange"){setSelectedCompany(null);setExchangeCompany(null)}},[tab]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const timer=window.setInterval(()=>setMarketPulse(Date.now()),1500);return()=>window.clearInterval(timer)},[timePaused,campaignFinished]);
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(120,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
-  useEffect(()=>{if(day>=120){setDay(120);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
+  useEffect(()=>{if(day>=120){setDay(120);setCampaignFinished(true);setTimePaused(true);setNotice("Кампания завершена. Рынок остановлен: теперь можно оценить результат.");}},[day]);
   useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
     slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
