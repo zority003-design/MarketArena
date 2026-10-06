@@ -3162,3 +3162,75 @@ h1,h2,h3,h4,strong,b,.panel-title h1,.game-heading h1,.setup-inner h1,.auth-copy
 .flag-symbol svg{width:100%;height:100%;display:block}
 .country-option .flag-symbol{width:48px;height:32px}
 .profile-title .flag-symbol{width:62px;height:42px}
+
+
+/* FINAL SHELL FIX — one document scroll, fixed rail and fixed header */
+html,body,#root{min-height:100%;margin:0}
+body{overflow-x:hidden;overflow-y:auto}
+.game-shell{min-height:100vh;overflow:visible}
+.game-topbar{position:fixed!important;left:0!important;right:0!important;top:0!important;height:72px!important;z-index:1000!important}
+.game-body{display:block!important;min-height:100vh!important;padding-top:72px!important}
+.game-sidebar{position:fixed!important;left:0!important;top:72px!important;bottom:0!important;width:252px!important;height:calc(100vh - 72px)!important;min-height:0!important;max-height:none!important;overflow:hidden!important;z-index:900!important}
+.game-main{display:block!important;margin-left:252px!important;max-width:none!important;min-height:calc(100vh - 72px);padding:34px clamp(24px,3vw,54px) 80px!important}
+.sidebar-section{overflow:visible!important}
+@media(max-width:1100px) and (min-width:701px){
+  .game-sidebar{width:84px!important}
+  .game-main{margin-left:84px!important}
+  .sidebar-player>div:not(.sidebar-avatar),.sidebar-section>span,.sidebar-next,.sidebar-status{display:none!important}
+}
+@media(max-width:700px){
+  .game-topbar{height:58px!important}
+  .game-body{padding-top:58px!important}
+  .game-sidebar{display:none!important}
+  .game-main{margin-left:0!important;padding:22px 14px 60px!important}
+}
+
+/* Top-left account exit */
+.topbar-logout{border:1px solid rgba(255,130,145,.22);background:rgba(255,90,110,.055);color:#ffb4bd;border-radius:8px;padding:7px 10px;font:700 9px "Inter";letter-spacing:.05em;cursor:pointer}
+.topbar-logout:hover{background:rgba(255,90,110,.12);border-color:rgba(255,130,145,.4)}
+
+/* Exchange opens on a company list first */
+.exchange-safe-companies{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important}
+.exchange-safe-companies>button{min-height:116px!important;text-align:left!important;padding:15px!important;border-radius:12px!important}
+.exchange-safe-focus{margin-top:18px!important;border-top:1px solid rgba(255,255,255,.07);padding-top:18px!important}
+@media(max-width:950px){.exchange-safe-companies{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:620px){.exchange-safe-companies{grid-template-columns:1fr!important}}
+
+/* Character / lifestyle dossier */
+.life-profile-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;margin:18px 0}
+.life-character-card,.life-stats-card{border:1px solid rgba(132,190,199,.16);border-radius:14px;background:linear-gradient(145deg,#0b202c,#07131d);padding:18px}
+.life-character{height:280px;border-radius:12px;background:radial-gradient(circle at 50% 20%,#23495a 0,#102a37 42%,#07151e 100%);position:relative;overflow:hidden}
+.life-character .head{position:absolute;left:50%;top:42px;transform:translateX(-50%);width:58px;height:68px;border-radius:48% 48% 42% 42%;background:#c9916f;box-shadow:0 -12px 0 4px #24201e}
+.life-character .body{position:absolute;left:50%;top:105px;transform:translateX(-50%);width:104px;height:132px;border-radius:34px 34px 12px 12px;background:#29455a}
+.life-character .shirt{position:absolute;left:50%;top:108px;transform:translateX(-50%);width:46px;height:110px;background:#e6ebea;clip-path:polygon(20% 0,80% 0,100% 100%,0 100%)}
+.life-character .arm{position:absolute;top:122px;width:25px;height:105px;border-radius:15px;background:#c9916f}.life-character .arm.left{left:63px;transform:rotate(9deg)}.life-character .arm.right{right:63px;transform:rotate(-9deg)}
+.life-character .leg{position:absolute;top:213px;width:29px;height:67px;background:#182b39;border-radius:10px}.life-character .leg.left{left:112px}.life-character .leg.right{right:112px}
+.life-character-label{position:absolute;left:12px;bottom:12px;font-size:9px;letter-spacing:.12em;color:#bcd1d5}
+.life-option-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.life-option{padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.025)}
+.life-option span{display:block;font-size:8px;letter-spacing:.12em;color:#71879a}.life-option b{display:block;margin-top:5px;font-size:14px}.life-option small{display:block;margin-top:5px;color:#78909d;font-size:9px;line-height:1.45}
+.life-impact{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.life-impact>div{padding:11px;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07)}.life-impact span{font-size:8px;color:#71879a}.life-impact b{display:block;margin-top:5px;font:600 15px "Space Grotesk"}
+@media(max-width:850px){.life-profile-grid{grid-template-columns:1fr}.life-impact{grid-template-columns:repeat(2,1fr)}}
+
+/* Full-screen pixel job stage — no emoji UI */
+.job-game-backdrop{background:rgba(2,7,12,.90)!important;backdrop-filter:blur(10px)!important}
+.job-game-modal{width:min(1180px,calc(100vw - 44px))!important;height:min(860px,calc(100vh - 44px))!important;max-height:none!important;padding:28px!important;border-radius:18px!important;background:#08131d!important;border:1px solid rgba(126,194,204,.22)!important;box-shadow:0 35px 100px rgba(0,0,0,.6)!important}
+.job-game-modal>h2{font-size:30px!important}
+.job-game-board{height:calc(100% - 145px)!important;min-height:520px!important}
+.job-2d-scene{position:relative!important;display:grid!important;gap:0!important;min-height:0!important;height:100%!important;padding:0!important;border-radius:14px!important;overflow:hidden!important;background:#315348!important;image-rendering:pixelated}
+.courier-scene{grid-template-columns:repeat(8,1fr)!important;grid-template-rows:repeat(5,1fr)!important}
+.courier-scene .street-tile{min-height:0!important;border:0!important;border-radius:0!important;background:#47704b!important}
+.courier-scene .street-tile:nth-child(-n+8){background:linear-gradient(#4c7350 0 48%,#d0b77e 48% 54%,#3b4247 54% 76%,#d0b77e 76% 82%,#4c7350 82%)!important}
+.courier-scene .street-tile:nth-child(n+9){background:linear-gradient(#3e6445 0 18%,#d0b77e 18% 24%,#3c4348 24% 52%,#d0b77e 52% 58%,#4d7650 58%)!important}
+.street-road{display:none!important}
+.street-house{width:58px;height:48px;left:50%;top:20%;transform:translateX(-50%);font-size:0!important;background:#c96e4e;border:3px solid #5c3d35;border-radius:3px;box-shadow:0 8px 0 rgba(0,0,0,.18)}
+.street-house:before{content:"";position:absolute;left:-8px;top:-17px;width:66px;height:25px;background:#6d3f37;clip-path:polygon(50% 0,100% 100%,0 100%);border:2px solid #4b3030}
+.street-house:after{content:"";position:absolute;left:21px;bottom:6px;width:16px;height:20px;background:#355568;box-shadow:0 0 0 2px #513d35}
+.courier-player{font-size:0!important;width:22px;height:34px;left:50%;top:56%;transform:translate(-50%,-50%);background:#e2b38b;border-radius:9px 9px 4px 4px;box-shadow:0 18px 0 -5px #263d55,0 2px 0 1px #12202b;z-index:8}
+.courier-player:before{content:"";position:absolute;left:-4px;top:-9px;width:30px;height:9px;background:#e8b34c;border-radius:4px}
+.delivery-pin{font-size:0!important;width:22px;height:28px;right:18px;bottom:24px;background:#45d9ed;border:3px solid #0a3440;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.35);z-index:7}
+.delivery-pin:after{content:"";position:absolute;width:6px;height:6px;left:5px;top:5px;border-radius:50%;background:#08202a}
+.street-tile small{font-size:7px!important;color:#dfead9!important;opacity:.8}
+.job-scene-hint{font-size:11px!important;margin-top:10px!important}
+.job-controls{display:none!important}
+@media(max-width:800px){.job-game-modal{width:calc(100vw - 20px)!important;height:calc(100vh - 20px)!important;padding:18px!important}.job-game-board{height:calc(100% - 150px)!important;min-height:420px!important}.courier-scene{grid-template-columns:repeat(4,1fr)!important;grid-template-rows:repeat(10,1fr)!important}}
