@@ -8,10 +8,13 @@ type Atlas3DProps = {
   onSelect: (id: string) => void;
   showCompanies?: boolean;
   onCompany?: (company: CompanyPreview) => void;
+  holdings?: Record<string, number>;
   home?: { housing: string; label: string };
 };
 
 type GeoPoint = [number, number];
+
+const GAME_CONFIG_SHARES = 1_000_000;
 
 const W = 32;
 const D = 23;
@@ -560,7 +563,7 @@ function makeSnowCap(geo: GeoPoint, size: number) {
   return mesh;
 }
 
-export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany, home }: Atlas3DProps) {
+export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany, holdings = {}, home }: Atlas3DProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const labelRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -588,7 +591,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     const focusGeo = home?.housing ? homeGeo : centerGeo;
     const centerWorld = worldFromGeo(focusGeo);
     const target = new THREE.Vector3(centerWorld.x, 0.5, centerWorld.z);
-    const homeZoom = home?.housing==="premium" ? 1.56 : home?.housing==="apartment" ? 1.52 : home?.housing==="studio" ? 1.47 : 1.42;
+    const homeZoom = home?.housing==="premium" ? 1.92 : home?.housing==="apartment" ? 1.86 : home?.housing==="studio" ? 1.80 : 1.72;
     camera.position.set(centerWorld.x, 20.5 / homeZoom, centerWorld.z + 20.5 / homeZoom);
     camera.lookAt(target);
 
@@ -895,7 +898,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     let moved = false;
     let lastX = 0;
     let lastY = 0;
-    let zoom = home?.housing ? homeZoom : 1.38;
+    let zoom = home?.housing ? homeZoom : 1.62;
     let panX = 0;
     let panZ = 0;
 
@@ -997,8 +1000,8 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-      panX = clamp(panX - dx * 0.018 / zoom, -2.8, 2.8);
-      panZ = clamp(panZ + dy * 0.015 / zoom, -2.2, 2.2);
+      panX = clamp(panX - dx * 0.022 / zoom, -5.8, 5.8);
+      panZ = clamp(panZ + dy * 0.018 / zoom, -4.8, 4.8);
       lastX = event.clientX;
       lastY = event.clientY;
       updateCamera();
@@ -1010,7 +1013,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     };
     const wheel = (event: WheelEvent) => {
       event.preventDefault();
-      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.82, 1.55);
+      zoom = clamp(zoom * Math.exp(-event.deltaY * 0.0012), 0.92, 2.75);
       updateCamera();
       updateOverlay();
     };
@@ -1100,7 +1103,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [countries, selected, showCompanies, home?.housing, home?.label]);
+  }, [countries, selected, showCompanies, holdings, home?.housing, home?.label]);
 
   const selectedCountry = countries.find((c) => c.id === selected);
 
@@ -1121,19 +1124,34 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
               <i /><span>{country.capital}</span>
             </button>
           ))}
-          {showCompanies && selectedCountry?.companies.map((company) => (
-            <button
-              key={company.ticker}
-              ref={(el) => { companyRefs.current[company.ticker] = el; }}
-              className="atlas-company-marker premium-company-marker"
-              type="button"
-              onClick={() => onCompanyRef.current?.(company)}
-            >
-              <b>{company.ticker}</b>
-            </button>
-          ))}
+          {showCompanies && selectedCountry?.companies.map((company) => {
+            const shares = holdings[company.ticker] || 0;
+            const ownership = Math.min(100, Math.round((shares / GAME_CONFIG_SHARES) * 100));
+            const controlled = ownership >= 51;
+            const strategic = ownership >= 10;
+            return (
+              <button
+                key={company.ticker}
+                ref={(el) => { companyRefs.current[company.ticker] = el; }}
+                className={`atlas-company-marker premium-company-marker ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
+                type="button"
+                title={`${company.name} · ${company.ticker} · ${ownership}%`}
+                onClick={() => onCompanyRef.current?.(company)}
+              >
+                <b>{company.ticker}</b>
+                <span>{company.name}</span>
+                <small>{controlled ? "КОНТРОЛЬ 51%" : shares > 0 ? `${ownership}% ДОЛЯ` : "ПУБЛИЧНАЯ"}</small>
+              </button>
+            );
+          })}
         </div>
-        <div className="atlas-3d-watermark">WEBGL · TERRAIN MESH · REAL SHADOWS</div>
+        <div className="atlas-map-hud">
+        <span><b>●</b> твой дом</span>
+        <span><b>◉</b> предприятие</span>
+        <span><b className="owned">◆</b> твоя доля</span>
+        <span><b className="control">◆</b> контроль 51%</span>
+      </div>
+      <div className="atlas-3d-watermark">WEBGL · ECONOMIC TERRAIN · DRAG / ZOOM</div>
       </div>
       <div className="map-key">
         <span><b className="dot" /> столица</span>
