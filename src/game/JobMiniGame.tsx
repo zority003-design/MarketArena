@@ -30,7 +30,8 @@ function makeCustomers(seed:number):Customer[]{
   return Array.from({length:8},(_,i)=>{
     const price=120+((seed+i*37)%15)*20;
     const change=[20,50,100,200][(seed+i)%4];
-    return {price,paid:price+change};
+    const basket=["Продукты","Техника","Одежда","Дом","Кофе","Аптека","Спорт","Книги"][i];
+    return {price,paid:price+change,basket};
   });
 }
 
