@@ -296,8 +296,7 @@ function makeTerrain(selectedId?: string) {
     for (let x = 0; x < nx; x += 1) {
       const a = z * (nx + 1) + x;
       const b = a + 1;
-      const c = a + nx + 1;
-      const d = c + 1;
+      const c = a + nx + 1;      const d = c + 1;
       indices.push(a, c, b, b, c, d);
     }
   }
@@ -616,8 +615,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     sun.shadow.camera.left = -20;
     sun.shadow.camera.right = 20;
     sun.shadow.camera.top = 15;
-    sun.shadow.camera.bottom = -15;
-    sun.shadow.camera.near = 1;
+    sun.shadow.camera.bottom = -15;    sun.shadow.camera.near = 1;
     sun.shadow.camera.far = 55;
     sun.shadow.bias = -0.00015;
     scene.add(sun);
@@ -700,6 +698,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const companyGeos = selectedCountry.companies.map(company => safeCompanyGeo(selectedCountry.id, company));
       const roadCurves: THREE.CatmullRomCurve3[] = [];
       const nodes:[GeoPoint,number][]=[capital,...companyGeos].map((geo,index)=>[geo,index]);
+
+      // Main city arteries: every issuer has a real physical headquarters and a road
+      // connection into the same street network. The existing building materials and
+      // lighting are intentionally reused; only the composition is changed.
       const connected:number[]=[0], remaining:number[]=nodes.slice(1).map((_,i)=>i+1);
       while(remaining.length){
         let bestR=0,bestC=connected[0],bestD=Infinity;
@@ -712,16 +714,44 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         });
         const bend=(hash(bestR*4.3, selectedCountry.id.length)-.5)*.18;
         const curve=inCountryRoad(selectedCountry.id,nodes[bestC][0],nodes[bestR][0],bend);
-        if(curve){ roadCurves.push(curve); scene.add(makeHighway(curve,.23)); }
-        connected.push(bestR); remaining.splice(remaining.indexOf(bestR),1);
+        roadCurves.push(curve);
+        scene.add(makeHighway(curve,.23));
+        scene.add(makeSidewalk(curve,.032));
+        connected.push(bestR);
+        remaining.splice(remaining.indexOf(bestR),1);
       }
-      companyGeos.forEach((geo,index)=>{
+
+      // Exactly one recognizable building per public issuer.
+      // Its type/scale varies by issuer so the country reads as a real business district,
+      // while keeping the same existing 3D building language.
+      selectedCountry.companies.forEach((company,index)=>{
+        const geo=companyGeos[index];
         const p=worldFromGeo(geo);
-        scene.add(makeTree(p.x+.28,p.z+.18,.55+(index%3)*.08));
-        scene.add(makeTree(p.x-.22,p.z+.26,.45+(index%2)*.1));
-        scene.add(makeModernBuilding(p.x+.34,p.z-.18,.85+(index%3)*.10,index));
-        scene.add(makeModernBuilding(p.x-.38,p.z+.12,.68+(index%2)*.12,index+1));
-        scene.add(makeModernBuilding(p.x+.02,p.z-.48,.62,index+2));
+        const sector=company.sector.toLowerCase();
+        const type=sector.includes("фин")||sector.includes("страх") ? 0
+          : sector.includes("тех")||sector.includes("элект")||sector.includes("робот") ? 1
+          : sector.includes("нефт")||sector.includes("металл")||sector.includes("пром")||sector.includes("хим") ? 3
+          : sector.includes("агро")||sector.includes("ритейл")||sector.includes("недвиж") ? 2
+          : index%5;
+        const scale=type===0 ? 1.02+(index%3)*.08 : type===3 ? .92+(index%3)*.08 : .82+(index%4)*.07;
+        const headquarters=makeModernBuilding(p.x,p.z,scale,type);
+        headquarters.userData.companyTicker=company.ticker;
+        headquarters.userData.companyName=company.name;
+        scene.add(headquarters);
+        scene.add(makeTree(p.x+.38,p.z+.22,.46+(index%3)*.07));
+
+        // Short access street ties the headquarters into the nearest city block.
+        if(index<companyGeos.length){
+          const nearest=companyGeos.reduce((best,other,j)=>{
+            if(j===index) return best;
+            const d=Math.hypot(other[0]-geo[0],other[1]-geo[1]);
+            return d<best.d ? {j,d} : best;
+          },{j:-1,d:Infinity});
+          if(nearest.j>=0){
+            const access=inCountryRoad(selectedCountry.id,geo,companyGeos[nearest.j],(hash(index*9.1,7.7)-.5)*.035);
+            scene.add(makeSidewalk(access,.026));
+          }
+        }
       });
       // Dense modern city fabric: fill quiet parts of the selected country with small, varied districts.
       const citySites:GeoPoint[]=[];
@@ -738,6 +768,12 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           const type=citySites.length%7;
           const scale=.32+hash(i*4.2,selectedCountry.id.length)*.42;
           scene.add(makeCityBuilding(p.x,p.z,scale,type));
+          // Small residential pockets use the same existing building assets, keeping
+          // the visual language untouched while making the city feel inhabited.
+          if(citySites.length%6===0){
+            scene.add(makeModernBuilding(p.x+.34,p.z+.20,.34,2));
+            scene.add(makeModernBuilding(p.x-.30,p.z-.22,.30,2));
+          }
           if(citySites.length%3===0) scene.add(makeTree(p.x+.24,p.z-.16,.35+scale*.18));
           if(citySites.length<=cityProfile.highRises && citySites.length%2===0) scene.add(makeModernBuilding(p.x+.18,p.z-.16,0.78+(citySites.length%4)*.08,0));
           if(citySites.length<=cityProfile.factories && citySites.length%2===1) scene.add(makeFactory(p.x-.16,p.z+.14,0.72+(citySites.length%3)*.10));
@@ -896,8 +932,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     let hoveredCountry = "";
     let drag = false;
     let moved = false;
-    let lastX = 0;
-    let lastY = 0;
+    let lastX = 0;    let lastY = 0;
     let zoom = home?.housing ? homeZoom : 1.62;
     let panX = 0;
     let panZ = 0;
@@ -1086,8 +1121,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
     render();
 
     return () => {
-      cancelAnimationFrame(raf);
-      observer.disconnect();
+      cancelAnimationFrame(raf);      observer.disconnect();
       renderer.domElement.removeEventListener("pointerdown", pointerDown);
       renderer.domElement.removeEventListener("pointermove", pointerMove);
       renderer.domElement.removeEventListener("pointerup", pointerUp);
@@ -1148,17 +1182,3 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
         <div className="atlas-map-hud">
         <span><b>●</b> твой дом</span>
         <span><b>◉</b> предприятие</span>
-        <span><b className="owned">◆</b> твоя доля</span>
-        <span><b className="control">◆</b> контроль 51%</span>
-      </div>
-      <div className="atlas-3d-watermark">WEBGL · ECONOMIC TERRAIN · DRAG / ZOOM</div>
-      </div>
-      <div className="map-key">
-        <span><b className="dot" /> столица</span>
-        <span><b className="mount" /> физический рельеф</span>
-        <span><b className="company-dot" /> компания · нажми</span><span><b className="water-dot" /> вода</span>
-      </div>
-    </div>
-  );
-}
-
