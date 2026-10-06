@@ -244,7 +244,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(365,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.72); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=365){setDay(365);setCampaignFinished(true);setTimePaused(true);setNotice("Год завершён. Рынок остановлен: теперь можно оценить результат кампании.");}},[day]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,housing,food,transport,appearance,energy]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
     slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
     lirania:{bias:.004,sectors:{"Судоходство":.020,"Порты":.018,"Страхование":.013,"Финансы":.010},strength:"торговые маршруты и портовая инфраструктура",risk:"зависимость от мирового товарооборота и фрахта"},
@@ -373,6 +373,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
     {id:"influence",title:"Влияние",text:"Достигни 25 пунктов влияния в своей стране.",done:countryInfluence>=25},
     {id:"year",title:"Год в игре",text:"Проживи полный экономический год.",done:day>=365}
   ];
+  const stakeOf=(ticker:string)=>((holdings[ticker]??0)/GAME_CONFIG.startingSharesPerCompany);
+  const controlledValue=ownedCompanies.reduce((sum,ticker)=>{const c=country.companies.find(x=>x.ticker===ticker);return sum+(c?priceFor(c)*GAME_CONFIG.startingSharesPerCompany*.51:0)},0);
+  const influenceTier=countryInfluence>=75?"Стратегический игрок":countryInfluence>=51?"Влиятельный инвестор":countryInfluence>=33?"Значимый акционер":countryInfluence>=10?"Устойчивый инвестор":"Новый игрок";
   const completedGoals=campaignGoals.filter(g=>g.done).length;
   const takeoverCost=(company:CompanyPreview)=>{const seed=company.ticker.split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);const marketCap=1_200_000+(seed%8)*350_000;return Math.round(marketCap*.51*1.15/1000)*1000;};
   const loanLimit=Math.max(0,Math.min(5000000,Math.round((totalWealth*0.65)/10000)*10000));
