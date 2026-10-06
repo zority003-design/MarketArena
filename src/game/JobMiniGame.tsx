@@ -53,6 +53,7 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
 
   const [customers]=useState(()=>makeCustomers(seed));
   const [customerIndex,setCustomerIndex]=useState(0);
+  const [cashierSelected,setCashierSelected]=useState(0);
 
   const [signal,setSignal]=useState(()=>3+(seed%10));
   const [chart,setChart]=useState(()=>makeAnalystSeries(seed));
@@ -142,20 +143,25 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
     if(next.length>=5)setTimeout(()=>finish(.08),120);
   };
 
-  const serveCustomer=(answer:number)=>{
+  const addCash=(value:number)=>{
+    if(finished)return;
+    setCashierSelected(v=>Math.min(300,v+value));
+  };
+  const resetCash=()=>setCashierSelected(0);
+  const serveCustomer=()=>{
     if(finished)return;
     const customer=customers[customerIndex];
     if(!customer)return;
     const correct=customer.paid-customer.price;
-    if(answer===correct){
-      const next=score+1;
-      setScore(next);
-      setMessage("Сдача верна. Следующий покупатель.");
-      if(customerIndex>=customers.length-1){setTimeout(()=>finish(.10),120);return;}
+    if(cashierSelected===correct){
+      setScore(v=>v+1);
+      setMessage("Сдача выдана верно. Следующий покупатель.");
+      setCashierSelected(0);
+      if(customerIndex>=customers.length-1){setTimeout(()=>finish(.13),120);return;}
       setCustomerIndex(v=>v+1);
     }else{
       setMistakes(v=>v+1);
-      setMessage("Неверная сдача. Пересчитай сумму.");
+      setMessage("Сумма не сходится. Проверь купюры и сдачу.");
     }
   };
 
@@ -177,21 +183,21 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
 
   const evaluateCase=(i:number)=>{
     if(finished)return;
-    const c=caseCompanies[i];
-    const target=caseCompanies[caseTarget];
-    if(!c||!target)return;
+    const picked=caseCompanies[i];
+    if(!picked)return;
     const scoreMetric=(x:CaseCompany)=>x.growth*1.35+x.profit*.035-x.debt*.028-x.pe*.65+(x.change*.35);
-    const correct=i===caseTarget && scoreMetric(c)>=scoreMetric(target)-.01;
-    if(correct){
+    const ranked=[...caseCompanies].sort((a,b)=>scoreMetric(b)-scoreMetric(a));
+    const best=ranked[caseTarget%ranked.length];
+    if(picked.ticker===best.ticker){
       const next=caseRound+1;
       setCaseRound(next);
       setScore(v=>v+1);
-      setMessage("Инвестиционный кейс разобран: фундаментал подтверждает выбор.");
-      if(next>=3){setTimeout(()=>finish(.14),120);return;}
-      setCaseTarget((caseTarget+1+seed)%caseCompanies.length);
+      setMessage("Инвестиционный кейс разобран: фундаментал и риск подтверждают выбор.");
+      if(next>=3){setTimeout(()=>finish(.16),120);return;}
+      setCaseTarget((caseTarget+1)%caseCompanies.length);
     }else{
       setMistakes(v=>v+1);
-      setMessage("Решение слабое. Смотри не только на рост: долг, P/E и новость тоже важны.");
+      setMessage("Решение слабое. Смотри на рост, прибыль, долг, P/E, динамику и новость вместе.");
     }
   };
 
@@ -239,9 +245,14 @@ export function JobMiniGame({jobId,title,basePay,marketContext=[],onComplete,onC
       </div>}
 
       {jobId==="cashier"&&<div className="job2d-cashier">
-        {customers[customerIndex]&&<div className="cashier-ticket"><span>ПОКУПАТЕЛЬ {customerIndex+1}/{customers.length}</span><strong>{money(customers[customerIndex].price)} VLR</strong><small>Оплата: {money(customers[customerIndex].paid)} VLR</small><b>Сдача: {money(customers[customerIndex].paid-customers[customerIndex].price)} VLR</b></div>}
-        <div className="cashier-register"><div className="cashier-screen">РАСЧЁТ</div><div className="cashier-options">{[20,50,100,200].map(v=><button key={v} onClick={()=>serveCustomer(v)}>+{money(v)} VLR</button>)}</div><div className="cashier-belt"><i/><i/><i/></div></div>
-        <small>8 покупателей · считай сдачу · скорость и точность влияют на оплату</small>
+        {customers[customerIndex]&&<div className="cashier-ticket"><span>ПОКУПАТЕЛЬ {customerIndex+1}/{customers.length}</span><strong>{money(customers[customerIndex].price)} VLR</strong><small>Покупатель даёт: {money(customers[customerIndex].paid)} VLR · {customers[customerIndex].basket}</small><b>Нужно выдать: {money(customers[customerIndex].paid-customers[customerIndex].price)} VLR</b></div>}
+        <div className="cashier-register">
+          <div className="cashier-screen">СДАЧА: {money(cashierSelected)} VLR</div>
+          <div className="cashier-options">{[5,10,20,50,100,200].map(v=><button key={v} onClick={()=>addCash(v)}>+{money(v)}</button>)}</div>
+          <div className="cashier-actions"><button onClick={resetCash}>СБРОСИТЬ</button><button className="cashier-submit" onClick={serveCustomer}>ВЫДАТЬ СДАЧУ</button></div>
+          <div className="cashier-belt"><i/><i/><i/></div>
+        </div>
+        <small>7 покупателей · составь точную сдачу купюрами · ошибка сбрасывает серию</small>
       </div>}
 
       {jobId==="analyst"&&<div className="job2d-analyst">
