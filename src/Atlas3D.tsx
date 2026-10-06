@@ -591,13 +591,47 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     const terrain = makeTerrain(selected);
     scene.add(terrain);
 
+    const oceanUniforms={uTime:{value:0}};
     const ocean = new THREE.Mesh(
-      new THREE.PlaneGeometry(70, 58, 1, 1),
-      new THREE.MeshStandardMaterial({ color: "#0a4055", roughness: 0.58, metalness: 0.12 })
+      new THREE.PlaneGeometry(70,58,96,76),
+      new THREE.ShaderMaterial({
+        uniforms:oceanUniforms,
+        vertexShader:`
+          uniform float uTime;
+          varying vec2 vUv;
+          varying float vWave;
+          void main(){
+            vUv=uv;
+            vec3 p=position;
+            float w1=sin(p.x*1.55+uTime*0.72)*0.035;
+            float w2=cos(p.y*1.9-uTime*0.52)*0.026;
+            float w3=sin((p.x+p.y)*3.1+uTime*0.35)*0.012;
+            p.z += w1+w2+w3;
+            vWave=w1+w2+w3;
+            gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
+          }
+        `,
+        fragmentShader:`
+          uniform float uTime;
+          varying vec2 vUv;
+          varying float vWave;
+          void main(){
+            float rip=sin(vUv.x*85.0+uTime*.8)*sin(vUv.y*70.0-uTime*.5);
+            float glint=smoothstep(.72,1.0,rip)*.16;
+            vec3 deep=vec3(.018,.16,.22);
+            vec3 shallow=vec3(.035,.31,.39);
+            vec3 col=mix(deep,shallow,clamp(vUv.y*.55+.25+vWave*2.0,0.0,1.0));
+            col += vec3(.18,.28,.28)*glint;
+            gl_FragColor=vec4(col,.96);
+          }
+        `,
+        transparent:true,
+        side:THREE.DoubleSide
+      })
     );
-    ocean.rotation.x = -Math.PI / 2;
-    ocean.position.y = -0.34;
-    ocean.receiveShadow = true;
+    ocean.rotation.x=-Math.PI/2;
+    ocean.position.y=-0.34;
+    ocean.receiveShadow=true;
     scene.add(ocean);
 
     const shallows = new THREE.Mesh(
@@ -990,6 +1024,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           obj.lookAt(ahead.x,surfaceHeight(ahead.x,ahead.z)+.045,ahead.z);
         }
       });
+      oceanUniforms.uTime.value=performance.now()*0.001;
       updateOverlay();
       renderer.render(scene, camera);
     };
