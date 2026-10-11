@@ -431,6 +431,9 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const jobLevelLabel=(id:JobId)=>jobProgression[id].names[jobLevel(id,jobXP[id]??0)-1];
   const jobNextXP=(id:JobId)=>{const xp=jobXP[id]??0;const next=jobProgression[id].levels.find(v=>v>xp);return next??15;};
   const ownedPositions=Object.values(holdings).filter(v=>v>0).length;
+  const ownedSectorCounts=country.companies.reduce<Record<string,number>>((acc,company)=>{if(ownedCompanies.includes(company.ticker)){const sector=company.sector||"Прочее";acc[sector]=(acc[sector]??0)+1;}return acc;},{});
+  const leadingSector=Object.entries(ownedSectorCounts).sort((a,b)=>b[1]-a[1])[0];
+  const sectorBonus=leadingSector?Math.min(24,Math.max(0,leadingSector[1]-1)*8):0;
   const countryInfluence=Math.min(100,ownedPositions*12+Math.min(40,Math.floor(careerXP/2))+Math.min(30,Math.floor(totalWealth/1000000)*5));
   const campaignGoals=[
     {id:"first-job",title:"1 · Создай денежный поток",text:"Заверши первую оплачиваемую работу и получи первые XP.",done:careerXP>0},
@@ -675,6 +678,7 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               <div className="command-rail-card capital-focus"><span>ОБЩИЙ КАПИТАЛ</span><strong>{totalWealth.toLocaleString("ru-RU")} VLR</strong><small>Кэш {cash.toLocaleString("ru-RU")} · активы {portfolioValue.toLocaleString("ru-RU")}</small><div className="money-bar"><i style={{width:cashPct+"%"}}/></div></div>
               <div className="command-rail-card next-focus"><span>СЛЕДУЮЩИЙ ХОД</span><b>{nextGoal.title}</b><p>{nextGoal.text}</p><button onClick={()=>{const g=nextGoal;if(g.id==="first-job")setTab("life");else if(g.id==="first-investment")openExchange();else if(g.id==="first-takeover")setTab("companies");else setTab("profile")}}>Открыть действие →</button></div>
               <div className="command-rail-card influence-focus"><span>ВЛИЯНИЕ В СТРАНЕ</span><strong>{countryInfluence}/100</strong><small>{influenceTier}</small><div className="influence-meter"><i style={{width:countryInfluence+"%"}}/></div><small>Контроль: {ownedCompanies.length} · долей: {ownedPositions}</small></div>
+              <div className="command-rail-card sector-focus"><span>СИНЕРГИЯ СЕКТОРА</span><strong>+{sectorBonus}%</strong><b>{leadingSector?leadingSector[0]:"Собери отрасль"}</b><small>{leadingSector?leadingSector[1]+" компании в секторе · бонус к дивидендам":"Контроль двух компаний одной отрасли даст +8% к дивидендам."}</small></div>
               <div className="command-rail-card market-focus"><span>РЫНОК</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>{currentCrisis?currentCrisis.short:"Следи за цепочками отраслей и новостями."}</small><button onClick={()=>setTab("events")}>События →</button></div>
             </aside>
           </section>
