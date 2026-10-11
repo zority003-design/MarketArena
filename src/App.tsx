@@ -153,7 +153,7 @@ function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   return <div className="auth-screen">
     <div className="auth-panel">
       <div className="brand large"><div className="brand-mark image"><img src="/marketarena-logo.svg" alt="MarketArena"/></div><div><b>MarketArena</b><small>СИМУЛЯТОР ЭКОНОМИЧЕСКОЙ ЖИЗНИ</small></div></div>
-      <div className="auth-copy"><span className="eyebrow">НАЧАЛО ИГРЫ</span><h1>Построй капитал<br/><em>с нуля.</em></h1><p>Работа, расходы, накопления, компании и рынок — одна игровая система, в которой твои решения постепенно меняют финансовую историю.</p></div>
+      <div className="auth-copy"><span className="eyebrow">НАЧАЛО ИГРЫ</span><h1>Каждый актив<br/><em>меняет игру.</em></h1><p>Покупай доли компаний, развивай собственный бизнес и борись за контроль над экономикой. Начни с личных решений — и постепенно меняй целый рынок.</p></div>
       <div className="auth-tabs"><button className={register?"active":""} onClick={()=>setRegister(true)}>Регистрация</button><button className={!register?"active":""} onClick={()=>setRegister(false)}>Войти</button></div>
       <label className="field"><span>Имя игрока</span><input value={name} onChange={e=>setName(e.target.value)} placeholder="Например, Алексей"/></label>
       <button className="primary" disabled={!name.trim()} onClick={()=>onContinue(name.trim())}>{register?"Создать профиль":"Продолжить"} <b>→</b></button>
@@ -691,6 +691,28 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               <div className="command-rail-card sector-focus"><span>СИНЕРГИЯ СЕКТОРА</span><strong>+{sectorBonus}%</strong><b>{leadingSector?leadingSector[0]:"Собери отрасль"}</b><small>{leadingSector?leadingSector[1]+" компании в секторе · бонус к дивидендам":"Контроль двух компаний одной отрасли даст +8% к дивидендам."}</small></div>
               <div className="command-rail-card market-focus"><span>РЫНОК</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>{currentCrisis?currentCrisis.short:"Следи за цепочками отраслей и новостями."}</small><button onClick={()=>setTab("events")}>События →</button></div>
             </aside>
+          </section>
+          <section className="capital-board" aria-label="Игровое поле активов">
+            <div className="capital-board-head">
+              <div><span className="eyebrow">ПОЛЕ ЭКОНОМИЧЕСКОГО ВЛИЯНИЯ</span><h2>Активы на твоём маршруте</h2><p>Выбирай предприятие, открывай сделку и постепенно собирай долю контроля.</p></div>
+              <button type="button" onClick={()=>setTab("exchange")}>Открыть биржу <span>↗</span></button>
+            </div>
+            <div className="capital-board-track">
+              {country.companies.slice(0,6).map((company,index)=>{
+                const shares=holdings[company.ticker]??0;
+                const stake=Math.min(100,shares/GAME_CONFIG.startingSharesPerCompany*100);
+                const price=priceFor(company);
+                const change=priceChange(company);
+                return <button type="button" key={company.ticker} className={`capital-tile ${sectorClass(company.sector)} ${shares>0?"has-stake":""}`} onClick={()=>openExchange(company)}>
+                  <span className="capital-tile-top"><i>{String(index+1).padStart(2,"0")}</i><small>{company.sector}</small></span>
+                  <strong className="capital-tile-name">{company.name}</strong>
+                  <span className="capital-tile-ticker">{company.ticker}</span>
+                  <span className="capital-tile-price">{Math.round(price).toLocaleString("ru-RU")} {country.currencySymbol}</span>
+                  <span className={`capital-tile-change ${change>=0?"gain":"loss"}`}>{change>=0?"+":""}{change.toFixed(2)}%</span>
+                  <span className="capital-tile-stake"><i style={{width:`${stake}%`}}/><small>{stake>0?`Твоя доля ${stake.toFixed(2)}%`:"Свободный актив"}</small></span>
+                </button>;
+              })}
+            </div>
           </section>
           <section className="campaign-path" aria-label="Путь игрока">
             <div className="campaign-path-intro">
