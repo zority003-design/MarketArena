@@ -114,3 +114,75 @@ input,select,textarea{border:1px solid rgba(164,199,173,.18)!important;border-ra
 @media(max-width:1100px){.auth-screen{grid-template-columns:minmax(320px,.9fr) minmax(300px,1.1fr);gap:25px;padding:28px}.game-body{grid-template-columns:74px minmax(0,1fr)}.game-sidebar{padding:17px 8px}.sidebar-player{justify-content:center;padding:6px 0 15px}.sidebar-player>div:last-child,.sidebar-section>span,.sidebar-section button:not(.active){font-size:0}.sidebar-player>div:last-child{display:none}.sidebar-section button{justify-content:center;padding:0}.sidebar-section button .nav-glyph{width:28px;height:28px}.sidebar-next,.sidebar-status{display:none}.sidebar-section button.active{font-size:0}.sidebar-section button.active .nav-glyph{width:30px;height:30px}.command-map-layout{grid-template-columns:minmax(0,1fr)!important}.command-map-rail{grid-template-columns:repeat(3,minmax(0,1fr))!important}.campaign-path{grid-template-columns:1fr}.campaign-path-intro p{max-width:700px}}
 @media(max-width:760px){.auth-screen{grid-template-columns:1fr;gap:26px;padding:24px 18px}.auth-panel{max-width:620px;margin:0 auto}.auth-panel .brand,.auth-panel .auth-brand{margin-bottom:32px}.auth-copy h1{font-size:clamp(42px,12vw,64px)}.auth-visual{min-height:350px;border-radius:20px}.auth-float{min-width:0;padding:11px 12px}.auth-float-a{left:3%;top:12%}.auth-float-b{right:3%;top:36%}.auth-float-c{left:6%;bottom:8%}.auth-float b{font-size:12px}.auth-float small{font-size:8px}.setup-screen{padding:14px}.setup-inner{padding:25px 18px;border-radius:17px}.setup-inner .step{top:21px;right:18px;font-size:9px}.setup-inner h1{font-size:clamp(31px,9vw,46px)}.game-topbar{position:relative;min-height:60px;display:flex;flex-wrap:wrap;gap:9px;padding:10px 12px}.game-brand{order:0}.game-brand img{width:115px}.game-profile-button{order:1}.topbar-context{display:none!important}.game-right{margin-left:auto;gap:8px}.topbar-time-controls{padding:4px}.topbar-time-status{display:none}.topbar-wealth{font-size:13px!important}.topbar-logout{font-size:10px}.game-body{display:block}.game-sidebar{position:sticky;top:0;z-index:50;width:100%;height:auto;overflow-x:auto;overflow-y:hidden;display:flex;gap:4px;padding:7px 9px;border-right:0;border-bottom:1px solid rgba(166,198,176,.12);background:rgba(8,14,15,.97)}.sidebar-player,.sidebar-next,.sidebar-status,.sidebar-section>span{display:none!important}.sidebar-section{display:flex;gap:4px;flex:0 0 auto;margin:0}.sidebar-section button,.sidebar-section button:not(.active){width:42px;min-width:42px;height:40px;min-height:40px;margin:0;padding:0;font-size:0!important}.sidebar-section button .nav-glyph{width:26px;height:26px}.sidebar-section button.active{font-size:0!important}.game-main{padding:17px 12px 30px}.game-heading{align-items:flex-start;gap:10px}.game-heading h1{font-size:26px}.game-heading p{font-size:11px}.day-button{padding:10px!important;font-size:10px;white-space:nowrap}.campaign-path{padding:15px}.campaign-path-steps{grid-template-columns:1fr}.campaign-path-step{display:grid;grid-template-columns:29px minmax(0,1fr) 18px;align-items:center;min-height:0;padding:11px}.campaign-step-arrow{align-self:center}.economy-live-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.economy-live-strip>div:last-child{grid-column:span 2}.economy-live-strip b{font-size:16px}.daily-goals-board{padding:13px}.daily-goals-grid{grid-template-columns:1fr}.daily-goals-grid button{min-height:0}.command-map-rail{grid-template-columns:1fr!important}.panel{padding:16px!important}.portfolio-summary,.profile-stat-grid,.history-milestones{grid-template-columns:repeat(2,minmax(0,1fr))!important}.company-grid,.career-job-grid,.mission-grid{grid-template-columns:1fr!important}.topbar-time-controls .time-main span{display:none}.topbar-time-controls .time-main{padding:7px}.topbar-time-controls .time-speed-group button{padding:5px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+/* Hotfix + world-first pass, 11 Oct 2026.
+   The entry screen is a single fixed viewport; no framed panel is cut into the shared background. */
+@media (min-width: 761px) {
+  html, body, #root { min-height: 100%; height: 100%; }
+  .auth-screen {
+    height: 100svh; min-height: 620px; max-height: 100svh;
+    overflow: hidden; padding: 0 clamp(24px, 5vw, 76px);
+    gap: clamp(24px, 4vw, 72px);
+    grid-template-columns: minmax(370px, .86fr) minmax(380px, 1.14fr);
+    background: radial-gradient(ellipse at 76% 48%, rgba(77,123,89,.12), transparent 43%), #080d10;
+  }
+  .auth-screen:before { opacity: .13; mask-image: linear-gradient(90deg, transparent, #000 45%, #000); }
+  .auth-screen:after { right: 3%; top: 8%; width: min(52vw, 660px); height: min(52vw, 660px); }
+  .auth-panel {
+    align-self: stretch; justify-self: stretch; max-width: 590px;
+    min-width: 0; padding: clamp(24px, 4vh, 44px) 0;
+    margin: 0; justify-content: center;
+  }
+  .auth-panel .brand, .auth-panel .auth-brand { margin-bottom: clamp(20px, 3.8vh, 42px); }
+  .auth-copy { margin: 0 0 clamp(20px, 3.4vh, 36px); }
+  .auth-copy h1 { font-size: clamp(42px, 4.2vw, 68px); margin: 14px 0 14px; }
+  .auth-copy p { font-size: 13px; line-height: 1.65; max-width: 490px; }
+  .auth-tabs { margin: 0 0 15px; }
+  .field { margin-bottom: 10px; }
+  .field input { height: 48px; }
+  .auth-panel .primary { min-height: 48px; }
+  .auth-note { margin-top: 10px; }
+  .auth-visual {
+    height: 100%; min-height: 0; align-self: stretch;
+    border: 0; border-radius: 0; box-shadow: none;
+    background: transparent; overflow: visible;
+  }
+  .auth-visual:before { opacity: .32; }
+  .auth-visual-core img { width: min(34%, 230px); }
+  .auth-float { background: rgba(13,23,23,.78); backdrop-filter: blur(8px); }
+}
+@media (max-height: 720px) and (min-width: 761px) {
+  .auth-panel { padding-block: 18px; }
+  .auth-panel .brand, .auth-panel .auth-brand { margin-bottom: 18px; }
+  .auth-copy h1 { font-size: clamp(38px, 4vw, 56px); margin: 10px 0; }
+  .auth-copy p { font-size: 12px; line-height: 1.45; }
+  .auth-tabs { margin-bottom: 10px; }
+  .field { margin-bottom: 7px; }
+  .field input { height: 42px; }
+  .auth-panel .primary { min-height: 43px; }
+  .auth-note { font-size: 9px; margin-top: 7px; }
+}
+@media (min-width: 1101px) {
+  .game-main { padding: clamp(22px, 2.1vw, 34px) clamp(24px, 2.6vw, 44px) 44px !important; }
+  .command-map-layout { grid-template-columns: minmax(0, 1.8fr) minmax(250px, .62fr) !important; gap: 18px !important; }
+  .command-map-main { min-height: 660px; overflow: hidden; border-radius: 18px !important; }
+  .command-map-main .atlas-3d-canvas { min-height: 520px; }
+  .command-map-main .card-head { padding: 20px 22px 16px !important; }
+  .command-map-main .map-subline { max-width: 620px; }
+  .command-map-rail { align-content: start; gap: 12px !important; }
+  .command-rail-card { min-width: 0; }
+  .command-rail-card strong { font-variant-numeric: tabular-nums; }
+}
+.command-map-main { border-color: rgba(171,202,161,.22) !important; background: linear-gradient(145deg, #111d1c, #0b1316) !important; }
+.command-map-main .card-head { border-bottom: 1px solid rgba(171,202,161,.13); }
+.command-map-main .card-head h2 { font-family: Manrope, sans-serif; letter-spacing: -.04em; }
+.command-map-main .atlas-3d-canvas { display: block; width: 100%; }
+.command-map-rail .command-rail-card { border-radius: 12px !important; background: linear-gradient(145deg, rgba(20,32,30,.98), rgba(12,20,21,.98)) !important; }
+.flag-symbol { display: inline-grid; place-items: center; overflow: hidden; border-radius: 5px !important; border: 1px solid rgba(226,238,226,.25) !important; background: #10191a; box-shadow: 0 3px 10px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.04); }
+.flag-symbol svg { display: block; width: 100%; height: 100%; filter: saturate(.94); }
+@media (max-width: 760px) {
+  .auth-screen { min-height: 100svh; height: auto; overflow: visible; padding: 22px 18px 28px; background: #080d10; }
+  .auth-visual { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+  .command-map-main .atlas-3d-canvas { min-height: 360px; }
+}
