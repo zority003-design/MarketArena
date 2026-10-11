@@ -817,6 +817,21 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         const geo=companyGeos[index];
         const p=worldFromGeo(geo);
         const sector=company.sector.toLowerCase();
+        const sectorColour=sector.includes("фин") ? "#69a9ff"
+          : sector.includes("энерг")||sector.includes("нефт") ? "#ffc45e"
+          : sector.includes("металл")||sector.includes("машин")||sector.includes("пром") ? "#ff8c70"
+          : sector.includes("судо")||sector.includes("порт")||sector.includes("логист") ? "#55d9ef"
+          : sector.includes("страх")||sector.includes("недвиж") ? "#c6a4ff"
+          : sector.includes("биотех")||sector.includes("хим") ? "#7ee787"
+          : sector.includes("тех")||sector.includes("элект")||sector.includes("робот") ? "#70f0c5"
+          : sector.includes("агро") ? "#b4dc73"
+          : sector.includes("ритейл") ? "#ff9ed0" : "#42e6b4";
+        // Each listed company occupies a coloured property plot, making ownership and sector sets readable in-world.
+        const plotY=surfaceHeight(p.x,p.z)+.032;
+        const plot=new THREE.Mesh(new THREE.CircleGeometry(.66,32),new THREE.MeshStandardMaterial({color:sectorColour,roughness:.92,transparent:true,opacity:.22,depthWrite:false}));
+        plot.rotation.x=-Math.PI/2;plot.position.set(p.x,plotY,p.z);plot.receiveShadow=true;plot.userData.companyTicker=company.ticker;scene.add(plot);
+        const plotEdge=new THREE.Mesh(new THREE.TorusGeometry(.66,.018,6,36),new THREE.MeshStandardMaterial({color:sectorColour,roughness:.7,emissive:sectorColour,emissiveIntensity:.12,transparent:true,opacity:.88}));
+        plotEdge.rotation.x=Math.PI/2;plotEdge.position.set(p.x,plotY+.018,p.z);plotEdge.userData.companyTicker=company.ticker;scene.add(plotEdge);
         const type=sector.includes("фин")||sector.includes("страх") ? 0
           : sector.includes("тех")||sector.includes("элект")||sector.includes("робот") ? 1
           : sector.includes("нефт")||sector.includes("металл")||sector.includes("пром")||sector.includes("хим") ? 3
@@ -846,8 +861,11 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
       const citySites:GeoPoint[]=[];
       const cityProfile=cityEconomyProfile[selectedCountry.id]??cityEconomyProfile.saverniya;
       for(let i=0;i<520&&citySites.length<cityProfile.sites;i++){
-        const u=16+hash(i*2.41,selectedCountry.id.length*5.7)*74;
-        const v=16+hash(i*3.17+9,selectedCountry.id.length*7.1)*74;
+        // Jittered urban blocks: buildings sit in legible neighbourhood rows rather than a uniform random scatter.
+        const column=i%18;
+        const row=Math.floor(i/18);
+        const u=10.5+column*4.35+hash(i*2.41,selectedCountry.id.length*5.7)*1.05;
+        const v=10.5+row*4.35+hash(i*3.17+9,selectedCountry.id.length*7.1)*1.05;
         const inside=pointInPolygon(u,v,selectedPoly);
         const margin=pointInPolygon(u+.9,v,selectedPoly)&&pointInPolygon(u-.9,v,selectedPoly)&&pointInPolygon(u,v+.9,selectedPoly)&&pointInPolygon(u,v-.9,selectedPoly);
         const spaced=citySites.every(([su,sv])=>Math.hypot(u-su,v-sv)>2.15);
