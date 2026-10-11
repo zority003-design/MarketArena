@@ -274,3 +274,19 @@ input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,
 }
 @media(max-width:620px){.auth-visual{min-height:290px!important}}
 @media(prefers-reduced-motion:reduce){.auth-screen:before{animation:none!important}}
+
+
+/* Sector identity: companies on the 3D map are colour-coded by their business group. */
+.premium-company-marker{--sector:#42e6b4;border-color:color-mix(in srgb,var(--sector) 62%,transparent)!important}
+.premium-company-marker:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sector);border-radius:10px 0 0 10px}
+.premium-company-marker b{color:var(--sector)!important}
+.premium-company-marker:hover{border-color:var(--sector)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--sector) 30%,transparent),0 8px 24px rgba(0,0,0,.32)!important}
+.premium-company-marker.sector-finance{--sector:#69a9ff}
+.premium-company-marker.sector-energy,.premium-company-marker.sector-oil{--sector:#ffc45e}
+.premium-company-marker.sector-metals,.premium-company-marker.sector-industrial,.premium-company-marker.sector-industry{--sector:#ff8c70}
+.premium-company-marker.sector-shipping,.premium-company-marker.sector-ports,.premium-company-marker.sector-logistics{--sector:#55d9ef}
+.premium-company-marker.sector-insurance,.premium-company-marker.sector-realestate{--sector:#c6a4ff}
+.premium-company-marker.sector-biotech,.premium-company-marker.sector-chemicals{--sector:#7ee787}
+.premium-company-marker.sector-technology,.premium-company-marker.sector-electronics,.premium-company-marker.sector-robotics{--sector:#70f0c5}
+.premium-company-marker.sector-agro{--sector:#b4dc73}
+.premium-company-marker.sector-retail{--sector:#ff9ed0}
