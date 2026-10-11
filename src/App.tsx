@@ -616,8 +616,8 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
       setNotice("Начислены проценты по кредиту: +"+charged.toLocaleString("ru-RU")+" VLR.");
     }
     if(day%30===0 && ownedCompanies.length){
-      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);return sum+(company?Math.round(takeoverCost(company)*.12):0);},0);
-      if(income>0){setCash(v=>v+income);setNotice("Доход холдинга: +"+income.toLocaleString("ru-RU")+" VLR.");}
+      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);if(!company)return sum;const sectorCount=country.companies.filter(other=>ownedCompanies.includes(other.ticker)&&other.sector===company.sector).length;const synergy=Math.min(0.24,Math.max(0,sectorCount-1)*0.08);return sum+Math.round(takeoverCost(company)*0.12*(1+synergy));},0);
+      if(income>0){setCash(v=>v+income);setNotice("Дивиденды холдинга: +"+income.toLocaleString("ru-RU")+" VLR. Компании одного сектора увеличивают выплаты.");}
     }
   },[day]);
   useEffect(()=>{
