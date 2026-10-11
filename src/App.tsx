@@ -736,6 +736,14 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               <div><span className="rule-icon">03</span><b>Собери сектор</b><small>Больше компаний — выше дивиденды</small></div>
               <div className="strategy-bonus"><span>ТВОЯ СИНЕРГИЯ</span><strong>+{sectorBonus}%</strong><small>{leadingSector?leadingSector[0]:"Пока не собран набор"}</small></div>
             </div>
+            <div className="strategy-rivals-strip" aria-label="Конкурирующие инвесторы">
+              <div className="strategy-rivals-title"><span className="eyebrow">КОНКУРЕНТЫ</span><small>Они тоже покупают акции каждый игровой день</small></div>
+              {rivals.map(rival=>{
+                const invested=Object.entries(rival.holdings).reduce((sum,[ticker,quantity])=>{const company=country.companies.find(item=>item.ticker===ticker);return sum+(company?quantity*priceFor(company):0);},0);
+                const target=country.companies.find(company=>company.ticker===rival.lastTarget);
+                return <div className="strategy-rival" key={rival.id}><span className={`rival-avatar rival-${rival.id}`}>{rival.name.replace(/[^А-ЯЁ]/gi,"").slice(0,1)}</span><div className="strategy-rival-info"><b>{rival.name}</b><small>{rival.style}</small><span>{target?"Последняя покупка: "+target.ticker:"Ищет первую сделку"}</span></div><div className="strategy-rival-money"><b>{Math.round(rival.cash).toLocaleString("ru-RU")}</b><small>VLR · активы {Math.round(invested).toLocaleString("ru-RU")}</small></div></div>;
+              })}
+            </div>
             <div className="strategy-sector-grid">
               {Object.entries(country.companies.reduce<Record<string,CompanyPreview[]>>((groups,company)=>{(groups[company.sector||"Прочее"]??=[]).push(company);return groups;},{})).map(([sector,companies])=>{
                 const controlled=companies.filter(company=>ownedCompanies.includes(company.ticker)).length;
@@ -751,9 +759,11 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
                     const price=priceFor(company);
                     const change=priceChange(company);
                     const hasControl=ownedCompanies.includes(company.ticker);
-                    return <button type="button" key={company.ticker} className={`strategy-company ${hasControl?"company-controlled":shares>0?"company-staked":""}`} onClick={()=>openExchange(company)}>
+                    const rivalOwners=rivals.filter(rival=>(rival.holdings[company.ticker]??0)>0).sort((x,y)=>(y.holdings[company.ticker]??0)-(x.holdings[company.ticker]??0));
+                    const rivalLabel=rivalOwners.length?` · ${rivalOwners[0].name.replace("Альянс ","").replace("Фонд ","").replace("Группа ","").replace(/[«»]/g,"")} ${Math.round((rivalOwners[0].holdings[company.ticker]??0)/GAME_CONFIG.startingSharesPerCompany*1000)/10}%`:"";
+                    return <button type="button" key={company.ticker} className={`strategy-company ${hasControl?"company-controlled":shares>0?"company-staked":""} ${rivalOwners.length?"company-contested":""}`} onClick={()=>openExchange(company)}>
                       <span className="strategy-company-monogram">{company.ticker.slice(0,2)}</span>
-                      <span className="strategy-company-info"><b>{company.name}</b><small>{company.ticker} · {hasControl?"ТВОЯ КОМПАНИЯ":stake>0?`ДОЛЯ ${stake.toFixed(1)}%`:"НА РЫНКЕ"}</small></span>
+                      <span className="strategy-company-info"><b>{company.name}</b><small>{company.ticker} · {hasControl?"ТВОЯ КОМПАНИЯ":stake>0?`ТВОЯ ДОЛЯ ${stake.toFixed(1)}%`:"НА РЫНКЕ"}{rivalLabel}</small></span>
                       <span className="strategy-company-price"><b>{Math.round(price).toLocaleString("ru-RU")}</b><small className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(1)}%</small></span>
                       <span className="strategy-company-arrow">↗</span>
                     </button>;
