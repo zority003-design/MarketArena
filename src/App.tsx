@@ -693,25 +693,41 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               <div className="command-rail-card market-focus"><span>РЫНОК</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>{currentCrisis?currentCrisis.short:"Следи за цепочками отраслей и новостями."}</small><button onClick={()=>setTab("events")}>События →</button></div>
             </aside>
           </section>
-          <section className="capital-board" aria-label="Игровое поле активов">
+          <section className="capital-board strategy-board" aria-label="Игровое поле с секторами">
             <div className="capital-board-head">
-              <div><span className="eyebrow">ПОЛЕ ЭКОНОМИЧЕСКОГО ВЛИЯНИЯ</span><h2>Активы на твоём маршруте</h2><p>Выбирай предприятие, открывай сделку и постепенно собирай долю контроля.</p></div>
-              <button type="button" onClick={()=>setTab("exchange")}>Открыть биржу <span>↗</span></button>
+              <div><span className="eyebrow">ИГРОВОЕ ПОЛЕ · ЗАХВАТ СЕКТОРОВ</span><h2>Собери отрасль — усили влияние</h2><p>Каждый сектор — отдельная стратегия. Покупай акции, получай контроль над предприятиями и собирай полный цветовой набор ради максимальной синергии.</p></div>
+              <button type="button" onClick={()=>setTab("companies")}>Управление активами <span>↗</span></button>
             </div>
-            <div className="capital-board-track">
-              {country.companies.slice(0,6).map((company,index)=>{
-                const shares=holdings[company.ticker]??0;
-                const stake=Math.min(100,shares/GAME_CONFIG.startingSharesPerCompany*100);
-                const price=priceFor(company);
-                const change=priceChange(company);
-                return <button type="button" key={company.ticker} className={`capital-tile ${sectorClass(company.sector)} ${shares>0?"has-stake":""}`} onClick={()=>openExchange(company)}>
-                  <span className="capital-tile-top"><i>{String(index+1).padStart(2,"0")}</i><small>{company.sector}</small></span>
-                  <strong className="capital-tile-name">{company.name}</strong>
-                  <span className="capital-tile-ticker">{company.ticker}</span>
-                  <span className="capital-tile-price">{Math.round(price).toLocaleString("ru-RU")} {country.currencySymbol}</span>
-                  <span className={`capital-tile-change ${change>=0?"gain":"loss"}`}>{change>=0?"+":""}{change.toFixed(2)}%</span>
-                  <span className="capital-tile-stake"><i style={{width:`${stake}%`}}/><small>{stake>0?`Твоя доля ${stake.toFixed(2)}%`:"Свободный актив"}</small></span>
-                </button>;
+            <div className="strategy-board-rules">
+              <div><span className="rule-icon">01</span><b>Купи долю</b><small>Начни с доступной компании</small></div>
+              <div><span className="rule-icon">02</span><b>Забери контроль</b><small>51% акций дают управление</small></div>
+              <div><span className="rule-icon">03</span><b>Собери сектор</b><small>Больше компаний — выше дивиденды</small></div>
+              <div className="strategy-bonus"><span>ТВОЯ СИНЕРГИЯ</span><strong>+{sectorBonus}%</strong><small>{leadingSector?leadingSector[0]:"Пока не собран набор"}</small></div>
+            </div>
+            <div className="strategy-sector-grid">
+              {Object.entries(country.companies.reduce<Record<string,CompanyPreview[]>>((groups,company)=>{(groups[company.sector||"Прочее"]??=[]).push(company);return groups;},{})).map(([sector,companies])=>{
+                const controlled=companies.filter(company=>ownedCompanies.includes(company.ticker)).length;
+                const sharesCount=companies.filter(company=>(holdings[company.ticker]||0)>0).length;
+                const completed=controlled===companies.length;
+                return <section key={sector} className={`strategy-sector ${sectorClass(sector)} ${completed?"sector-complete":""}`}>
+                  <header className="strategy-sector-head"><span className="strategy-sector-color"/><div><span className="strategy-sector-label">ОТРАСЛЬ</span><h3>{sector}</h3></div><b className="strategy-sector-count">{controlled}/{companies.length}</b></header>
+                  <div className="strategy-sector-meter"><i style={{width:(controlled/companies.length*100)+"%"}}/></div>
+                  <small className="strategy-sector-status">{completed?"СЕКТОР ПОД КОНТРОЛЕМ":sharesCount?sharesCount+" актив(а) в портфеле":"Свободная конкуренция"}</small>
+                  <div className="strategy-company-list">{companies.map(company=>{
+                    const shares=holdings[company.ticker]??0;
+                    const stake=Math.min(100,shares/GAME_CONFIG.startingSharesPerCompany*100);
+                    const price=priceFor(company);
+                    const change=priceChange(company);
+                    const hasControl=ownedCompanies.includes(company.ticker);
+                    return <button type="button" key={company.ticker} className={`strategy-company ${hasControl?"company-controlled":shares>0?"company-staked":""}`} onClick={()=>openExchange(company)}>
+                      <span className="strategy-company-monogram">{company.ticker.slice(0,2)}</span>
+                      <span className="strategy-company-info"><b>{company.name}</b><small>{company.ticker} · {hasControl?"ТВОЯ КОМПАНИЯ":stake>0?`ДОЛЯ ${stake.toFixed(1)}%`:"НА РЫНКЕ"}</small></span>
+                      <span className="strategy-company-price"><b>{Math.round(price).toLocaleString("ru-RU")}</b><small className={change>=0?"gain":"loss"}>{change>=0?"+":""}{change.toFixed(1)}%</small></span>
+                      <span className="strategy-company-arrow">↗</span>
+                    </button>;
+                  })}</div>
+                  {completed&&<div className="strategy-sector-reward">✓ ПОЛНЫЙ НАБОР · ДИВИДЕНДНАЯ СИНЕРГИЯ</div>}
+                </section>;
               })}
             </div>
           </section>
