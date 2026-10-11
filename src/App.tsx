@@ -661,7 +661,31 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
         <div className="sidebar-status"><span>СТАТУС РЫНКА</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>Влияние {countryInfluence}/100 · Контроль {ownedCompanies.length}</small></div>
       </aside>
       <main className="game-main">
-        {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>Экономическая карта {country.name}</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>{currentCrisis&&<div className="macro-event-banner compact"><div><span className="eyebrow">МИРОВАЯ НОВОСТЬ · ДЕНЬ {day}</span><h2>{currentCrisis.name}</h2><p>{currentCrisis.short}</p></div><strong className="loss">{currentCrisis.impact>=0?"+":""}{(currentCrisis.impact*100).toFixed(1)}%</strong><small>Событие влияет на разные отрасли по-разному. Открой «События», чтобы увидеть цепочку.</small></div>}
+        {tab==="overview"&&<><div className="game-heading"><div><span className="eyebrow">ДЕНЬ {day} · {country.name.toUpperCase()}</span><h1>Экономическая карта {country.name}</h1><p>{notice}</p></div><button className="day-button" onClick={advance}>Следующий день →</button></div>
+          <section className="campaign-path" aria-label="Путь игрока">
+            <div className="campaign-path-intro">
+              <span className="eyebrow">ТВОЯ КАМПАНИЯ · КОРОТКО О ГЛАВНОМ</span>
+              <h2>От первой зарплаты до контроля бизнеса</h2>
+              <p>Работай, береги энергию, покупай доли компаний и постепенно собирай собственную экономическую империю. Каждый шаг открывает новые возможности.</p>
+            </div>
+            <div className="campaign-path-steps">
+              <button type="button" className={campaignGoals[0].done?"campaign-path-step complete":"campaign-path-step"} onClick={()=>setTab("life")}>
+                <span className="campaign-step-number">{campaignGoals[0].done?"✓":"01"}</span>
+                <span className="campaign-step-copy"><b>Заработай</b><small>{campaignGoals[0].done?"Первый доход получен":"Открой «Жизнь» и выполни рабочую смену"}</small></span>
+                <span className="campaign-step-arrow">↗</span>
+              </button>
+              <button type="button" className={campaignGoals[2].done?"campaign-path-step complete":"campaign-path-step"} onClick={()=>openExchange()}>
+                <span className="campaign-step-number">{campaignGoals[2].done?"✓":"02"}</span>
+                <span className="campaign-step-copy"><b>Инвестируй</b><small>{campaignGoals[2].done?"Первые акции уже в портфеле":"На бирже выбери компанию и купи акции"}</small></span>
+                <span className="campaign-step-arrow">↗</span>
+              </button>
+              <button type="button" className={campaignGoals[6].done?"campaign-path-step complete":"campaign-path-step"} onClick={()=>setTab("companies")}>
+                <span className="campaign-step-number">{campaignGoals[6].done?"✓":"03"}</span>
+                <span className="campaign-step-copy"><b>Получи контроль</b><small>{campaignGoals[6].done?"Ты контролируешь бизнес":"Цель — накопить 51% акций компании"}</small></span>
+                <span className="campaign-step-arrow">↗</span>
+              </button>
+            </div>
+          </section>{currentCrisis&&<div className="macro-event-banner compact"><div><span className="eyebrow">МИРОВАЯ НОВОСТЬ · ДЕНЬ {day}</span><h2>{currentCrisis.name}</h2><p>{currentCrisis.short}</p></div><strong className="loss">{currentCrisis.impact>=0?"+":""}{(currentCrisis.impact*100).toFixed(1)}%</strong><small>Событие влияет на разные отрасли по-разному. Открой «События», чтобы увидеть цепочку.</small></div>}
           <div className="economy-live-strip"><div><span>ВВП</span><b>{(economyNow.gdpGrowth*100).toFixed(1)}%</b></div><div><span>ИНФЛЯЦИЯ</span><b>{(economyNow.inflation*100).toFixed(1)}%</b></div><div><span>СТАВКА</span><b>{(economyNow.policyRate*100).toFixed(1)}%</b></div><div><span>ЗАРПЛАТЫ</span><b>{Math.round(economyNow.wageIndex*100)}%</b></div><div><span>СПРОС</span><b>{Math.round(economyNow.consumerDemand*100)}%</b></div></div><section className="daily-goals-board"><div className="daily-goals-head"><div><span>СЕГОДНЯ</span><h2>Три действия, которые двигают тебя вперёд</h2><p>Не обязательно делать всё. Выбери то, что лучше отвечает ситуации на рынке.</p></div><b>{[workActions>=Math.min(2,GAME_CONFIG.workActionsPerDay),energy>=60,transactions.some(t=>t.day===day)].filter(Boolean).length}/3</b></div><div className="daily-goals-grid">
 <button className={workActions>=Math.min(2,GAME_CONFIG.workActionsPerDay)?"done":""} onClick={()=>setTab("life")}><span>РАБОТА</span><b>{workActions>=Math.min(2,GAME_CONFIG.workActionsPerDay)?"✓":"2 смены"}</b><small>{workActions>=Math.min(2,GAME_CONFIG.workActionsPerDay)?"Денежный поток создан":"Заработай деньги и XP профессии"}</small></button>
 <button className={energy>=60?"done":""} onClick={()=>setTab("life")}><span>ЖИЗНЬ</span><b>{energy>=60?"✓":"Энергия ≥ 60"}</b><small>{energy>=60?"Ресурс в норме":"Улучши питание или восстановление"}</small></button>
