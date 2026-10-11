@@ -463,3 +463,21 @@ input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,
 .strategy-sector.property-set-b .strategy-company-monogram{color:#ffd18a}
 .strategy-sector.property-set-a .strategy-sector-reward{color:#7df5c8}
 .strategy-sector.property-set-b .strategy-sector-reward{color:#ffd18a}
+
+
+.campaign-intro-banner{position:relative;display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:17px;margin:0 0 17px;padding:19px 20px;border:1px solid rgba(66,235,180,.34);border-radius:15px;background:radial-gradient(ellipse at 0% 50%,rgba(38,216,160,.16),transparent 45%),linear-gradient(110deg,#12382f,#0b2428 70%,#102d35);box-shadow:0 14px 34px rgba(0,0,0,.2);overflow:hidden}
+.campaign-intro-banner:after{content:"";position:absolute;right:-40px;top:-80px;width:220px;height:220px;border:1px solid rgba(70,239,189,.12);transform:rotate(45deg);pointer-events:none}
+.campaign-intro-emblem{display:grid;place-items:center;width:56px;height:56px;border:1px solid rgba(105,255,204,.45);border-radius:15px;background:linear-gradient(145deg,#26dba4,#1a7f83);color:#06231d;font:900 17px "Space Grotesk",sans-serif;box-shadow:0 0 30px rgba(37,225,167,.16)}
+.campaign-intro-copy{min-width:0;position:relative;z-index:1}
+.campaign-intro-copy .eyebrow{color:#76eec3!important;font-size:9px!important}
+.campaign-intro-copy h2{margin:6px 0;color:#f0fff9;font:700 clamp(19px,2vw,25px)/1.15 "Space Grotesk","Manrope",sans-serif;letter-spacing:-.035em}
+.campaign-intro-copy p{max-width:780px;margin:0;color:#a8ccc2;font-size:11px;line-height:1.6}
+.campaign-intro-steps{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:12px}
+.campaign-intro-steps span{display:flex;align-items:center;gap:6px;color:#dffcf2;font-size:10px;font-weight:800}
+.campaign-intro-steps span b{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:rgba(62,232,177,.13);color:#78f3c4;font:800 9px "Space Grotesk",sans-serif}
+.campaign-intro-steps i{color:#4b9884;font-style:normal}
+.campaign-intro-actions{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;min-width:180px}
+.campaign-intro-actions button{padding:10px 12px;border:1px solid rgba(73,230,183,.22);border-radius:9px;background:rgba(7,27,30,.62);color:#dffff4;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer}
+.campaign-intro-actions button.primary{background:linear-gradient(120deg,#25d6a0,#7af3c7)!important;color:#06231d!important;border:0!important}
+@media(max-width:1000px){.campaign-intro-banner{grid-template-columns:48px minmax(0,1fr)}.campaign-intro-emblem{width:46px;height:46px}.campaign-intro-actions{grid-column:2;flex-direction:row;flex-wrap:wrap}.campaign-intro-actions button{white-space:normal}}
+@media(max-width:620px){.campaign-intro-banner{grid-template-columns:1fr;padding:15px}.campaign-intro-emblem{display:none}.campaign-intro-actions{grid-column:1;min-width:0}.campaign-intro-actions button{flex:1}.campaign-intro-steps{gap:5px}.campaign-intro-steps span{font-size:9px}}
