@@ -630,7 +630,9 @@ function makeSnowCap(geo: GeoPoint, size: number) {
   return mesh;
 }
 
-export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany, holdings = {}, home }: Atlas3DProps) {
+export function Atlas3D({ countries, selected, onSelect, showCompanies = false, onCompany, holdings = {}, home, rivals = [] }: Atlas3DProps) {
+  const rivalsRef = useRef(rivals);
+  useEffect(() => { rivalsRef.current = rivals; }, [rivals]);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const labelRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -1101,6 +1103,19 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           const p = project(worldFromGeo(safeCompanyGeo(selected, company)), 0.95);
           marker.style.transform = `translate3d(${p.x}px,${p.y}px,0) translate(-50%,-100%)`;
           marker.style.opacity = p.z > 1 ? "0" : "1";
+          const rivalOwner = rivalsRef.current.map(rival=>({name:rival.name,shares:rival.holdings[company.ticker]??0})).sort((a,b)=>b.shares-a.shares)[0];
+          const rivalShares = rivalOwner?.shares??0;
+          const rivalOwnership = Math.min(100,Math.round(rivalShares/GAME_CONFIG_SHARES*1000)/10);
+          const contested = rivalShares>0;
+          marker.classList.toggle("rival-contested",contested&&!(holdings[company.ticker]>=Math.ceil(GAME_CONFIG_SHARES*.51)));
+          const small=marker.querySelector("small");
+          if(small){
+            const shares=holdings[company.ticker]??0;
+            const ownership=Math.min(100,Math.round(shares/GAME_CONFIG_SHARES*100));
+            const text=ownership>=51?"КОНТРОЛЬ 51%":contested?`СОПЕРНИК ${rivalOwnership}%`:shares>0?`${ownership}% ДОЛЯ`:"ПУБЛИЧНАЯ";
+            if(small.textContent!==text)small.textContent=text;
+          }
+          if(contested){const rivalText=` ${rivalOwner?.name??"Соперник"} ${rivalOwnership}%`;if(!marker.title.endsWith(rivalText))marker.title=`${company.name} · ${company.ticker} · твоя доля ${Math.min(100,Math.round((holdings[company.ticker]??0)/GAME_CONFIG_SHARES*100))}%${rivalText}`;}
         });
       }
     };
@@ -1279,7 +1294,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [countries, selected, showCompanies, holdings, home?.housing, home?.label, rivals]);
+  }, [countries, selected, showCompanies, holdings, home?.housing, home?.label]);
 
   const selectedCountry = countries.find((c) => c.id === selected);
 
