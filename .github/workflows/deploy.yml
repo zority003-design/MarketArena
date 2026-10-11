@@ -35,4 +35,4 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || (echo "::error::Missing GitHub Actions secret CLOUDFLARE_API_TOKEN" && exit 1)
 
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy dist --project-name portivo-44r
+        run: npx wrangler pages deploy dist --project-name marketarena
