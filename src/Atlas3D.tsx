@@ -717,8 +717,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
 
     const terrain = makeTerrain(selected);
     scene.add(terrain);
-    const terrainContours = makeTerrainContours(selected);
-    scene.add(terrainContours);
+    // Terrain shading and the physical relief remain; avoid contour overlays that read as stray stripes.
 
     const oceanUniforms={uTime:{value:0}};
     const ocean = new THREE.Mesh(
