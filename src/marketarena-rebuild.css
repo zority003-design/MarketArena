@@ -487,3 +487,8 @@ input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,
 .random-country-button{padding:10px 13px;border:1px solid rgba(73,230,183,.25);border-radius:10px;background:linear-gradient(135deg,#12332f,#0b2025);color:#8df4cf;font-size:11px;font-weight:800;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
 .random-country-button:hover{transform:translateY(-2px);border-color:rgba(73,230,183,.55);background:linear-gradient(135deg,#19463a,#102d32)}
 @media(max-width:620px){.country-start-actions{width:100%;justify-content:stretch}.country-start-actions button{flex:1}}
+
+
+.premium-company-marker.rival-contested:not(.control){border-color:rgba(255,194,104,.8)!important;box-shadow:0 0 0 1px rgba(255,194,104,.14),0 0 18px rgba(255,194,104,.09)!important}
+.premium-company-marker.rival-contested:not(.control) small{color:#ffd18a!important}
+.premium-company-marker.rival-contested:not(.control):after{content:"";position:absolute;right:-3px;top:-3px;width:7px;height:7px;border:1px solid #0b1b1d;border-radius:50%;background:#ffc36b;box-shadow:0 0 9px rgba(255,195,107,.5)}
