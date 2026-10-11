@@ -1,0 +1,94 @@
+/* MarketArena 2.0 — premium strategy interface layer.
+   Intentionally additive: preserves the existing Three.js atlas, campaign state and saves. */
+:root{
+  color-scheme:dark;
+  --ma-bg:#080e13;--ma-panel:#101a21;--ma-panel-2:#14222a;--ma-line:rgba(164,195,202,.13);
+  --ma-muted:#81949c;--ma-text:#edf4f3;--ma-cyan:#8fd6d0;--ma-gold:#d7b66d;
+  --ma-shadow:0 18px 48px rgba(0,0,0,.22);
+}
+body{background:radial-gradient(ellipse at 58% -15%,#19343b 0,transparent 45%),var(--ma-bg);color:var(--ma-text)}
+button{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease}
+button:active{transform:translateY(1px) scale(.99)}
+::selection{background:#8fd6d044}
+.game-shell{min-height:100vh;background:transparent}
+.game-topbar{background:rgba(8,15,20,.9)!important;border-bottom:1px solid var(--ma-line)!important;backdrop-filter:blur(18px);box-shadow:0 8px 32px #0002}
+.game-brand img{filter:drop-shadow(0 3px 16px #79c9c322);transition:transform .25s ease}
+.game-brand:hover img{transform:scale(1.035)}
+.topbar-wealth{color:#d6e8e4!important;font-variant-numeric:tabular-nums}
+.game-body{gap:0!important}
+.game-sidebar{background:linear-gradient(180deg,rgba(13,23,29,.97),rgba(9,16,21,.97))!important;border-right:1px solid var(--ma-line)!important}
+.sidebar-player{border-bottom:1px solid var(--ma-line)!important;padding-bottom:20px!important}
+.sidebar-avatar,.profile-avatar{background:linear-gradient(145deg,#c3e8df,#537e79)!important;color:#0b1919!important;box-shadow:0 5px 22px #7dc8b722}
+.sidebar-section>span{color:#607b82!important;letter-spacing:.17em!important;font-size:9px!important}
+.sidebar-section button{border:1px solid transparent!important;border-radius:8px!important;margin:2px 0!important;color:#a0b1b4!important;min-height:39px;position:relative;overflow:hidden}
+.sidebar-section button:hover{background:#1a2b32!important;color:#edf8f5!important;border-color:#9dd9d21e!important;transform:translateX(2px)}
+.sidebar-section button.active{background:linear-gradient(100deg,#203d40,#16272d)!important;color:#d8f4ec!important;border-color:#8fd6d02b!important;box-shadow:inset 3px 0 #91d4c9,0 6px 20px #0002}
+.sidebar-section button.active .nav-glyph{color:#a5e0d4!important}
+.sidebar-next,.sidebar-status{background:linear-gradient(145deg,#14242a,#101b21)!important;border:1px solid var(--ma-line)!important;border-radius:11px!important;box-shadow:0 12px 28px #0002}
+.sidebar-next button{border-radius:7px!important}
+.game-main{padding:clamp(18px,2.3vw,34px)!important;min-width:0;overflow:hidden}
+.game-heading h1,.panel-title h1{font-family:"Manrope","DM Sans",sans-serif!important;letter-spacing:-.045em!important;font-weight:800!important}
+.game-heading h1{font-size:clamp(27px,2.3vw,38px)!important}
+.game-heading p,.panel-lead{color:#9aadb1!important;line-height:1.7!important}
+.eyebrow{color:#88aaa9!important;letter-spacing:.16em!important}
+.day-button,.primary,.takeover-button{border-radius:8px!important;box-shadow:0 8px 22px #7fc8bb12!important}
+.day-button{background:linear-gradient(135deg,#c7e8dc,#80b8ad)!important;color:#10211e!important;border:1px solid #d4f2e7!important;font-weight:800!important}
+.day-button:hover,.primary:hover{filter:brightness(1.07);box-shadow:0 12px 30px #8fd6d022!important}
+.economy-live-strip{background:linear-gradient(120deg,#14242b,#101b21)!important;border:1px solid var(--ma-line)!important;border-radius:12px!important;box-shadow:var(--ma-shadow);overflow:hidden}
+.economy-live-strip>div{padding:15px 17px!important;border-right:1px solid var(--ma-line)!important}
+.economy-live-strip span,.command-rail-card>span,.command-strip>button>span{color:#81999b!important;letter-spacing:.13em!important}
+.economy-live-strip b{font-variant-numeric:tabular-nums;color:#e0eeea!important}
+.daily-goals-board,.market-map-card,.home-news-card,.game-panel,.profile-hero-card,.campaign-goals-card,.profile-records>div,.profile-account-card{background:linear-gradient(145deg,rgba(19,32,39,.98),rgba(13,23,29,.98))!important;border:1px solid var(--ma-line)!important;border-radius:13px!important;box-shadow:var(--ma-shadow)!important}
+.daily-goals-board{padding:22px!important}
+.daily-goals-head h2,.card-head h2{font-family:"Manrope",sans-serif!important;letter-spacing:-.025em!important}
+.daily-goals-grid>button{background:linear-gradient(145deg,#192b31,#122027)!important;border:1px solid #b1d4ce20!important;border-radius:10px!important;padding:17px!important;min-height:116px!important}
+.daily-goals-grid>button:hover{transform:translateY(-3px)!important;border-color:#8fd6d05e!important;box-shadow:0 12px 26px #0003!important}
+.daily-goals-grid>button.done{background:linear-gradient(145deg,#18372f,#132720)!important;border-color:#82d6ac45!important}
+.daily-goals-grid>button>span{color:#89a9a5!important}
+.daily-goals-grid>button>b{font-size:16px!important;color:#e8f2ef!important}
+.command-map-layout{gap:18px!important;align-items:stretch!important}
+.market-map-card{overflow:hidden!important;min-width:0}
+.market-map-card .card-head{padding:21px 22px 16px!important;border-bottom:1px solid var(--ma-line)!important}
+.market-map-card .card-head h2{font-size:20px!important;color:#edf4f1!important}
+.map-subline{color:#91a8a8!important;line-height:1.6!important}
+.map-head-stats{gap:5px 10px!important}
+.map-head-stats b{color:#d9eee7!important;font-variant-numeric:tabular-nums}
+.command-map-rail{gap:12px!important}
+.command-rail-card{background:linear-gradient(145deg,#16272d,#101c22)!important;border:1px solid var(--ma-line)!important;border-radius:11px!important;padding:17px!important;box-shadow:0 10px 28px #0002!important}
+.command-rail-card:hover{transform:translateY(-3px)!important;border-color:#9ad8cf4a!important;box-shadow:0 16px 32px #0003!important}
+.command-rail-card>strong{font:800 25px "Space Grotesk",sans-serif!important;letter-spacing:-.04em!important;color:#e2f2eb!important}
+.command-rail-card p,.command-rail-card small{color:#91a6a9!important;line-height:1.6!important}
+.command-rail-card button{border-radius:7px!important;background:#20373a!important;border:1px solid #9bd5cd2b!important;color:#c7e8df!important;padding:10px 12px!important}
+.command-rail-card button:hover{background:#29484a!important;border-color:#9bd5cd66!important}
+.money-bar,.influence-meter{background:#27363a!important;border-radius:99px!important;overflow:hidden}
+.money-bar i,.influence-meter i{background:linear-gradient(90deg,#5f9f8f,#b5dfc7)!important;border-radius:99px!important}
+.command-strip{gap:12px!important;margin-top:16px!important}
+.command-strip>button{background:linear-gradient(145deg,#16262c,#101b21)!important;border:1px solid var(--ma-line)!important;border-radius:11px!important;padding:17px!important;min-width:0!important}
+.command-strip>button:hover{transform:translateY(-3px)!important;border-color:#91d6cd50!important;box-shadow:0 15px 30px #0003!important}
+.command-strip>button>b{color:#e1efea!important;font:700 19px "Space Grotesk",sans-serif!important;font-variant-numeric:tabular-nums}
+.home-news-card{margin-top:16px!important;overflow:hidden}
+.home-news-card .card-head{padding:20px 22px!important}
+.home-news-list>button{padding:15px 20px!important;border-top:1px solid #b5d3d11a!important;background:transparent!important}
+.home-news-list>button:hover{background:#1a2b30!important;transform:none!important}
+.home-news-list>button b{color:#e3efec!important}
+.home-news-list>button p{color:#8da3a4!important;line-height:1.55!important}
+.game-panel{padding:clamp(18px,2vw,28px)!important}
+.panel-title{border-bottom:1px solid var(--ma-line)!important;padding-bottom:18px!important;margin-bottom:22px!important}
+.panel-title h1{font-size:clamp(27px,2.4vw,36px)!important}
+.game-panel button:not(.primary):not(.active):hover,.news-filter-bar button:hover,.chart-range-tabs button:hover{border-color:#9bd8ce66!important}
+.news-item,.event-card,.company-focus-card,.exchange-safe-companies>button,.life-option{border-radius:10px!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important}
+.news-item:hover,.event-card:hover,.company-focus-card:hover,.exchange-safe-companies>button:hover{transform:translateY(-2px)!important;box-shadow:0 12px 28px #0003!important}
+.game-panel [class*="grid"]>div,.game-panel [class*="stat"]>div{min-width:0}
+.company-modal{border-radius:15px!important;background:#0e191f!important;border-color:#c0dfd51f!important;box-shadow:0 35px 100px #000a!important}
+.company-modal-backdrop{backdrop-filter:blur(8px)!important}
+.modal-close{border-radius:8px!important}
+.game-profile-button:hover{background:#17272d!important}
+.topbar-time-controls{border-color:var(--ma-line)!important;background:#101c22!important;border-radius:9px!important}
+.time-main{border-radius:7px!important}
+.time-speed-group button{border-radius:5px!important}
+:focus-visible{outline:2px solid #a4e1d5!important;outline-offset:3px!important}
+@media(min-width:1500px){.game-main{max-width:none!important}.command-map-layout{grid-template-columns:minmax(0,1fr) 285px!important}.command-map-rail{min-width:0}}
+@media(max-width:1180px){.command-map-layout{grid-template-columns:minmax(0,1fr)!important}.command-map-rail{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}.command-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}.game-main{padding:20px!important}}
+@media(max-width:760px){.game-topbar{flex-wrap:wrap!important;gap:10px!important}.topbar-context{display:none!important}.game-right{margin-left:auto!important}.game-sidebar{width:66px!important;min-width:66px!important;padding:10px 6px!important}.sidebar-player>div:not(.sidebar-avatar),.sidebar-section>span,.sidebar-section button:not(.active),.sidebar-section button:not(.active) .nav-glyph+*,.sidebar-next,.sidebar-status{display:none!important}.sidebar-section button{justify-content:center!important;padding:9px!important;font-size:0!important}.sidebar-section button .nav-glyph{margin:0!important}.sidebar-player{justify-content:center!important;padding:8px 0 16px!important}.game-main{padding:13px!important}.game-heading{align-items:flex-start!important;gap:12px!important}.game-heading h1{font-size:25px!important}.daily-goals-board{padding:15px!important}.daily-goals-grid{grid-template-columns:1fr!important}.daily-goals-grid>button{min-height:90px!important}.command-map-rail{grid-template-columns:1fr!important}.command-strip{grid-template-columns:1fr 1fr!important}.economy-live-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}.market-map-card .card-head{padding:15px!important}.map-head-stats{display:none!important}.home-news-list>button{padding:12px!important}.home-news-list>button>strong{font-size:11px!important}}
+@media(max-width:440px){.game-sidebar{width:52px!important;min-width:52px!important}.command-strip{grid-template-columns:1fr!important}.game-right .topbar-wealth{display:none!important}.game-profile-button b{display:none!important}.game-heading{flex-direction:column!important}.day-button{width:100%!important;justify-content:center!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
