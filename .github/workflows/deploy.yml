@@ -29,5 +29,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Validate Cloudflare credentials
+        run: |
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || (echo "::error::Missing GitHub Actions secret CLOUDFLARE_ACCOUNT_ID" && exit 1)
+          test -n "$CLOUDFLARE_API_TOKEN" || (echo "::error::Missing GitHub Actions secret CLOUDFLARE_API_TOKEN" && exit 1)
+
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy dist --project-name marketarena
+        run: npx wrangler pages deploy dist --project-name portivo-44r
