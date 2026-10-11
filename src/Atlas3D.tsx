@@ -10,6 +10,7 @@ type Atlas3DProps = {
   onCompany?: (company: CompanyPreview) => void;
   holdings?: Record<string, number>;
   home?: { housing: string; label: string };
+  rivals?: {id:string;name:string;holdings:Record<string,number>}[];
 };
 
 type GeoPoint = [number, number];
@@ -1278,7 +1279,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [countries, selected, showCompanies, holdings, home?.housing, home?.label]);
+  }, [countries, selected, showCompanies, holdings, home?.housing, home?.label, rivals]);
 
   const selectedCountry = countries.find((c) => c.id === selected);
 
@@ -1302,20 +1303,23 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
           {showCompanies && selectedCountry?.companies.map((company) => {
             const shares = holdings[company.ticker] || 0;
             const ownership = Math.min(100, Math.round((shares / GAME_CONFIG_SHARES) * 100));
+            const rivalOwner = (rivals??[]).map(rival=>({name:rival.name,shares:rival.holdings[company.ticker]??0})).sort((a,b)=>b.shares-a.shares)[0];
+            const rivalOwnership = Math.min(100,Math.round(((rivalOwner?.shares??0)/GAME_CONFIG_SHARES)*1000)/10);
+            const contested = (rivalOwner?.shares??0)>0;
             const controlled = ownership >= 51;
             const strategic = ownership >= 10;
             return (
               <button
                 key={company.ticker}
                 ref={(el) => { companyRefs.current[company.ticker] = el; }}
-                className={`atlas-company-marker premium-company-marker sector-${({ "Финансы":"finance", "Энергетика":"energy", "Металлы":"metals", "Машиностроение":"industrial", "Судоходство":"shipping", "Страхование":"insurance", "Порты":"ports", "Нефть":"oil", "Логистика":"logistics", "Биотех":"biotech", "Технологии":"technology", "Электроника":"electronics", "Робототехника":"robotics", "Агро":"agro", "Ритейл":"retail", "Недвижимость":"realestate", "Промышленность":"industry", "Химия":"chemicals" } as Record<string,string>)[company.sector] ?? "default"} ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
+                className={`atlas-company-marker premium-company-marker sector-${({ "Финансы":"finance", "Энергетика":"energy", "Металлы":"metals", "Машиностроение":"industrial", "Судоходство":"shipping", "Страхование":"insurance", "Порты":"ports", "Нефть":"oil", "Логистика":"logistics", "Биотех":"biotech", "Технологии":"technology", "Электроника":"electronics", "Робототехника":"robotics", "Агро":"agro", "Ритейл":"retail", "Недвижимость":"realestate", "Промышленность":"industry", "Химия":"chemicals" } as Record<string,string>)[company.sector] ?? "default"} ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""} ${contested?"rival-contested":""}`}
                 type="button"
-                title={`${company.name} · ${company.ticker} · ${ownership}%`}
+                title={`${company.name} · ${company.ticker} · твоя доля ${ownership}%${contested?" · соперник "+rivalOwner.name+" "+rivalOwnership+"%":""}`}
                 onClick={() => onCompanyRef.current?.(company)}
               >
                 <b>{company.ticker}</b>
                 <span>{company.name}</span>
-                <small>{controlled ? "КОНТРОЛЬ 51%" : shares > 0 ? `${ownership}% ДОЛЯ` : "ПУБЛИЧНАЯ"}</small>
+                <small>{controlled ? "КОНТРОЛЬ 51%" : contested ? `СОПЕРНИК ${rivalOwnership}%` : shares > 0 ? `${ownership}% ДОЛЯ` : "ПУБЛИЧНАЯ"}</small>
               </button>
             );
           })}
