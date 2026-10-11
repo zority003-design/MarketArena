@@ -320,6 +320,72 @@ function makeTerrain(selectedId?: string) {
   return mesh;
 }
 
+function makeTerrainContours(selectedId: string) {
+  const poly = countryPolygons[selectedId];
+  if (!poly) return new THREE.Group();
+
+  // Fine, low-contrast elevation lines help the selected country read as a
+  // physical landscape instead of a flat painted surface.
+  const nx = 150, nz = 108;
+  const levels: number[] = [];
+  for (let level = 0.42; level <= 2.18; level += 0.22) levels.push(level);
+  const positions: number[] = [];
+
+  const geoInside = (x: number, z: number) =>
+    pointInPolygon((x / W + 0.5) * 100, (z / D + 0.5) * 100, poly);
+
+  for (const level of levels) {
+    for (let iz = 0; iz < nz; iz += 1) {
+      const z0 = (iz / nz - 0.5) * D;
+      const z1 = ((iz + 1) / nz - 0.5) * D;
+      for (let ix = 0; ix < nx; ix += 1) {
+        const x0 = (ix / nx - 0.5) * W;
+        const x1 = ((ix + 1) / nx - 0.5) * W;
+        const corners: [number, number, number][] = [
+          [x0, z0, terrainHeight(x0, z0)],
+          [x1, z0, terrainHeight(x1, z0)],
+          [x1, z1, terrainHeight(x1, z1)],
+          [x0, z1, terrainHeight(x0, z1)]
+        ];
+        const crossings: [number, number][] = [];
+        for (let edge = 0; edge < 4; edge += 1) {
+          const a = corners[edge];
+          const b = corners[(edge + 1) % 4];
+          if ((a[2] < level && b[2] >= level) || (b[2] < level && a[2] >= level)) {
+            const t = (level - a[2]) / ((b[2] - a[2]) || 1e-6);
+            crossings.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+          }
+        }
+        const addSegment = (a: [number, number], b: [number, number]) => {
+          const mx = (a[0] + b[0]) * 0.5;
+          const mz = (a[1] + b[1]) * 0.5;
+          if (!geoInside(mx, mz)) return;
+          positions.push(a[0], terrainHeight(a[0], a[1]) * SELECTED_RELIEF_SCALE + 0.035, a[1]);
+          positions.push(b[0], terrainHeight(b[0], b[1]) * SELECTED_RELIEF_SCALE + 0.035, b[1]);
+        };
+        if (crossings.length === 2) addSegment(crossings[0], crossings[1]);
+        else if (crossings.length === 4) {
+          addSegment(crossings[0], crossings[1]);
+          addSegment(crossings[2], crossings[3]);
+        }
+      }
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  const material = new THREE.LineBasicMaterial({
+    color: "#d6d5ad",
+    transparent: true,
+    opacity: 0.24,
+    depthWrite: false
+  });
+  const contours = new THREE.LineSegments(geometry, material);
+  contours.renderOrder = 2;
+  contours.userData.isTerrainContourLayer = true;
+  return contours;
+}
+
 function makeLine(points: THREE.Vector3[], color: number, opacity = 1, width = 1) {
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
   const material = new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity });
@@ -651,6 +717,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
 
     const terrain = makeTerrain(selected);
     scene.add(terrain);
+    const terrainContours = makeTerrainContours(selected);
+    scene.add(terrainContours);
 
     const oceanUniforms={uTime:{value:0}};
     const ocean = new THREE.Mesh(
