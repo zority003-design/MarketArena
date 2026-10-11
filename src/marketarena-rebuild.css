@@ -481,3 +481,9 @@ input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,
 .campaign-intro-actions button.primary{background:linear-gradient(120deg,#25d6a0,#7af3c7)!important;color:#06231d!important;border:0!important}
 @media(max-width:1000px){.campaign-intro-banner{grid-template-columns:48px minmax(0,1fr)}.campaign-intro-emblem{width:46px;height:46px}.campaign-intro-actions{grid-column:2;flex-direction:row;flex-wrap:wrap}.campaign-intro-actions button{white-space:normal}}
 @media(max-width:620px){.campaign-intro-banner{grid-template-columns:1fr;padding:15px}.campaign-intro-emblem{display:none}.campaign-intro-actions{grid-column:1;min-width:0}.campaign-intro-actions button{flex:1}.campaign-intro-steps{gap:5px}.campaign-intro-steps span{font-size:9px}}
+
+
+.country-start-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.random-country-button{padding:10px 13px;border:1px solid rgba(73,230,183,.25);border-radius:10px;background:linear-gradient(135deg,#12332f,#0b2025);color:#8df4cf;font-size:11px;font-weight:800;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+.random-country-button:hover{transform:translateY(-2px);border-color:rgba(73,230,183,.55);background:linear-gradient(135deg,#19463a,#102d32)}
+@media(max-width:620px){.country-start-actions{width:100%;justify-content:stretch}.country-start-actions button{flex:1}}
