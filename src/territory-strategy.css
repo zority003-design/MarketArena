@@ -95,3 +95,22 @@ button:active{transform:translateY(1px) scale(.99)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 body,.game-shell,button,input,select,textarea{font-family:'DM Sans',sans-serif}
 .game-heading h1,.panel-title h1,.daily-goals-head h2,.card-head h2{font-family:'Manrope','DM Sans',sans-serif!important}
+
+
+/* v1.0.8 — playable command HUD */
+.world-command-strip{display:grid;grid-template-columns:minmax(210px,1.05fr) minmax(320px,1.5fr) auto;gap:18px;align-items:stretch;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(189,164,104,.2);border-radius:16px;background:linear-gradient(112deg,rgba(19,31,30,.96),rgba(13,22,27,.94) 62%,rgba(27,28,24,.88));box-shadow:0 14px 36px rgba(0,0,0,.16);min-width:0}
+.world-command-mission{display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0;border-left:2px solid #c5a65f;padding-left:13px}
+.world-command-kicker,.world-command-stats>div>span{font-size:9px;font-weight:800;letter-spacing:.14em;color:#a9b7ae}
+.world-command-mission strong{font-size:14px;line-height:1.35;color:#f0e5c9}
+.world-command-mission small{font-size:11px;line-height:1.45;color:#91a39a}
+.world-command-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
+.world-command-stats>div{display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0;padding:8px 10px;border:1px solid rgba(171,196,178,.09);border-radius:10px;background:rgba(255,255,255,.018)}
+.world-command-stats>div>strong{font-size:clamp(14px,1.15vw,19px);font-weight:800;line-height:1.1;color:#e4d1a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.world-command-stats>div>small{font-size:10px;color:#7f958b}
+.world-command-actions{display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:112px}
+.world-command-actions button{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px;border:1px solid rgba(159,198,173,.15);border-radius:8px;background:rgba(105,155,117,.07);color:#c5d8ca;font-size:11px;font-weight:700;white-space:nowrap}
+.world-command-actions button span{color:#cbb16f;transition:transform .18s ease}
+.world-command-actions button:hover{border-color:rgba(205,177,111,.42);background:rgba(125,154,104,.14);transform:translateX(2px)}
+.world-command-actions button:hover span{transform:translate(2px,-2px)}
+@media(max-width:1100px){.world-command-strip{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}.world-command-actions{grid-column:1/-1;flex-direction:row;justify-content:flex-start;flex-wrap:wrap}.world-command-actions button{min-width:112px}}
+@media(max-width:680px){.world-command-strip{grid-template-columns:minmax(0,1fr);gap:12px;padding:13px}.world-command-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.world-command-actions{grid-column:auto}.world-command-mission strong{font-size:13px}}
