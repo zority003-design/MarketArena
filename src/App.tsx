@@ -10,8 +10,9 @@ import { companyMarketSignal, macroEventForDay, quarterlyFinancials, commoditySi
 type Screen = "auth" | "mode" | "country" | "difficulty" | "game";
 type GameTab = "overview" | "exchange" | "portfolio" | "companies" | "life" | "map" | "news" | "events" | "history" | "updates" | "profile" | "economy";
 type Transaction = { day:number; type:"BUY"|"SELL"; ticker:string; quantity:number; price:number };
+type RivalPlayer = { id:string; name:string; style:string; cash:number; holdings:Record<string,number>; lastTarget?:string };
 type GameSave = {
-  player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>;
+  player:string; countryId:string; difficulty:string; cash:number; holdings:Record<string,number>; rivals?:RivalPlayer[];
   day:number; transactions:Transaction[]; tab:GameTab; savedAt:string; careerXP?:number; achievements?:string[]; campaignMissions?:string[]; earnedIncome?:number; economyVisited?:boolean; miniGamesCompleted?:number; crisisSurvived?:boolean; startingCapital?:number;
   loan?:{principal:number;balance:number;lastChargeDay:number;rate:number}|null;
   ownedCompanies?:string[]; jobXP?:Partial<Record<JobId,number>>; lastJobDay?:number; miniGameRewardDay?:number; workActionsDay?:number; workActions?:number; housing?:keyof typeof GAME_CONFIG.housing; food?:keyof typeof GAME_CONFIG.food; transport?:keyof typeof GAME_CONFIG.transport; appearance?:keyof typeof GAME_CONFIG.appearance; energy?:number;
@@ -313,6 +314,11 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const [achievements,setAchievements]=useState<string[]>(()=>initialSave?.achievements??[]);
   const [loan,setLoan]=useState<GameSave["loan"]>(()=>initialSave?.loan??null);
   const [ownedCompanies,setOwnedCompanies]=useState<string[]>(()=>initialSave?.ownedCompanies??[]);
+  const [rivals,setRivals]=useState<RivalPlayer[]>(()=>initialSave?.rivals??[
+    {id:"orion",name:"Альянс «Орион»",style:"Агрессивный скупщик",cash:650000,holdings:{}},
+    {id:"vector",name:"Фонд «Вектор»",style:"Охота за дивидендами",cash:720000,holdings:{}},
+    {id:"meridian",name:"Группа «Меридиан»",style:"Сбор отраслей",cash:600000,holdings:{}}
+  ]);
   const [lastJobDay,setLastJobDay]=useState(()=>initialSave?.lastJobDay??0);
   const [miniGameRewardDay,setMiniGameRewardDay]=useState(()=>initialSave?.miniGameRewardDay??0);
   const [workActions,setWorkActions]=useState(()=>initialSave?.workActionsDay===day?initialSave?.workActions??0:0);
@@ -332,7 +338,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   useEffect(()=>{if(timePaused||campaignFinished)return; const ms=Math.round(300000/timeSpeed); const timer=window.setInterval(()=>setDay(v=>Math.min(120,v+1)),ms);return()=>window.clearInterval(timer)},[timeSpeed,timePaused,campaignFinished]);
   useEffect(()=>{if(day<=1)return; setWorkActions(0); const comfortRecovery=8+(GAME_CONFIG.housing[housing].comfort*0.10); const nextEnergy=Math.min(100,energy+GAME_CONFIG.food[food].energy*0.48+comfortRecovery); setCash(v=>Math.max(0,v-lifestyleCost)); setEnergy(nextEnergy); setNotice(`День ${day}: жизнь −${lifestyleCost.toLocaleString("ru-RU")} VLR · энергия ${Math.round(nextEnergy)}/100.`);},[day]);
   useEffect(()=>{if(day>=120){setDay(120);setCampaignFinished(true);setTimePaused(true);setNotice("Кампания завершена. Рынок остановлен: теперь можно оценить результат.");}},[day]);
-  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,campaignMissions:completedMissions,earnedIncome,economyVisited,miniGamesCompleted,crisisSurvived,startingCapital:initialCapital,loan,ownedCompanies,jobXP,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,completedMissions,earnedIncome,economyVisited,miniGamesCompleted,crisisSurvived,initialCapital,loan,ownedCompanies,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy,jobXP]);
+  useEffect(()=>{const payload:GameSave={player,countryId:country.id,difficulty,cash,holdings,day,transactions,tab,savedAt:new Date().toISOString(),careerXP,achievements,campaignMissions:completedMissions,earnedIncome,economyVisited,miniGamesCompleted,crisisSurvived,startingCapital:initialCapital,loan,ownedCompanies,rivals,jobXP,lastJobDay,miniGameRewardDay,workActionsDay:day,workActions,housing,food,transport,appearance,energy};try{window.localStorage.setItem(saveKey,JSON.stringify(payload));}catch{}},[saveKey,player,country.id,difficulty,cash,holdings,day,transactions,tab,careerXP,achievements,completedMissions,earnedIncome,economyVisited,miniGamesCompleted,crisisSurvived,initialCapital,loan,ownedCompanies,rivals,lastJobDay,miniGameRewardDay,workActions,housing,food,transport,appearance,energy,jobXP]);
   const countryMarketProfile:Record<string,{bias:number;sectors:Record<string,number>;strength:string;risk:string}>={
     slavoriya:{bias:.006,sectors:{"Металлы":.018,"Энергетика":.012,"Машиностроение":.014,"Финансы":.009},strength:"сильный внутренний спрос и промышленная база",risk:"циклический спрос на металлы и стоимость кредита"},
     lirania:{bias:.004,sectors:{"Судоходство":.020,"Порты":.018,"Страхование":.013,"Финансы":.010},strength:"торговые маршруты и портовая инфраструктура",risk:"зависимость от мирового товарооборота и фрахта"},
@@ -627,6 +633,32 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
       const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);if(!company)return sum;const sectorCount=country.companies.filter(other=>ownedCompanies.includes(other.ticker)&&other.sector===company.sector).length;const synergy=Math.min(0.24,Math.max(0,sectorCount-1)*0.08);return sum+Math.round(takeoverCost(company)*0.12*(1+synergy));},0);
       if(income>0){setCash(v=>v+income);setNotice("Дивиденды холдинга: +"+income.toLocaleString("ru-RU")+" VLR. Компании одного сектора увеличивают выплаты.");}
     }
+  },[day]);
+  useEffect(()=>{
+    if(day<=1||!country.companies.length)return;
+    setRivals(current=>current.map((rival,index)=>{
+      const cashBefore=rival.cash+18000;
+      const ownedTickers=Object.keys(rival.holdings).filter(ticker=>(rival.holdings[ticker]??0)>0);
+      let candidates=[...country.companies];
+      if(index===0){
+        const contested=candidates.filter(company=>(holdings[company.ticker]??0)>0).sort((a,b)=>(holdings[b.ticker]??0)-(holdings[a.ticker]??0));
+        if(contested.length)candidates=contested;
+      }else if(index===1){
+        candidates.sort((a,b)=>Number.parseFloat((b.dividendYield??"0").replace(",", "."))-Number.parseFloat((a.dividendYield??"0").replace(",", ".")));
+      }else if(ownedTickers.length){
+        const ownedSector=candidates.find(company=>ownedTickers.includes(company.ticker))?.sector;
+        const sameSector=candidates.filter(company=>company.sector===ownedSector);
+        if(sameSector.length)candidates=sameSector;
+      }
+      const target=candidates[(day+index*3)%candidates.length];
+      if(!target)return {...rival,cash:cashBefore};
+      const price=Math.max(1,priceFor(target));
+      const budget=Math.min(cashBefore*.28,Math.max(0,cashBefore-35000));
+      const quantity=Math.min(5000,Math.floor(budget/(price*(1+GAME_CONFIG.marketOrderFeeRate))));
+      if(quantity<1)return {...rival,cash:cashBefore,lastTarget:target.ticker};
+      const cost=quantity*price*(1+GAME_CONFIG.marketOrderFeeRate);
+      return {...rival,cash:cashBefore-cost,holdings:{...rival.holdings,[target.ticker]:(rival.holdings[target.ticker]??0)+quantity},lastTarget:target.ticker};
+    }));
   },[day]);
   useEffect(()=>{
     const newlyCompleted=CAMPAIGN_MISSIONS.filter(m=>missionChecks[m.id]&&!completedMissions.includes(m.id));
