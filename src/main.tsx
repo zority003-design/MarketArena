@@ -6,6 +6,7 @@ import "./marketarena-gameplay.css";
 import "./game/job-minigames.css";
 import "./economic-world-redesign.css";
 import "./territory-strategy.css";
+import "./marketarena-cinematic.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
