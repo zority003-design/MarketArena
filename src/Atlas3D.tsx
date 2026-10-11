@@ -121,13 +121,13 @@ function makeFactory(x:number,z:number,scale=1){
 }
 
 const colorStops = [
-  { h: 0.00, c: new THREE.Color("#496b48") },
-  { h: 0.18, c: new THREE.Color("#69875a") },
-  { h: 0.36, c: new THREE.Color("#8f9a68") },
-  { h: 0.56, c: new THREE.Color("#6f745c") },
-  { h: 0.73, c: new THREE.Color("#66645a") },
-  { h: 0.88, c: new THREE.Color("#9b9a8b") },
-  { h: 1.00, c: new THREE.Color("#e7e5d8") }
+  { h: 0.00, c: new THREE.Color("#3d5740") },
+  { h: 0.18, c: new THREE.Color("#617b50") },
+  { h: 0.36, c: new THREE.Color("#8c8a60") },
+  { h: 0.56, c: new THREE.Color("#686d59") },
+  { h: 0.73, c: new THREE.Color("#64615b") },
+  { h: 0.88, c: new THREE.Color("#a19d8b") },
+  { h: 1.00, c: new THREE.Color("#ded9c8") }
 ];
 
 function clamp(v: number, a: number, b: number) {
@@ -286,8 +286,8 @@ function makeTerrain(selectedId?: string) {
       const rawHeight=terrainHeight(px,pz);
       const h=land ? Math.max(-0.03,(selectedLand ? rawHeight*0.34 : 0.08 + rawHeight*0.035) * clamp(edge,0,1)) : -0.48;
       positions.push(px,h,pz);
-      const c=selectedLand ? heightColor(h,px,pz) : new THREE.Color("#68747a");
-      if(land&&!selectedLand)c.lerp(new THREE.Color("#8b9495"),0.28);
+      const c=selectedLand ? heightColor(h,px,pz) : new THREE.Color("#626b69");
+      if(land&&!selectedLand)c.lerp(new THREE.Color("#8d9186"),0.22);
       colors.push(c.r,c.g,c.b);
     }
   }
@@ -647,8 +647,8 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     if (!host || !overlay) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#86b8d1");
-    scene.fog = new THREE.Fog("#8bb8c9", 34, 68);
+    scene.background = new THREE.Color("#152327");
+    scene.fog = new THREE.Fog("#152327", 34, 68);
 
     const sky = new THREE.Mesh(
       new THREE.SphereGeometry(78, 48, 32),
@@ -656,7 +656,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
         side: THREE.BackSide,
         uniforms: { uSun: { value: 0.0 } },
         vertexShader: `varying vec3 vWorld; void main(){ vWorld=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-        fragmentShader: `varying vec3 vWorld; void main(){ float h=clamp(normalize(vWorld).y*.5+.5,0.0,1.0); vec3 horizon=vec3(.72,.84,.88); vec3 zenith=vec3(.10,.29,.48); vec3 c=mix(horizon,zenith,pow(h,.72)); float sunGlow=pow(max(dot(normalize(vWorld),normalize(vec3(-.45,.72,.3))),0.0),36.0); c+=vec3(1.0,.78,.45)*sunGlow*.28; gl_FragColor=vec4(c,1.0); }`
+        fragmentShader: `varying vec3 vWorld; void main(){ float h=clamp(normalize(vWorld).y*.5+.5,0.0,1.0); vec3 horizon=vec3(.16,.24,.25); vec3 zenith=vec3(.025,.055,.07); vec3 c=mix(horizon,zenith,pow(h,.72)); float sunGlow=pow(max(dot(normalize(vWorld),normalize(vec3(-.45,.72,.3))),0.0),36.0); c+=vec3(.84,.66,.37)*sunGlow*.22; gl_FragColor=vec4(c,1.0); }`
       })
     );
     scene.add(sky);
@@ -695,10 +695,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     host.insertBefore(renderer.domElement, host.firstChild);
     renderer.domElement.className = "atlas-3d-canvas";
 
-    const hemi = new THREE.HemisphereLight("#d9e7e1", "#162b2d", 1.35);
+    const hemi = new THREE.HemisphereLight("#d9e0d0", "#172326", 1.5);
     scene.add(hemi);
 
-    const sun = new THREE.DirectionalLight("#fff3d8", 3.4);
+    const sun = new THREE.DirectionalLight("#f0dfb9", 3.0);
     sun.position.set(-10, 18, -9);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
@@ -711,7 +711,7 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
     sun.shadow.bias = -0.00015;
     scene.add(sun);
 
-    const fill = new THREE.DirectionalLight("#86a8b1", 0.7);
+    const fill = new THREE.DirectionalLight("#8ca59b", 0.65);
     fill.position.set(14, 8, 12);
     scene.add(fill);
 
@@ -746,10 +746,10 @@ export function Atlas3D({ countries, selected, onSelect, showCompanies = false, 
           void main(){
             float rip=sin(vUv.x*85.0+uTime*.8)*sin(vUv.y*70.0-uTime*.5);
             float glint=smoothstep(.72,1.0,rip)*.16;
-            vec3 deep=vec3(.018,.16,.22);
-            vec3 shallow=vec3(.035,.31,.39);
+            vec3 deep=vec3(.025,.075,.09);
+            vec3 shallow=vec3(.075,.19,.20);
             vec3 col=mix(deep,shallow,clamp(vUv.y*.55+.25+vWave*2.0,0.0,1.0));
-            col += vec3(.18,.28,.28)*glint;
+            col += vec3(.24,.22,.15)*glint;
             gl_FragColor=vec4(col,.96);
           }
         `,
