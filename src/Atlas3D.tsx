@@ -1290,7 +1290,7 @@ for(let i=0;i<Math.floor(cityProfile.trees*3.50);i++){const u=6+hash(i*3.71+211,
               <button
                 key={company.ticker}
                 ref={(el) => { companyRefs.current[company.ticker] = el; }}
-                className={`atlas-company-marker premium-company-marker ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
+                className={`atlas-company-marker premium-company-marker sector-${({ "Финансы":"finance", "Энергетика":"energy", "Металлы":"metals", "Машиностроение":"industrial", "Судоходство":"shipping", "Страхование":"insurance", "Порты":"ports", "Нефть":"oil", "Логистика":"logistics", "Биотех":"biotech", "Технологии":"technology", "Электроника":"electronics", "Робототехника":"robotics", "Агро":"agro", "Ритейл":"retail", "Недвижимость":"realestate", "Промышленность":"industry", "Химия":"chemicals" } as Record<string,string>)[company.sector] ?? "default"} ${controlled ? "owned control" : strategic ? "owned strategic" : shares > 0 ? "owned stake" : ""}`}
                 type="button"
                 title={`${company.name} · ${company.ticker} · ${ownership}%`}
                 onClick={() => onCompanyRef.current?.(company)}
