@@ -419,3 +419,32 @@ input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,
 .strategy-company.company-contested:not(.company-controlled) .strategy-company-info>small{color:#d8bb7a}
 @media(max-width:1200px){.strategy-rivals-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.strategy-rivals-title{grid-column:1/-1;padding:2px 2px 5px}}
 @media(max-width:620px){.strategy-rivals-strip{grid-template-columns:1fr}.strategy-rivals-title{grid-column:auto}.strategy-rival{grid-template-columns:32px minmax(0,1fr) auto}.strategy-rival-money{grid-column:3;grid-row:1/3;align-items:flex-end;justify-content:center}.strategy-rival-info>span{max-width:190px}}
+
+
+.turn-deck{margin:22px 0 20px;padding:20px;border:1px solid rgba(56,230,175,.22);border-radius:16px;background:radial-gradient(ellipse at 100% 0%,rgba(24,190,145,.09),transparent 45%),linear-gradient(145deg,#10292a,#09191d);box-shadow:0 16px 38px rgba(0,0,0,.16)}
+.turn-deck-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:16px}
+.turn-deck-head h2{margin:7px 0 5px;color:#f0fff9;font:700 clamp(20px,2.2vw,28px)/1.15 "Space Grotesk","Manrope",sans-serif;letter-spacing:-.035em}
+.turn-deck-head p{margin:0;color:#9bbdb5;font-size:12px;line-height:1.5}
+.turn-deck-round{flex:0 0 105px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid rgba(255,200,106,.2);border-radius:10px;background:rgba(53,43,23,.25)}
+.turn-deck-round small{color:#d4b777;font-size:8px;font-weight:900;letter-spacing:.12em}
+.turn-deck-round b{color:#ffcf7b;font:800 22px "Space Grotesk",sans-serif}
+.turn-deck-round i{display:block;height:3px;margin-top:3px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden}
+.turn-deck-round i span{display:block;height:100%;background:#ffc86a}
+.turn-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.turn-action{position:relative;display:grid;grid-template-columns:28px 35px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:10px;row-gap:4px;min-width:0;padding:13px;border:1px solid rgba(63,223,177,.16);border-radius:12px;background:linear-gradient(140deg,rgba(16,49,46,.88),rgba(7,25,29,.96));text-align:left;color:#edfff8;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+.turn-action:hover{transform:translateY(-3px);border-color:rgba(63,238,185,.44);background:linear-gradient(140deg,rgba(21,66,56,.95),rgba(8,30,32,.98))}
+.turn-action-number{grid-column:1;grid-row:1;color:#78cbb1;font:800 10px "Space Grotesk",sans-serif}
+.turn-action-icon{grid-column:2;grid-row:1/3;display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(62,230,177,.23);border-radius:10px;background:rgba(42,221,163,.1);color:#70f3c2;font-size:19px}
+.turn-action-copy{grid-column:3;grid-row:1/3;display:flex;flex-direction:column;gap:5px;min-width:0}
+.turn-action-copy>b{color:#f0fff9;font-size:12px}
+.turn-action-copy>small{color:#91b8ae;font-size:10px;line-height:1.4}
+.turn-action-status{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:5px;padding-top:8px;border-top:1px solid rgba(63,223,177,.1);color:#69eab9;font-size:8px;font-weight:900;letter-spacing:.12em}
+.turn-action.completed{border-color:rgba(65,230,171,.32);background:linear-gradient(140deg,rgba(19,66,48,.65),rgba(7,25,29,.96))}
+.turn-action.completed .turn-action-status{color:#a3efb8}
+.turn-news{margin-top:20px}
+.economy-live-strip{border-color:rgba(56,230,175,.15)!important;background:rgba(10,29,32,.7)!important;border-radius:12px!important}
+.economy-live-strip>div span{color:#80b4a6!important}
+.economy-live-strip>div b{color:#dffdf3!important}
+.macro-event-banner{border-radius:13px!important;border-color:rgba(255,125,135,.28)!important;background:linear-gradient(120deg,rgba(75,27,36,.72),rgba(13,31,33,.95))!important}
+@media(max-width:900px){.turn-action-grid{grid-template-columns:1fr}.turn-action{grid-template-columns:24px 35px minmax(0,1fr)}.turn-action-status{grid-column:3;grid-row:2;justify-content:flex-start;border-top:0;padding-top:0;margin-top:0}.turn-action-copy{grid-row:1/3}.turn-action-icon{grid-row:1/3}}
+@media(max-width:620px){.turn-deck{padding:14px}.turn-deck-head{flex-direction:column}.turn-deck-round{flex-direction:row;align-items:center;flex-wrap:wrap;width:100%;flex-basis:auto}.turn-deck-round i{flex:1;min-width:60px}.strategy-sector-grid{grid-template-columns:1fr}}
