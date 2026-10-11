@@ -151,6 +151,26 @@ const sectorTone: Record<string,string> = {
   "Промышленность":"industry","Химия":"chemicals"
 };
 function sectorClass(sector:string){return "sector-"+(sectorTone[sector]??"default");}
+function propertySetId(countryId:string,company:CompanyPreview){
+  const groupA:Record<string,string[]>={
+    slavoriya:["Металлы","Машиностроение"],
+    lirania:["Судоходство","Порты"],
+    darvast:["Нефть","Металлы"],
+    estraviya:["Электроника","Технологии"],
+    saverniya:["Агро"]
+  };
+  return (groupA[countryId]??[]).includes(company.sector)?"a":"b";
+}
+function propertySetName(countryId:string,setId:string){
+  const names:Record<string,[string,string]>={
+    slavoriya:["Индустриальный пояс","Энергия и капитал"],
+    lirania:["Морские ворота","Капитал и риски"],
+    darvast:["Сырьевой пояс","Энергия и логистика"],
+    estraviya:["Цифровой фронтир","Биотех и робототехника"],
+    saverniya:["Продовольственный район","Торговый коридор"]
+  };
+  return (names[countryId]??["Район I","Район II"])[setId==="a"?0:1];
+}
 function AuthScreen({ onContinue }: { onContinue:(name:string)=>void }) {
   const [name,setName]=useState("");
   const [register,setRegister]=useState(true);
@@ -444,7 +464,7 @@ function GameScreen({player,country,difficulty,onRestart,onLogout}:{player:strin
   const jobLevelLabel=(id:JobId)=>jobProgression[id].names[jobLevel(id,jobXP[id]??0)-1];
   const jobNextXP=(id:JobId)=>{const xp=jobXP[id]??0;const next=jobProgression[id].levels.find(v=>v>xp);return next??15;};
   const ownedPositions=Object.values(holdings).filter(v=>v>0).length;
-  const ownedSectorCounts=country.companies.reduce<Record<string,number>>((acc,company)=>{if(ownedCompanies.includes(company.ticker)){const sector=company.sector||"Прочее";acc[sector]=(acc[sector]??0)+1;}return acc;},{});
+  const ownedSectorCounts=country.companies.reduce<Record<string,number>>((acc,company)=>{if(ownedCompanies.includes(company.ticker)){const set=propertySetName(country.id,propertySetId(country.id,company));acc[set]=(acc[set]??0)+1;}return acc;},{});
   const leadingSector=Object.entries(ownedSectorCounts).sort((a,b)=>b[1]-a[1])[0];
   const sectorBonus=leadingSector?Math.min(24,Math.max(0,leadingSector[1]-1)*8):0;
   const countryInfluence=Math.min(100,ownedPositions*12+Math.min(40,Math.floor(careerXP/2))+Math.min(30,Math.floor(totalWealth/1000000)*5));
@@ -632,7 +652,7 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
       setNotice("Начислены проценты по кредиту: +"+charged.toLocaleString("ru-RU")+" VLR.");
     }
     if(day%30===0 && ownedCompanies.length){
-      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);if(!company)return sum;const sectorCount=country.companies.filter(other=>ownedCompanies.includes(other.ticker)&&other.sector===company.sector).length;const synergy=Math.min(0.24,Math.max(0,sectorCount-1)*0.08);return sum+Math.round(takeoverCost(company)*0.12*(1+synergy));},0);
+      const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);if(!company)return sum;const propertySet=propertySetId(country.id,company);const sectorCount=country.companies.filter(other=>ownedCompanies.includes(other.ticker)&&propertySetId(country.id,other)===propertySet).length;const synergy=Math.min(0.24,Math.max(0,sectorCount-1)*0.08);return sum+Math.round(takeoverCost(company)*0.12*(1+synergy));},0);
       if(income>0){setCash(v=>v+income);setNotice("Дивиденды холдинга: +"+income.toLocaleString("ru-RU")+" VLR. Компании одного сектора увеличивают выплаты.");}
     }
   },[day]);
@@ -747,12 +767,13 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               })}
             </div>
             <div className="strategy-sector-grid">
-              {Object.entries(country.companies.reduce<Record<string,CompanyPreview[]>>((groups,company)=>{(groups[company.sector||"Прочее"]??=[]).push(company);return groups;},{})).map(([sector,companies])=>{
+              {Object.entries(country.companies.reduce<Record<string,CompanyPreview[]>>((groups,company)=>{const setId=propertySetId(country.id,company);(groups[setId]??=[]).push(company);return groups;},{})).map(([setId,companies])=>{
+                const sector=propertySetName(country.id,setId);
                 const controlled=companies.filter(company=>ownedCompanies.includes(company.ticker)).length;
                 const sharesCount=companies.filter(company=>(holdings[company.ticker]||0)>0).length;
                 const completed=controlled===companies.length;
-                return <section key={sector} className={`strategy-sector ${sectorClass(sector)} ${completed?"sector-complete":""}`}>
-                  <header className="strategy-sector-head"><span className="strategy-sector-color"/><div><span className="strategy-sector-label">ОТРАСЛЬ</span><h3>{sector}</h3></div><b className="strategy-sector-count">{controlled}/{companies.length}</b></header>
+                return <section key={sector} className={`strategy-sector property-set-${setId} ${completed?"sector-complete":""}`}>
+                  <header className="strategy-sector-head"><span className="strategy-sector-color"/><div><span className="strategy-sector-label">ЦВЕТОВАЯ ГРУППА</span><h3>{sector}</h3></div><b className="strategy-sector-count">{controlled}/{companies.length}</b></header>
                   <div className="strategy-sector-meter"><i style={{width:(controlled/companies.length*100)+"%"}}/></div>
                   <small className="strategy-sector-status">{completed?"СЕКТОР ПОД КОНТРОЛЕМ":sharesCount?sharesCount+" актив(а) в портфеле":"Свободная конкуренция"}</small>
                   <div className="strategy-company-list">{companies.map(company=>{
