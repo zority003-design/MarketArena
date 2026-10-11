@@ -182,3 +182,95 @@ button:not(.primary){-webkit-tap-highlight-color:transparent}
 .capital-tile-stake>small{font-size:9px;color:#81917e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:1200px){.capital-board-track{grid-template-columns:repeat(3,minmax(0,1fr))}.capital-tile{min-height:160px}}
 @media(max-width:620px){.capital-board-head{align-items:flex-start;flex-direction:column}.capital-board-track{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.capital-tile{min-height:160px;padding:10px}.capital-tile-name{font-size:12px}.capital-board-head>button{width:100%}}
+
+
+/* v1.1 direction correction — restore vivid emerald/teal energy and the moving square field. */
+:root{
+  --ma-bg:#071316;
+  --ma-panel:#0d2022;
+  --ma-panel-raised:#123033;
+  --ma-panel-soft:#102629;
+  --ma-line:rgba(63,220,177,.23);
+  --ma-green:#28e0a3;
+  --ma-green-strong:#7bffd2;
+  --ma-gold:#ffca68;
+  --ma-text:#f3fffc;
+  --ma-muted:#9bbab7;
+}
+html,body,#root{background:#071316}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(0,204,161,.16),transparent 48%),linear-gradient(145deg,#071316,#0b1b24 55%,#071316);color:#f3fffc}
+.game-topbar{background:rgba(5,17,20,.96)!important;border-bottom-color:rgba(46,223,174,.2)!important}
+.game-sidebar{background:#09191c!important;border-right-color:rgba(46,223,174,.16)!important}
+.game-sidebar,.game-main{border-color:rgba(46,223,174,.15)!important}
+.eyebrow,.game-heading .eyebrow,.step{color:#53efbd!important}
+.topbar-wealth{color:#7bffd2!important}
+.sidebar-section button.active{background:linear-gradient(90deg,rgba(20,220,163,.22),rgba(20,220,163,.055))!important;border-color:rgba(48,236,181,.38)!important;box-shadow:inset 3px 0 #28e0a3!important;color:#eafff8!important}
+.panel,.market-map-card,.command-rail-card,.portfolio-summary>div,.profile-stat-grid>div,.history-milestones>div,.exchange-safe-focus,.life-avatar-stage,.company-focus-card{
+  border-color:rgba(55,222,177,.19)!important;
+  background:linear-gradient(145deg,rgba(15,39,40,.97),rgba(8,25,29,.98))!important;
+}
+.atlas-3d-viewport,.atlas-3d-canvas{background:#102a31!important}
+.atlas-company-marker,.premium-company-marker{border-color:rgba(67,241,187,.48)!important;background:rgba(7,29,31,.95)!important}
+.atlas-company-marker:hover,.premium-company-marker:hover{border-color:#54f3c1!important;background:#123a38!important}
+button.primary,.primary{border-radius:12px!important;background:linear-gradient(115deg,#13c995,#6df5be)!important;color:#05221d!important;border:1px solid rgba(137,255,216,.58)!important;box-shadow:0 8px 24px rgba(16,211,156,.2)!important}
+button.primary:hover,.primary:hover{filter:brightness(1.08);box-shadow:0 12px 30px rgba(16,211,156,.3)!important}
+button,input,select,textarea{border-radius:11px}
+input,select,textarea{background:#07191d!important;border-color:rgba(65,224,180,.24)!important;color:#f3fffc!important}
+.world-command-strip{background:linear-gradient(105deg,#12312e,#0b2024 65%,#122d31)!important;border-color:rgba(55,222,177,.26)!important}
+.world-command-mission{border-left-color:#ffca68!important}
+.world-command-mission strong,.world-command-stats>div>strong{color:#82f5ce!important}
+.world-command-actions button{background:#123033!important;border-color:rgba(65,224,180,.22)!important;color:#e0fff5!important}
+.capital-board{border-top-color:rgba(55,222,177,.25)!important}
+.capital-board-head h2{color:#f1fffb!important}
+.capital-board-head p{color:#a2c4bf!important}
+.capital-board-head>button{border-color:rgba(255,202,104,.4)!important;background:#173330!important;color:#ffda8a!important}
+.capital-tile{border-color:rgba(55,222,177,.23)!important;background:linear-gradient(160deg,#143432,#0a2023 78%)!important;color:#f1fffb!important}
+.capital-tile:before{background:#18c997!important}
+.capital-tile.has-stake{border-color:rgba(62,242,183,.62)!important;background:linear-gradient(160deg,#17483a,#0b2426 80%)!important}
+.capital-tile.has-stake:before{background:#42f0b5!important}
+.capital-tile-top i{color:#ffcf78!important}
+.capital-tile-ticker{color:#76eac7!important}
+.capital-tile-stake>i{background:#32e3a9!important}
+
+/* A single, wide welcome scene with a subtle field of falling luminous squares. */
+.auth-screen{
+  position:relative!important;
+  isolation:isolate!important;
+  grid-template-columns:minmax(390px,.86fr) minmax(0,1.14fr)!important;
+  gap:clamp(24px,4vw,64px)!important;
+  padding:clamp(28px,4vw,64px)!important;
+  overflow:hidden!important;
+  background:radial-gradient(ellipse at 78% 45%,rgba(0,206,169,.18),transparent 45%),linear-gradient(125deg,#071316 0%,#0a1c24 52%,#071316 100%)!important;
+}
+.auth-screen:before{
+  content:""!important;position:absolute!important;inset:-180px 0 0!important;z-index:-1!important;pointer-events:none!important;
+  background-image:linear-gradient(rgba(68,238,194,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(68,238,194,.13) 1px,transparent 1px),linear-gradient(rgba(68,238,194,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(68,238,194,.065) 1px,transparent 1px)!important;
+  background-size:52px 52px,52px 52px,13px 13px,13px 13px!important;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 18%,#000 80%,transparent 100%)!important;
+  animation:ma-falling-grid 22s linear infinite!important;
+}
+.auth-screen:after{
+  content:""!important;position:absolute!important;inset:0!important;z-index:-1!important;pointer-events:none!important;
+  background:radial-gradient(circle at 15% 78%,rgba(23,230,170,.12),transparent 26%),radial-gradient(circle at 85% 20%,rgba(26,177,224,.11),transparent 28%)!important;
+}
+@keyframes ma-falling-grid{from{background-position:0 -52px,0 -52px,0 -13px,0 -13px}to{background-position:0 364px,0 364px,0 91px,0 91px}}
+.auth-panel{max-width:560px!important;justify-self:center!important;position:relative!important;z-index:1!important}
+.auth-copy h1 em{color:#52f0bd!important;text-shadow:0 0 34px rgba(45,239,184,.16)!important}
+.auth-tabs{border-radius:13px!important;background:rgba(5,24,27,.72)!important;border:1px solid rgba(55,222,177,.2)!important;padding:5px!important}
+.auth-tabs button{border-radius:10px!important;background:transparent!important;color:#a6c6c0!important}
+.auth-tabs button.active{background:linear-gradient(120deg,rgba(21,201,147,.25),rgba(36,145,172,.2))!important;color:#eafff8!important;box-shadow:inset 0 0 0 1px rgba(72,240,190,.26)!important}
+.auth-panel .primary{border-radius:13px!important}
+.auth-visual{position:relative!important;z-index:1!important;width:100%!important;min-width:0!important;min-height:min(72vh,680px)!important;overflow:visible!important;transform:scale(1.04)!important;transform-origin:center!important}
+.auth-visual:before{inset:2% 1%!important;border-color:rgba(53,225,183,.2)!important;background:radial-gradient(ellipse at center,rgba(20,126,116,.14),transparent 67%)!important}
+.auth-visual-grid{opacity:.65!important;background-image:linear-gradient(rgba(72,231,193,.11) 1px,transparent 1px),linear-gradient(90deg,rgba(72,231,193,.11) 1px,transparent 1px)!important}
+.auth-visual-core{border-color:rgba(72,241,194,.35)!important;background:radial-gradient(circle at 50% 35%,rgba(26,178,139,.25),rgba(7,24,28,.92) 70%)!important;box-shadow:0 0 90px rgba(15,216,163,.12),inset 0 0 60px rgba(40,218,174,.08)!important}
+.auth-orbit{border-color:rgba(58,228,184,.28)!important}
+.auth-float{border-color:rgba(57,228,183,.3)!important;background:rgba(8,31,34,.88)!important;box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 28px rgba(21,212,162,.07)!important}
+.auth-float span{color:#58edbf!important}
+.auth-float b{color:#edfff9!important}
+@media(max-width:900px){
+ .auth-screen{grid-template-columns:minmax(0,1fr)!important;padding:28px 22px!important}
+ .auth-visual{min-height:390px!important;transform:none!important}
+}
+@media(max-width:620px){.auth-visual{min-height:290px!important}}
+@media(prefers-reduced-motion:reduce){.auth-screen:before{animation:none!important}}
