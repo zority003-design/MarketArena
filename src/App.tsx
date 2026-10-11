@@ -653,7 +653,7 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
     }
     if(day%30===0 && ownedCompanies.length){
       const income=ownedCompanies.reduce((sum,ticker)=>{const company=country.companies.find(c=>c.ticker===ticker);if(!company)return sum;const propertySet=propertySetId(country.id,company);const sectorCount=country.companies.filter(other=>ownedCompanies.includes(other.ticker)&&propertySetId(country.id,other)===propertySet).length;const synergy=Math.min(0.24,Math.max(0,sectorCount-1)*0.08);return sum+Math.round(takeoverCost(company)*0.12*(1+synergy));},0);
-      if(income>0){setCash(v=>v+income);setNotice("Дивиденды холдинга: +"+income.toLocaleString("ru-RU")+" VLR. Компании одного сектора увеличивают выплаты.");}
+      if(income>0){setCash(v=>v+income);setNotice("Дивиденды холдинга: +"+income.toLocaleString("ru-RU")+" VLR. Компании одной цветовой группы увеличивают выплаты.");}
     }
   },[day]);
   useEffect(()=>{
@@ -743,7 +743,7 @@ const completedGoals=campaignGoals.filter(g=>g.done).length;
               <div className="command-rail-card capital-focus"><span>ОБЩИЙ КАПИТАЛ</span><strong>{totalWealth.toLocaleString("ru-RU")} VLR</strong><small>Кэш {cash.toLocaleString("ru-RU")} · активы {portfolioValue.toLocaleString("ru-RU")}</small><div className="money-bar"><i style={{width:cashPct+"%"}}/></div></div>
               <div className="command-rail-card next-focus"><span>СЛЕДУЮЩИЙ ХОД</span><b>{nextGoal.title}</b><p>{nextGoal.text}</p><button onClick={()=>{const g=nextGoal;if(g.id==="first-job")setTab("life");else if(g.id==="first-investment")openExchange();else if(g.id==="first-takeover")setTab("companies");else setTab("profile")}}>Открыть действие →</button></div>
               <div className="command-rail-card influence-focus"><span>ВЛИЯНИЕ В СТРАНЕ</span><strong>{countryInfluence}/100</strong><small>{influenceTier}</small><div className="influence-meter"><i style={{width:countryInfluence+"%"}}/></div><small>Контроль: {ownedCompanies.length} · долей: {ownedPositions}</small></div>
-              <div className="command-rail-card sector-focus"><span>СИНЕРГИЯ СЕКТОРА</span><strong>+{sectorBonus}%</strong><b>{leadingSector?leadingSector[0]:"Собери отрасль"}</b><small>{leadingSector?leadingSector[1]+" компании в секторе · бонус к дивидендам":"Контроль двух компаний одной отрасли даст +8% к дивидендам."}</small></div>
+              <div className="command-rail-card sector-focus"><span>СИНЕРГИЯ СЕКТОРА</span><strong>+{sectorBonus}%</strong><b>{leadingSector?leadingSector[0]:"Собери отрасль"}</b><small>{leadingSector?leadingSector[1]+" компании в секторе · бонус к дивидендам":"Контроль обеих компаний цветовой группы даст +8% к дивидендам."}</small></div>
               <div className="command-rail-card market-focus"><span>РЫНОК</span><b className={currentCrisis?"loss":"gain"}>{currentCrisis?currentCrisis.name:"Рынок стабилен"}</b><small>{currentCrisis?currentCrisis.short:"Следи за цепочками отраслей и новостями."}</small><button onClick={()=>setTab("events")}>События →</button></div>
             </aside>
           </section>
